@@ -2,9 +2,7 @@ import { Text, View } from 'react-native';
 
 const Example = () => {
   return (
-    <View>
-      <Text>Welcome To Beacon</Text>
-    </View>
+    <Text className="text-4xl font-bold text-blue-500">Welcome To Beacon</Text>
   );
 };
 

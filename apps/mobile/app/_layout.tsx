@@ -1,4 +1,5 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import '../global.css';
 import {
   DarkTheme,
   DefaultTheme,
