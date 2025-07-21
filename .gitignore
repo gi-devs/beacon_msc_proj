@@ -1,0 +1,17 @@
+# system and IDE specific files
+.DS_Store
+.vscode/
+.idea/
+
+# build and test artifacts, packages, and logs
+node_modules/
+dist/
+coverage/
+.turbo/
+
+# private files
+.env.development
+certs/
+
+# Misc
+notes.md
