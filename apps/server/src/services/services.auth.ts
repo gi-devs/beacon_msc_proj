@@ -3,13 +3,6 @@ import bcrypt from 'bcryptjs';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { CustomError } from '@/utils/custom-error';
 
-const payload = (data: Omit<UserPayload, 'iat' | 'exp'>) => {
-  return {
-    userId: data.userId,
-    username: data.username,
-  };
-};
-
 async function registerUser(data: {
   email: string;
   username: string;
@@ -62,8 +55,8 @@ async function registerUser(data: {
     accessToken,
     refreshToken,
     user: {
-      id: newUser.id,
-      displayName: newUser.username,
+      userId: newUser.id,
+      username: newUser.username,
     },
   };
 }
@@ -112,8 +105,8 @@ async function loginUser(data: {
     accessToken,
     refreshToken,
     user: {
-      id: userFound.id,
-      displayName: userFound.username,
+      userId: userFound.id,
+      username: userFound.username,
     },
   };
 }

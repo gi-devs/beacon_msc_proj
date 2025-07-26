@@ -1,8 +1,5 @@
 import prisma from '@/lib/prisma';
 import { CustomError } from '@/utils/custom-error';
-import { Prisma } from '@/generated/prisma';
-import PrismaClientInitializationError = Prisma.PrismaClientInitializationError;
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 export async function getUserByEmail(email: string) {
   try {

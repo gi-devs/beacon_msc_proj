@@ -13,7 +13,7 @@
     "paths": {
       "@/*": ["*"],
     },
-    "typeRoots": ["./node_modules/@types", "./src/types", "../../node_modules/@types"],
+    "typeRoots": ["./node_modules/@types", "./src/types", "../../node_modules/@types", "../../packages/types"],
     "types": ["jest", "node"]
   },
   "include": ["src/**/*", "tests/**/*", "src/types/**/*"],
