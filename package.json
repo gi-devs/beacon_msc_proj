@@ -8,10 +8,16 @@
     "packages/*"
   ],
   "scripts": {
+    "dev": "npm run dev:backend & npm run dev:mobile",
     "dev:mobile": "npm run start -w mobile",
     "dev:server": "npm run dev -w server",
-    "dev": "npm run dev:backend & npm run dev:mobile",
-    "test": "npm run test -w server && npm run test -w mobile"
+    "test": "npm run test -w server && npm run test -w mobile",
+    "test:mobile": "npm run test -w mobile",
+    "test:server": "npm run test -w server",
+    "prisma:studio": "npm run prisma:studio -w server",
+    "prisma:migrate": "npm run migrate -w server",
+    "prisma:migrate_deploy": "npm run migrate:deploy -w server",
+    "prisma:generate": "npm run generate -w server"
   },
   "keywords": [],
   "author": "",

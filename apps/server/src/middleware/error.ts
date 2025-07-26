@@ -10,7 +10,7 @@ export async function error(
   if (err instanceof CustomError) {
     res.status(err.statusCode).json(err.toJSON());
   } else {
-    console.error(err);  // Log unexpected errors
+    // console.error(err);  // Log unexpected errors
 
     res.status(500).json({
       message: err.message || 'Internal Server Error',

@@ -3,7 +3,7 @@
     "target": "ESNext",
     "module": "commonjs",
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": ".",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -12,13 +12,15 @@
     "baseUrl": "./src",
     "paths": {
       "@/*": ["*"],
-    }
+    },
+    "typeRoots": ["./node_modules/@types", "./src/types", "../../node_modules/@types"],
+    "types": ["jest", "node"]
   },
-  "include": ["src/**/*", "tests/**/*"],
+  "include": ["src/**/*", "tests/**/*", "src/types/**/*"],
   "exclude": ["node_modules", "dist"],
   "ts-node": {
-    "require": ["tsconfig-paths/register"]
+    "require": ["tsconfig-paths/register"],
+    "files": true,
   },
-  "files": ["src/types/global-types.d.ts"],
 }
 

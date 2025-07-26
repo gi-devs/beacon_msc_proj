@@ -1,0 +1,12 @@
+import { Router } from 'express';
+import { authController } from '@/controllers/controller.auth';
+import { verifyToken } from '@/middleware/verify-token';
+
+const router = Router();
+
+router.post('/register', authController.register);
+router.post('/login', authController.login);
+router.post('/refresh-token', authController.refreshToken);
+// router.get('/profile', verifyToken, authController.profile);
+
+export default router;

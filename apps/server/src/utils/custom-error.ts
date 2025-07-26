@@ -1,3 +1,5 @@
+import { PrismaClientKnownRequestError } from '@/generated/prisma/runtime/library';
+
 export enum ErrorCodes {
   NO_TOKEN = 'NO_TOKEN',
   INVALID_TOKEN = 'INVALID_TOKEN',
@@ -8,15 +10,25 @@ export enum ErrorCodes {
   MISSING_FIELDS = 'MISSING_FIELDS',
 }
 
-
 export class CustomError extends Error {
   statusCode: number;
   code: ErrorCodes | undefined;
+  error: Error | undefined;
 
-  constructor(message: string, statusCode: number, code?: ErrorCodes) {
+  constructor(
+    message: string,
+    statusCode: number,
+    code?: ErrorCodes,
+    error?: Error,
+  ) {
     super(message);
     this.statusCode = statusCode;
     this.code = code;
+    this.error = error;
+
+    if (error && error instanceof PrismaClientKnownRequestError) {
+      this.message = `Prisma Error: ${error.message}`;
+    }
 
     Object.setPrototypeOf(this, CustomError.prototype);
   }
