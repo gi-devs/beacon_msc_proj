@@ -1,0 +1,41 @@
+import axios from 'axios';
+import { getStoredAccessToken, refreshAccessToken } from '../api/authApi';
+import { API_URL } from '../constants/apiUrl';
+
+const axiosInstance = axios.create({
+  baseURL: API_URL,
+});
+
+// Add a request interceptor
+axiosInstance.interceptors.request.use(async (config) => {
+  // Do something before request is sent
+  const token = await getStoredAccessToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      try {
+        const accessToken = await refreshAccessToken();
+        if (accessToken) {
+          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+          return axiosInstance(originalRequest);
+        }
+      } catch (err) {
+        console.error('Token refresh failed:', err);
+      }
+    }
+
+    return Promise.reject(error);
+  },
+);
+
+export default axiosInstance;
