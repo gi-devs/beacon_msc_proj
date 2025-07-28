@@ -18,7 +18,7 @@ async function registerUser(data: {
   // Check if user already exists
   const existingUserEmail = await getUserByEmail(lowercasedEmail);
   if (existingUserEmail) {
-    throw new CustomError('Email already exists', 409);
+    throw new CustomError('SignUp already exists', 409);
   }
 
   const existingUsername = await getUserByEmail(username);
@@ -68,7 +68,7 @@ async function loginUser(data: {
   const { email, password } = data;
 
   if (!email || !password) {
-    throw new CustomError('Email and password are required', 400);
+    throw new CustomError('SignUp and password are required', 400);
   }
 
   const lowercasedEmail = email.toLowerCase();
@@ -130,23 +130,23 @@ async function refreshAccessToken(refreshToken: string) {
   });
 }
 
-// async function getProfile(userId: string) {
-//   const userFound = await getUserById(userId);
-//
-//   if (!userFound) {
-//     throw new CustomError('User not found', 404);
-//   }
-//
-//   return {
-//     id: userFound.id,
-//     email: userFound.email,
-//     displayName: userFound.username,
-//   };
-// }
+async function getProfile(userId: string) {
+  const userFound = await getUserById(userId);
+
+  if (!userFound) {
+    throw new CustomError('User not found', 404);
+  }
+
+  return {
+    id: userFound.id,
+    email: userFound.email,
+    displayName: userFound.username,
+  };
+}
 
 export const authService = {
   registerUser,
   loginUser,
   refreshAccessToken,
-  // getProfile,
+  getProfile,
 };

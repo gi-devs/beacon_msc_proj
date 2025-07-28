@@ -11,16 +11,20 @@
     "allowImportingTsExtensions": false,
     "baseUrl": "./src",
     "paths": {
-      "@/*": ["*"],
+      "@/*": ["*"]
     },
     "typeRoots": ["./node_modules/@types", "./src/types", "../../node_modules/@types", "../../packages/types"],
     "types": ["jest", "node"]
   },
-  "include": ["src/**/*", "tests/**/*", "src/types/**/*"],
+  "include": ["src/**/*",
+    "tests/**/*",
+    "src/types/**/*",
+    "../../packages/types/src/*"
+  ],
   "exclude": ["node_modules", "dist"],
   "ts-node": {
     "require": ["tsconfig-paths/register"],
-    "files": true,
-  },
+    "files": true
+  }
 }
 

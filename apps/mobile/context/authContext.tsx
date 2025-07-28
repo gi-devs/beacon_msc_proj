@@ -19,7 +19,7 @@ type AuthContextType = {
     email: string,
     password: string,
     username: string,
-  ) => Promise<UserPayload>;
+  ) => Promise<UserPayload | void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -35,15 +35,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       try {
         const res = await axiosInstance.get('/auth/profile');
         setUser(res.data.user);
+        Toast.info('User profile loaded successfully');
       } catch (err: any) {
         Toast.error(err.response.data.message);
         setUser(null);
       }
     };
 
-    initialiseAuth();
+    initialiseAuth(); // this is OK
 
-    // Optional: Re-check when app comes back to foreground
     const subscription = AppState.addEventListener('change', async (state) => {
       if (state === 'active') {
         await initialiseAuth();
@@ -65,7 +65,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         await storeRefreshToken(res.data.refreshToken);
       })
       .catch((err) => {
-        throw err;
+        console.error('Registration error:', err);
+        Toast.error(err.data.message);
       });
   };
 
@@ -73,7 +74,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     email: string,
     password: string,
     username: string,
-  ): Promise<UserPayload> => {
+  ): Promise<UserPayload | void> => {
     return await axiosInstance
       .post(`/auth/register`, {
         email,
@@ -98,7 +99,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       })
       .catch((err) => {
         console.error('Registration error:', err);
-        throw err;
+        Toast.error(err.data.message);
       });
   };
 

@@ -1,24 +1,32 @@
-import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { ImageBackground, Text, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '@/context/authContext';
 import Animated, {
-  Easing,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
 import { useEffect } from 'react';
 import { Link } from 'expo-router';
+import { useUI } from '@/context/uiContext';
 
 const Index = () => {
   const { isAuthenticated } = useAuth();
+  const { openingScreen } = useUI();
+
+  // animated values
   const top = useSharedValue(-1000);
-  const opacity = useSharedValue(0);
   const infoOpacity = useSharedValue(0);
 
   useEffect(() => {
+    if (openingScreen.hasAnimated) {
+      top.value = 0;
+      infoOpacity.value = 1;
+      return;
+    }
+
     const timer = setTimeout(() => {
       handleAnimation();
-    }, 1000);
+    }, 500);
 
     return () => clearTimeout(timer);
   }, []);
@@ -37,15 +45,6 @@ const Index = () => {
     };
   });
 
-  const animatedCircles = useAnimatedStyle(() => {
-    return {
-      position: 'absolute',
-      zIndex: 0,
-      opacity: opacity.value,
-    };
-  });
-
-  // className="flex justify-end flex-col items-center h-full pt-safe px-8 pb-20"
   const animatedInfo = useAnimatedStyle(() => {
     return {
       opacity: infoOpacity.value,
@@ -53,21 +52,16 @@ const Index = () => {
   });
 
   const handleAnimation = () => {
-    opacity.value = withTiming(
-      1,
-      { duration: 700, easing: Easing.linear },
+    top.value = withTiming(
+      0,
+      {
+        duration: 1000,
+      },
       () => {
-        top.value = withTiming(
-          0,
-          {
-            duration: 1500,
-          },
-          () => {
-            infoOpacity.value = withTiming(1, { duration: 500 });
-          },
-        );
+        infoOpacity.value = withTiming(1, { duration: 500 });
       },
     );
+    openingScreen.setHasAnimated(true);
   };
 
   if (isAuthenticated) {
@@ -76,25 +70,26 @@ const Index = () => {
   }
 
   return (
-    <View className="h-full w-full bg-[#3E678E]">
+    <ImageBackground
+      className="h-full w-full bg-ripple-600"
+      source={require('@/assets/app/background_2.png')}
+    >
       <Animated.Image
-        source={require('@/assets/items/beacon_light.png')}
+        source={require('@/assets/items/beacon_light_thick.png')}
         style={animatedBeacon}
       />
       <Animated.Image
-        source={require('@/assets/items/blurred_circles.png')}
-        style={animatedCircles}
-      />
-      <Image
-        source={require('@/assets/icons/BEACON_title.png')}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 object-contain z-10"
+        style={animatedInfo}
+        source={require('@/assets/icons/BEACON_title_large.png')}
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-screen"
+        resizeMode="contain"
       />
       <Animated.View
         className="flex justify-end flex-col items-center h-full pt-safe px-8 pb-20"
         style={animatedInfo}
       >
         <View className="flex gap-8 items-center w-full">
-          <Text className="text-white text-center leading-relaxed">
+          <Text className="text-black text-center leading-relaxed">
             By creating an account, you agree to our{' '}
             <Link href="/" className="underline font-bold">
               Terms of Service.
@@ -111,9 +106,9 @@ const Index = () => {
             .
           </Text>
           <View className="flex w-full items-center gap-4">
-            <Link href="/(registration)/email" asChild>
-              <TouchableOpacity className="bg-secondary py-4 w-full flex justify-center items-center rounded-full">
-                <Text className="text-white text-center font-bold">
+            <Link href="/(auth)/sign-up" asChild>
+              <TouchableOpacity className="bg-secondaryLight py-4 w-full flex justify-center items-center rounded-full">
+                <Text className="text-black text-center font-bold">
                   Create an account
                 </Text>
               </TouchableOpacity>
@@ -121,7 +116,7 @@ const Index = () => {
           </View>
         </View>
       </Animated.View>
-    </View>
+    </ImageBackground>
   );
 };
 

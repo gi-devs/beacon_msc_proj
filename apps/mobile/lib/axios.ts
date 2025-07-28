@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { getStoredAccessToken, refreshAccessToken } from '../api/authApi';
-import { API_URL } from '../constants/apiUrl';
+import { API_URL } from '@/constants/apiUrl';
 
 const axiosInstance = axios.create({
   baseURL: API_URL,

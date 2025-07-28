@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
 import { authService } from '@/services/services.auth';
-import { JwtPayload } from 'jsonwebtoken';
 
 async function register(req: Request, res: Response, next: NextFunction) {
   try {
@@ -41,24 +40,24 @@ async function refreshToken(
   }
 }
 
-// async function profile(
-//   req: Request,
-//   res: Response,
-//   next: NextFunction,
-// ): Promise<void> {
-//   try {
-//     const decoded = req.user as UserPayload;
-//     const user = await authService.getProfile(decoded.userId);
-//
-//     res.status(200).json(user);
-//   } catch (e) {
-//     next(e);
-//   }
-// }
+async function profile(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    const decoded = req.user as UserPayload;
+    const user = await authService.getProfile(decoded.userId);
+
+    res.status(200).json(user);
+  } catch (e) {
+    next(e);
+  }
+}
 
 export const authController = {
   register,
   login,
   refreshToken,
-  // profile,
+  profile,
 };

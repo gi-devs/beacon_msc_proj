@@ -33,7 +33,7 @@ const RegistrationLayout = () => {
           headerShown: false,
         }}
       >
-        <Stack.Screen name="email" options={{ title: 'Email' }} />
+        <Stack.Screen name="sign-up" options={{ title: 'SignUp' }} />
       </Stack>
     </>
   );

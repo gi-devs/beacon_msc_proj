@@ -5,10 +5,17 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#3E678E',
-        primaryLight: '#79B2E7',
         secondary: '#DCC0D2',
         secondaryLight: '#EEDAD4',
+
+        ripple: {
+          100: '#05EEC3',
+          200: '#03D6D6',
+          300: '#00B1B1',
+          400: '#019090',
+          500: '#036666',
+          600: '#014444',
+        },
       },
     },
   },
