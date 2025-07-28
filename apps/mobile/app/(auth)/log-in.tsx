@@ -16,18 +16,17 @@ import {
 import { useIsMounted } from '@/hooks/useIsMounted';
 import { useEffect } from 'react';
 import { useAuth } from '@/context/authContext';
-import { SignUpData, signUpSchema } from '@beacon/validation';
+import { Toast } from 'toastify-react-native';
+import { LogInData, logInSchema } from '@beacon/validation';
 
-const SignUp = () => {
+const LogIn = () => {
   const isMounted = useIsMounted();
-  const { register } = useAuth();
-  const { control, handleSubmit } = useForm<SignUpData>({
-    resolver: zodResolver(signUpSchema),
+  const { login } = useAuth();
+  const { control, handleSubmit } = useForm<LogInData>({
+    resolver: zodResolver(logInSchema),
     defaultValues: {
       email: '',
       password: '',
-      confirmPassword: '',
-      username: '',
     },
   });
 
@@ -38,15 +37,15 @@ const SignUp = () => {
 
   const router = useRouter();
 
-  const handleNextPress = async (data: SignUpData) => {
+  const handleNextPress = async (data: LogInData) => {
     console.log('Valid form data:', data);
-
-    const { email, password, username } = data;
+    const { email, password } = data;
 
     try {
-      const user = await register(email, password, username);
+      const user = await login(email, password);
       if (user) {
         router.push('/(home)/(tabs)');
+        Toast.success('Logged in successfully!');
       }
     } catch (error) {
       console.error('Registration error:', error);
@@ -72,7 +71,7 @@ const SignUp = () => {
           resizeMode="contain"
         />
         <Text className="text-2xl font-bold leading-tight w-full text-white">
-          Let's get you set up!
+          Welcome back!
         </Text>
         <View className="w-full flex gap-4 mt-8">
           <FormTextInput
@@ -81,25 +80,11 @@ const SignUp = () => {
             placeholder="Email"
             placeholderTextColor="#ffff"
           />
-          <FormTextInput
-            name="username"
-            control={control}
-            placeholder="Username"
-            placeholderTextColor="#ffff"
-            info="Your username will be visible to others."
-          />
           <FormSecureTextInput
             name="password"
             control={control}
             placeholder="Password"
             placeholderTextColor="#ffff"
-          />
-          <FormTextInput
-            name="confirmPassword"
-            control={control}
-            placeholder="Confirm Password"
-            placeholderTextColor="#ffff"
-            secureTextEntry
           />
         </View>
         <View className="mt-8 w-full">
@@ -107,9 +92,9 @@ const SignUp = () => {
             We will never share your email with anyone.
           </Text>
           <Text className="text-sm text-gray-400 mt-2 w-full text-center leading-relaxed">
-            By signing up, you agree to our{' '}
+            By signing in, you agree to our{' '}
             <Text className="underline font-bold">Terms of Service</Text> and{' '}
-            <Text className="underline font-bold">Privacy Policy</Text>.
+            <Text className="underline font-bold">Privacy Policy</Text>
           </Text>
         </View>
         <TouchableOpacity
@@ -123,4 +108,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default LogIn;

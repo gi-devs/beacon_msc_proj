@@ -3,7 +3,7 @@
     "target": "ESNext",
     "module": "commonjs",
     "outDir": "./dist",
-    "rootDir": ".",
+    "rootDir": "../../",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -11,7 +11,7 @@
     "allowImportingTsExtensions": false,
     "baseUrl": "./src",
     "paths": {
-      "@/*": ["*"]
+      "@/*": ["*"],
     },
     "typeRoots": ["./node_modules/@types", "./src/types", "../../node_modules/@types", "../../packages/types"],
     "types": ["jest", "node"]
@@ -19,7 +19,7 @@
   "include": ["src/**/*",
     "tests/**/*",
     "src/types/**/*",
-    "../../packages/types/src/*"
+    "../../packages/**/*",
   ],
   "exclude": ["node_modules", "dist"],
   "ts-node": {

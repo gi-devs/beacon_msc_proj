@@ -2,12 +2,11 @@ import { createUser, getUserByEmail, getUserById } from '@/models/model.user';
 import bcrypt from 'bcryptjs';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { CustomError } from '@/utils/custom-error';
+import { LogInData, SignUpData } from '@beacon/validation';
 
-async function registerUser(data: {
-  email: string;
-  username: string;
-  password: string;
-}): Promise<LoginResponse> {
+async function registerUser(
+  data: Omit<SignUpData, 'confirmPassword'>,
+): Promise<LoginResponse> {
   const { email, username, password } = data;
   if (!email || !password || !username) {
     throw new CustomError('Missing required fields', 400);
@@ -61,10 +60,7 @@ async function registerUser(data: {
   };
 }
 
-async function loginUser(data: {
-  email: string;
-  password: string;
-}): Promise<LoginResponse> {
+async function loginUser(data: LogInData): Promise<LoginResponse> {
   const { email, password } = data;
 
   if (!email || !password) {

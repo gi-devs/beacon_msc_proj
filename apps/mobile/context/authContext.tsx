@@ -12,8 +12,9 @@ import { Toast } from 'toastify-react-native';
 
 type AuthContextType = {
   user: UserPayload | null;
+  isLoading: boolean;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
   register: (
     email: string,
@@ -26,23 +27,28 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const isAuthenticated = !!user;
 
   // Load user when provider mounts
+  // TODO: no need for toast should load user silently and redirect to home if user is authenticated
   useEffect(() => {
     const initialiseAuth = async () => {
       try {
+        setIsLoading(true);
         const res = await axiosInstance.get('/auth/profile');
         setUser(res.data.user);
         Toast.info('User profile loaded successfully');
       } catch (err: any) {
         Toast.error(err.response.data.message);
         setUser(null);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    initialiseAuth(); // this is OK
+    initialiseAuth();
 
     const subscription = AppState.addEventListener('change', async (state) => {
       if (state === 'active') {
@@ -53,21 +59,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => subscription.remove();
   }, []);
 
-  const login = async (email: string, password: string) => {
-    await axiosInstance
-      .post(`/auth/login`, {
+  const login = async (email: string, password: string): Promise<boolean> => {
+    try {
+      const res = await axiosInstance.post(`/auth/login`, {
         email,
         password,
-      })
-      .then(async (res) => {
-        setUser(res.data.user);
-        await storeAccessToken(res.data.accessToken);
-        await storeRefreshToken(res.data.refreshToken);
-      })
-      .catch((err) => {
-        console.error('Registration error:', err);
-        Toast.error(err.data.message);
       });
+      setUser(res.data.user);
+      await storeAccessToken(res.data.accessToken);
+      await storeRefreshToken(res.data.refreshToken);
+      return true;
+    } catch (err: any) {
+      console.error('Login error:', err);
+      Toast.error(err?.response?.data?.message || 'Login failed');
+      return false;
+    }
   };
 
   const register = async (
@@ -110,7 +116,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
   return (
     <AuthContext.Provider
-      value={{ user, login, logout, register, isAuthenticated }}
+      value={{ user, isLoading, login, logout, register, isAuthenticated }}
     >
       {children}
     </AuthContext.Provider>
