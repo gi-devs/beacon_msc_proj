@@ -44,7 +44,6 @@ const LogIn = () => {
     try {
       const user = await login(email, password);
       if (user) {
-        router.push('/(home)/(tabs)');
         Toast.success('Logged in successfully!');
       }
     } catch (error) {

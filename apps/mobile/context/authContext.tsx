@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       try {
         setIsLoading(true);
         const res = await axiosInstance.get('/auth/profile');
-        setUser(res.data.user);
+        setUser(res.data);
         Toast.info('User profile loaded successfully');
       } catch (err: any) {
         Toast.error(err.response.data.message);
@@ -68,6 +68,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(res.data.user);
       await storeAccessToken(res.data.accessToken);
       await storeRefreshToken(res.data.refreshToken);
+
+      router.push('/(home)');
       return true;
     } catch (err: any) {
       console.error('Login error:', err);
@@ -101,6 +103,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         await storeAccessToken(res.data.accessToken);
         await storeRefreshToken(res.data.refreshToken);
 
+        router.push('/(home)');
         return res.data.user as UserPayload;
       })
       .catch((err) => {
@@ -112,8 +115,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = async () => {
     setUser(null);
     await clearTokens();
-    router.replace('/');
   };
+
   return (
     <AuthContext.Provider
       value={{ user, isLoading, login, logout, register, isAuthenticated }}

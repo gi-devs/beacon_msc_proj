@@ -17,6 +17,7 @@ import { useIsMounted } from '@/hooks/useIsMounted';
 import { useEffect } from 'react';
 import { useAuth } from '@/context/authContext';
 import { SignUpData, signUpSchema } from '@beacon/validation';
+import { Toast } from 'toastify-react-native';
 
 const SignUp = () => {
   const isMounted = useIsMounted();
@@ -46,7 +47,7 @@ const SignUp = () => {
     try {
       const user = await register(email, password, username);
       if (user) {
-        router.push('/(home)/(tabs)');
+        Toast.success(`Welcome, ${user.username}!`);
       }
     } catch (error) {
       console.error('Registration error:', error);
