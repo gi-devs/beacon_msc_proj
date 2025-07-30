@@ -1,5 +1,5 @@
 {
-  "name": "mobile",
+  "name": "beacon",
   "version": "1.0.0",
   "main": "index.js",
   "private": true,
@@ -8,7 +8,7 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm run dev:backend & npm run dev:mobile",
+    "dev": "npm run dev -w server && npm run dev -w mobile",
     "dev:mobile": "npm run start -w mobile",
     "dev:server": "npm run dev -w server",
     "test": "npm run test -w server && npm run test -w mobile",
@@ -33,6 +33,7 @@
     "jest": "^30.0.4",
     "prettier": "^3.6.2",
     "ts-jest": "^29.4.0",
+    "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   }
 }
