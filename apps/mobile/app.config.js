@@ -25,13 +25,19 @@ export default {
         backgroundColor: '#ffffff',
       },
       edgeToEdgeEnabled: true,
+      package: 'com.gidevs.beaconapp',
     },
     plugins: ['expo-router'],
     experiments: {
       typedRoutes: true,
     },
     extra: {
-      API_URL: process.env.API_URL,
+      API_URL: process.env.BACKEND_URL,
+      ANDROID_API_URL: process.env.BACKEND_URL_ANDROID,
+      DEVICE_URL: process.env.BACKEND_URL_DEVICE,
+      eas: {
+        projectId: '5023d697-c77c-4fe6-bf73-fe7f7987444e',
+      },
     },
   },
 };
