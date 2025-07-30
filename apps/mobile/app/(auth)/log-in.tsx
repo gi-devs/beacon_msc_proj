@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useRouter } from 'expo-router';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -35,10 +34,7 @@ const LogIn = () => {
   }, []);
   if (!isMounted.current) return null;
 
-  const router = useRouter();
-
   const handleNextPress = async (data: LogInData) => {
-    console.log('Valid form data:', data);
     const { email, password } = data;
 
     try {
@@ -47,7 +43,7 @@ const LogIn = () => {
         Toast.success('Logged in successfully!');
       }
     } catch (error) {
-      console.error('Registration error:', error);
+      console.log('Registration error:', error);
     }
   };
 

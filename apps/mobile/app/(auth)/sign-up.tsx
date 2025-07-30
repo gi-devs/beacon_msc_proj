@@ -50,7 +50,7 @@ const SignUp = () => {
         Toast.success(`Welcome, ${user.username}!`);
       }
     } catch (error) {
-      console.error('Registration error:', error);
+      console.log('Registration error:', error);
     }
   };
 

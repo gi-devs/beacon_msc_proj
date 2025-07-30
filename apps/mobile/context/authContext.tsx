@@ -72,7 +72,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       router.push('/(home)');
       return true;
     } catch (err: any) {
-      console.error('Login error:', err);
+      console.log('Login error:', err);
       Toast.error(err?.response?.data?.message || 'Login failed');
       return false;
     }
@@ -107,7 +107,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return res.data.user as UserPayload;
       })
       .catch((err) => {
-        console.error('Registration error:', err);
+        console.log('Registration error:', err);
         Toast.error(err.data.message);
       });
   };

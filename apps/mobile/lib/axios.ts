@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { getStoredAccessToken, refreshAccessToken } from '../api/authApi';
-import { API_URL } from '@/constants/apiUrl';
+import { getApiUrl } from '@/constants/apiUrl';
+
+const API_URL = getApiUrl();
 
 const axiosInstance = axios.create({
   baseURL: API_URL,
@@ -30,7 +32,7 @@ axiosInstance.interceptors.response.use(
           return axiosInstance(originalRequest);
         }
       } catch (err) {
-        console.error('Token refresh failed:', err);
+        console.log('Token refresh failed:', err);
       }
     }
 

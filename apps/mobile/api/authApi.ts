@@ -1,29 +1,39 @@
 import * as SecureStore from 'expo-secure-store';
 import axios from 'axios';
-import { API_URL } from '@/constants/apiUrl';
+import { getApiUrl } from '@/constants/apiUrl';
 
 export const getStoredAccessToken = async () => {
   try {
     return await SecureStore.getItemAsync('accessToken');
   } catch (error) {
-    console.error('Failed to get stored token:', error);
+    console.log('Failed to get stored token:', error);
     return null;
   }
 };
 
-export const storeAccessToken = async (token: string) => {
+export const storeAccessToken = async (token: string | null | undefined) => {
+  if (!token) {
+    console.log('Invalid access token provided to storeAccessToken:', token);
+    return;
+  }
+
   try {
     await SecureStore.setItemAsync('accessToken', token);
   } catch (error) {
-    console.error('Failed to store token:', error);
+    console.log('Failed to store token:', error);
   }
 };
 
-export const storeRefreshToken = async (token: string) => {
+export const storeRefreshToken = async (token: string | null | undefined) => {
+  if (!token) {
+    console.log('Invalid refresh token provided to storeRefreshToken:', token);
+    return;
+  }
+
   try {
     await SecureStore.setItemAsync('refreshToken', token);
   } catch (error) {
-    console.error('Failed to store refresh token:', error);
+    console.log('Failed to store refresh token:', error);
   }
 };
 
@@ -32,7 +42,7 @@ export const clearTokens = async () => {
     await SecureStore.deleteItemAsync('accessToken');
     await SecureStore.deleteItemAsync('refreshToken');
   } catch (error) {
-    console.error('Failed to clear tokens:', error);
+    console.log('Failed to clear tokens:', error);
   }
 };
 
@@ -43,7 +53,7 @@ export const refreshAccessToken = async () => {
       throw new Error('No refresh token available');
     }
 
-    const response = await axios(`${API_URL}/auth/refresh-token`, {
+    const response = await axios(`${getApiUrl()}/auth/refresh-token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
