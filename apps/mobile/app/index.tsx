@@ -8,6 +8,7 @@ import Animated, {
 import { useEffect } from 'react';
 import { Link } from 'expo-router';
 import { useUI } from '@/context/uiContext';
+import UIButton from '@/components/ui/UIButton';
 
 const Index = () => {
   const { isAuthenticated } = useAuth();
@@ -106,27 +107,13 @@ const Index = () => {
             .
           </Text>
           <View className="flex w-full items-center gap-4">
-            <Link href="/(auth)/log-in" asChild>
-              <TouchableOpacity className="bg-secondaryLight py-4 w-full flex justify-center items-center rounded-full">
-                <Text className="text-black text-center font-bold">
-                  Sign in
-                </Text>
-              </TouchableOpacity>
-            </Link>
-            <Link href="/(auth)/sign-up" asChild>
-              <TouchableOpacity className="w-full">
-                <Text className="text-black text-center font-bold">
-                  Create an account
-                </Text>
-              </TouchableOpacity>
-            </Link>
-            <Link href="/(home)" asChild>
-              <TouchableOpacity className="w-full">
-                <Text className="text-black text-center font-bold">
-                  Need Auth
-                </Text>
-              </TouchableOpacity>
-            </Link>
+            <UIButton variant="secondary" href="/(auth)/log-in">
+              Sign In
+            </UIButton>
+
+            <UIButton href="/(auth)/sign-up" variant="ghost">
+              Create an account
+            </UIButton>
           </View>
         </View>
       </Animated.View>
