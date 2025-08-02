@@ -15,7 +15,6 @@ import {
 import { useIsMounted } from '@/hooks/useIsMounted';
 import { useEffect } from 'react';
 import { useAuth } from '@/context/authContext';
-import { Toast } from 'toastify-react-native';
 import { LogInData, logInSchema } from '@beacon/validation';
 
 const LogIn = () => {
@@ -40,7 +39,7 @@ const LogIn = () => {
     try {
       const user = await login(email, password);
       if (user) {
-        Toast.success('Logged in successfully!');
+        console.log(user);
       }
     } catch (error) {
       console.log('Registration error:', error);
