@@ -1,14 +1,18 @@
-import * as SecureStore from 'expo-secure-store';
 import axios from 'axios';
 import { getApiUrl } from '@/constants/apiUrl';
+import {
+  deleteSecureItem,
+  getSecureItem,
+  saveSecureItem,
+} from '@/api/secureStoreApi';
 
 export const getStoredAccessToken = async () => {
-  try {
-    return await SecureStore.getItemAsync('accessToken');
-  } catch (error) {
-    console.log('Failed to get stored token:', error);
-    return null;
+  const accessToken = await getSecureItem('accessToken');
+
+  if (accessToken) {
+    return accessToken;
   }
+  console.log('Failed to get stored access token');
 };
 
 export const storeAccessToken = async (token: string | null | undefined) => {
@@ -17,10 +21,8 @@ export const storeAccessToken = async (token: string | null | undefined) => {
     return;
   }
 
-  try {
-    await SecureStore.setItemAsync('accessToken', token);
-  } catch (error) {
-    console.log('Failed to store token:', error);
+  if (await saveSecureItem('accessToken', token)) {
+    console.log('Failed to store access token');
   }
 };
 
@@ -30,25 +32,26 @@ export const storeRefreshToken = async (token: string | null | undefined) => {
     return;
   }
 
-  try {
-    await SecureStore.setItemAsync('refreshToken', token);
-  } catch (error) {
-    console.log('Failed to store refresh token:', error);
+  if (await saveSecureItem('refreshToken', token)) {
+    console.log('Failed to store refresh token');
   }
 };
 
 export const clearTokens = async () => {
-  try {
-    await SecureStore.deleteItemAsync('accessToken');
-    await SecureStore.deleteItemAsync('refreshToken');
-  } catch (error) {
-    console.log('Failed to clear tokens:', error);
+  const accessTokenIsDeleted = await deleteSecureItem('accessToken');
+  const refreshTokenIsDeleted = await deleteSecureItem('refreshToken');
+
+  if (!accessTokenIsDeleted || !refreshTokenIsDeleted) {
+    console.log('Failed to clear tokens');
+    !accessTokenIsDeleted && console.log('Access token deletion failed');
+    !refreshTokenIsDeleted && console.log('Refresh token deletion failed');
   }
 };
 
 export const refreshAccessToken = async () => {
   try {
-    const refreshToken = await SecureStore.getItemAsync('refreshToken');
+    const refreshToken = await getSecureItem('refreshToken');
+
     if (!refreshToken) {
       throw new Error('No refresh token available');
     }
@@ -57,9 +60,7 @@ export const refreshAccessToken = async () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-      },
-      data: {
-        refreshToken,
+        Authorization: `Bearer ${refreshToken}`,
       },
     });
 

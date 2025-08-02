@@ -22,4 +22,19 @@ model User {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   isEmailVerified Boolean  @default(false)
+
+  // relationships
+  currentSession Session? @relation("UserCurrentSession")
+}
+
+model Session {
+  token     String   @id @default(cuid())
+  userId    String   @unique
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  updatedAt DateTime @updatedAt
+
+  user User @relation("UserCurrentSession", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, token])
 }

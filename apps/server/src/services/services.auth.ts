@@ -1,8 +1,16 @@
 import { createUser, getUserByEmail, getUserById } from '@/models/model.user';
 import bcrypt from 'bcryptjs';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { CustomError } from '@/utils/custom-error';
 import { LogInData, SignUpData } from '@beacon/validation';
+import { addDays } from 'date-fns';
+import {
+  createSession,
+  deleteSessionByToken,
+  getSessionByToken,
+  getSessionByUserId,
+} from '@/models/models.session';
+import prisma from '@/lib/prisma';
 
 async function registerUser(
   data: Omit<SignUpData, 'confirmPassword'>,
@@ -34,19 +42,28 @@ async function registerUser(
     username,
     password: hashedPassword,
   };
-  const newUser = await createUser(userData);
 
-  // Generate tokens
-  const accessToken = jwt.sign(
-    { userId: newUser.id },
-    process.env.JWT_SECRET!,
-    { expiresIn: '15m' },
-  );
+  const { newUser, refreshToken, accessToken } = await prisma.$transaction(
+    async (tx) => {
+      const newUser = await createUser(userData, tx);
 
-  const refreshToken = jwt.sign(
-    { userId: newUser.id },
-    process.env.REFRESH_TOKEN_SECRET!,
-    { expiresIn: '7d' },
+      // Generate tokens
+      const accessToken = jwt.sign(
+        { userId: newUser.id },
+        process.env.JWT_SECRET!,
+        { expiresIn: '15m' },
+      );
+
+      const session = await createSession(
+        {
+          userId: newUser.id,
+          expiresAt: addDays(new Date(), 7), // Set session expiration to 7 days
+        },
+        tx,
+      );
+
+      return { newUser, refreshToken: session.token, accessToken };
+    },
   );
 
   // Respond with tokens and user info
@@ -90,11 +107,26 @@ async function loginUser(data: LogInData): Promise<LoginResponse> {
     },
   );
 
-  const refreshToken = jwt.sign(
-    { userId: userFound.id },
-    process.env.REFRESH_TOKEN_SECRET!,
-    { expiresIn: '7d' },
-  );
+  const refreshToken = await prisma.$transaction(async (tx) => {
+    const existingSession = await getSessionByUserId(userFound.id, tx);
+
+    if (existingSession) {
+      await deleteSessionByToken(existingSession.token, tx);
+    }
+
+    // Create a new session
+    const session = await createSession(
+      {
+        userId: userFound.id,
+        expiresAt: addDays(new Date(), 7), // Set session expiration to 7 days
+      },
+      tx,
+    );
+
+    return session.token;
+  });
+
+  console.log({ accessToken, refreshToken });
 
   // Respond with tokens and user info
   return {
@@ -108,20 +140,13 @@ async function loginUser(data: LogInData): Promise<LoginResponse> {
 }
 
 async function refreshAccessToken(refreshToken: string) {
-  if (!refreshToken) {
-    throw new CustomError('Refresh token is required', 401);
-  }
+  const session = await getSessionByToken(refreshToken);
 
-  const decoded = jwt.verify(
-    refreshToken,
-    process.env.REFRESH_TOKEN_SECRET!,
-  ) as JwtPayload;
-
-  if (!decoded.userId) {
+  if (!session) {
     throw new CustomError('Invalid refresh token', 401);
   }
 
-  return jwt.sign({ userId: decoded.userId }, process.env.JWT_SECRET!, {
+  return jwt.sign({ userId: session.userId }, process.env.JWT_SECRET!, {
     expiresIn: '15m',
   });
 }

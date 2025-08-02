@@ -17,13 +17,15 @@
     "prisma:studio": "npm run prisma:studio -w server",
     "prisma:migrate": "npm run migrate -w server",
     "prisma:migrate_deploy": "npm run migrate:deploy -w server",
-    "prisma:generate": "npm run generate -w server"
+    "prisma:generate": "npm run generate -w server",
+    "prisma:push": "npm run push -w server"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "date-fns": "^4.1.0",
     "dotenv": "^17.2.0",
     "zod": "^4.0.10"
   },

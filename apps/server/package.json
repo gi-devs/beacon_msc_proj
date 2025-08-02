@@ -13,6 +13,7 @@
     "migrate": "dotenv -e ../../.env.development -- npx prisma migrate dev",
     "migrate:deploy": "dotenv -e ../../.env.development -- npx prisma migrate deploy",
     "generate": "dotenv -e ../../.env.development -- npx prisma generate",
+    "push": "dotenv -e ../../.env.development -- npx prisma db push",
     "prisma:studio": "dotenv -e ../../.env.development -- npx prisma studio"
   },
   "keywords": [],

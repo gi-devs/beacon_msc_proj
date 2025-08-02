@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getStoredAccessToken, refreshAccessToken } from '../api/authApi';
+import { getStoredAccessToken, refreshAccessToken } from '@/api/authApi';
 import { getApiUrl } from '@/constants/apiUrl';
 
 const API_URL = getApiUrl();

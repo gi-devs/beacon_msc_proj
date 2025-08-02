@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { authService } from '@/services/services.auth';
+import { CustomError, ErrorCodes } from '@/utils/custom-error';
 
 async function register(req: Request, res: Response, next: NextFunction) {
   try {
@@ -31,10 +32,18 @@ async function refreshToken(
   next: NextFunction,
 ): Promise<void> {
   try {
-    const accessToken = await authService.refreshAccessToken(
-      req.body.refreshToken,
-    );
-    res.status(200).json(accessToken);
+    const token = req.header('Authorization')?.split(' ')[1];
+
+    if (!token) {
+      throw new CustomError(
+        'Access denied. No token provided.',
+        401,
+        ErrorCodes.NO_TOKEN,
+      );
+    }
+
+    const accessToken = await authService.refreshAccessToken(token);
+    res.status(200).json({ accessToken });
   } catch (e) {
     next(e);
   }
