@@ -1,20 +1,26 @@
-import { Stack } from 'expo-router';
+import { SplashScreen, Stack } from 'expo-router';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import '../global.css';
 import { StatusBar } from 'react-native';
 import { AuthProvider, useAuth } from '@/context/authContext';
 import ToastManager from 'toastify-react-native';
 import { UIProvider } from '@/context/uiContext';
+import { NotificationProvider } from '@/context/notificationContext';
+import { useEffect } from 'react';
+
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <AuthProvider>
-        <UIProvider>
-          <StatusBar backgroundColor="transparent" translucent={true} />
-          <ToastManager />
-          <RootNavigator />
-        </UIProvider>
+        <NotificationProvider>
+          <UIProvider>
+            <StatusBar backgroundColor="transparent" translucent={true} />
+            <ToastManager />
+            <RootNavigator />
+          </UIProvider>
+        </NotificationProvider>
       </AuthProvider>
     </SafeAreaProvider>
   );
@@ -22,6 +28,12 @@ export default function RootLayout() {
 
 function RootNavigator() {
   const { isAuthenticated, isLoading } = useAuth();
+
+  useEffect(() => {
+    if (isLoading) {
+      SplashScreen.hide();
+    }
+  }, [isLoading]);
 
   if (isLoading) {
     return null;
