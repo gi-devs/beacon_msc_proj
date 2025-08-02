@@ -13,9 +13,9 @@ const buttonVariants = {
     destructive: 'bg-red-500',
   },
   sizes: {
-    sm: 'py-2 px-3',
-    md: 'py-3 px-4',
-    lg: 'py-4 px-6',
+    sm: 'py-3 px-3',
+    md: 'py-4 px-4',
+    lg: 'py-5 px-6',
   },
 };
 
