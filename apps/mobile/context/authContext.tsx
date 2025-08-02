@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import axiosInstance from '@/lib/axios';
 
 import {
@@ -26,6 +32,7 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const lastCheckRef = useRef(Date.now());
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
@@ -37,13 +44,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const initialiseAuth = async () => {
       try {
         setIsLoading(true);
+        console.log('Initialising authentication...');
         const res = await axiosInstance.get('/auth/profile');
         setUser(res.data);
-        Toast.info('User profile loaded successfully');
       } catch (err: any) {
-        Toast.error(err.response.data.message);
+        console.log('Error during auth initialisation:', err);
         setUser(null);
       } finally {
+        console.log('Authentication initialisation complete');
         setIsLoading(false);
       }
     };
@@ -52,7 +60,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const subscription = AppState.addEventListener('change', async (state) => {
       if (state === 'active') {
-        await initialiseAuth();
+        console.log('App is active, checking authentication status...');
+        const now = Date.now();
+        const idleTime = now - lastCheckRef.current;
+
+        let shouldReinitialise = false;
+        if (idleTime > 15 * 60 * 1000) {
+          console.log(
+            'More than 15 minutes since last check, reinitialising auth...',
+          );
+          await initialiseAuth();
+          shouldReinitialise = true;
+        }
+
+        shouldReinitialise
+          ? console.log('Reinitialised auth after idle time')
+          : console.log('No reinitialisation needed');
+
+        lastCheckRef.current = now;
       }
     });
 
@@ -60,6 +85,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
+    console.log('Logging in with:', {
+      email,
+      password,
+    });
     try {
       const res = await axiosInstance.post(`/auth/login`, {
         email,
