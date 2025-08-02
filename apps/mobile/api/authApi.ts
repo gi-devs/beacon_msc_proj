@@ -4,7 +4,7 @@ import {
   deleteSecureItem,
   getSecureItem,
   saveSecureItem,
-} from '@/api/secureStoreApi';
+} from '@/lib/secureStore';
 
 export const getStoredAccessToken = async () => {
   const accessToken = await getSecureItem('accessToken');
