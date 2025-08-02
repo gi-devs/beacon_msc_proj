@@ -26,6 +26,7 @@ export default {
       },
       edgeToEdgeEnabled: true,
       package: 'com.gidevs.beaconapp',
+      googleServicesFile: './google-services.json',
     },
     plugins: ['expo-router'],
     experiments: {
@@ -35,6 +36,7 @@ export default {
       API_URL: process.env.BACKEND_URL,
       ANDROID_API_URL: process.env.BACKEND_URL_ANDROID,
       DEVICE_URL: process.env.BACKEND_URL_DEVICE,
+      DEVICE_URL_MO: process.env.BACKEND_URL_DEVICE_MO,
       eas: {
         projectId: '5023d697-c77c-4fe6-bf73-fe7f7987444e',
       },

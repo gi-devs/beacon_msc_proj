@@ -18,6 +18,11 @@ expo-env.d.ts
 *.key
 *.mobileprovision
 
+# Android
+beacon-62984*.json
+google-services.json
+
+
 # Metro
 .metro-health-check*
 
