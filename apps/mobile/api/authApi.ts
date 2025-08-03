@@ -60,7 +60,9 @@ export const refreshAccessToken = async () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${refreshToken}`,
+      },
+      data: {
+        refreshToken,
       },
     });
 

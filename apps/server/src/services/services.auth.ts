@@ -139,16 +139,30 @@ async function loginUser(data: LogInData): Promise<LoginResponse> {
   };
 }
 
-async function refreshAccessToken(refreshToken: string) {
+async function refreshAccessToken(
+  refreshToken: string,
+): Promise<RefreshTokenResponse> {
+  if (!refreshToken) {
+    throw new CustomError('Refresh token is required', 400);
+  }
+
   const session = await getSessionByToken(refreshToken);
 
   if (!session) {
     throw new CustomError('Invalid refresh token', 401);
   }
 
-  return jwt.sign({ userId: session.userId }, process.env.JWT_SECRET!, {
-    expiresIn: '15m',
-  });
+  const accessToken = jwt.sign(
+    { userId: session.userId },
+    process.env.JWT_SECRET!,
+    {
+      expiresIn: '15m',
+    },
+  );
+
+  return {
+    accessToken,
+  };
 }
 
 async function getProfile(userId: string) {

@@ -8,9 +8,10 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm run dev -w server && npm run dev -w mobile",
     "dev:mobile": "npm run start -w mobile",
     "dev:server": "npm run dev -w server",
+    "dev:infra": "docker compose up -d",
+    "dev": "concurrently --kill-others-on-fail --names \"infra,server\" --prefix-colors \"cyan,yellow\" \"npm run dev:infra\" \"npm run dev:server\" && docker compose down",
     "test": "npm run test -w server && npm run test -w mobile",
     "test:mobile": "npm run test -w mobile",
     "test:server": "npm run test -w server",
@@ -31,6 +32,7 @@
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
+    "concurrently": "^9.2.0",
     "eslint": "^9.31.0",
     "jest": "^30.0.4",
     "prettier": "^3.6.2",
