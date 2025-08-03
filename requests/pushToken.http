@@ -1,0 +1,7 @@
+POST {{BASE_URL}}/push-token/sync
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "pushToken": "test-push-token-1"
+}

@@ -1,4 +1,3 @@
-import '@/lib/notifications'; // This import is to run the notification handler setup code
 import React, {
   createContext,
   useContext,
@@ -8,10 +7,19 @@ import React, {
   ReactNode,
 } from 'react';
 import * as Notifs from 'expo-notifications';
-import type { Notification } from 'expo-notifications';
+import { Notification, setNotificationHandler } from 'expo-notifications';
 import { fetchAndSavePushToken } from '@/lib/requestNotificationPermissions';
 import { AppState } from 'react-native';
 import { useAuth } from '@/context/authContext';
+
+setNotificationHandler({
+  handleNotification: async () => ({
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: false,
+  }),
+});
 
 type NotificationContextType = {
   notification: Notification | null;

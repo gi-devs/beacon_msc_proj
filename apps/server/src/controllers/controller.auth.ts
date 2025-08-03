@@ -30,6 +30,23 @@ async function login(
   }
 }
 
+async function logout(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    console.log('Logout request received');
+    const decoded = req.user as UserPayload;
+    const userId = decoded.userId;
+
+    await authService.logoutUser(userId);
+    res.status(200).json({ message: 'Logged out successfully' });
+  } catch (e) {
+    next(e);
+  }
+}
+
 async function refreshToken(
   req: Request,
   res: Response,
@@ -63,6 +80,7 @@ async function profile(
 export const authController = {
   register,
   login,
+  logout,
   refreshToken,
   profile,
 };

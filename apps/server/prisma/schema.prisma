@@ -24,7 +24,8 @@ model User {
   isEmailVerified Boolean  @default(false)
 
   // relationships
-  currentSession Session? @relation("UserCurrentSession")
+  pushToken      PushToken? @relation("UserPushToken")
+  currentSession Session?   @relation("UserCurrentSession")
 }
 
 model Session {
@@ -37,4 +38,13 @@ model Session {
   user User @relation("UserCurrentSession", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, token])
+}
+
+model PushToken {
+  userId    String   @unique
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation("UserPushToken", fields: [userId], references: [id], onDelete: Cascade)
 }

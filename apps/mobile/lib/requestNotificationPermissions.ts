@@ -7,15 +7,8 @@ import {
   setNotificationHandler,
 } from 'expo-notifications';
 import { getSecureItem, saveSecureItem } from '@/lib/secureStore';
-
-setNotificationHandler({
-  handleNotification: async () => ({
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-    shouldShowBanner: true,
-    shouldShowList: false,
-  }),
-});
+import { syncPushToken } from '@/api/pushTokenApi';
+import { Toast } from 'toastify-react-native';
 
 export async function requestNotificationPermissions(): Promise<boolean> {
   if (Platform.OS === 'android') {
@@ -107,16 +100,16 @@ export async function fetchAndSavePushToken(): Promise<boolean> {
     });
     const oldToken = await getSecureItem('pushToken');
 
-    if (token !== oldToken) {
-      console.log('token has changed, saving new token:', token);
+    if (token !== oldToken || !oldToken) {
       await saveSecureItem('pushToken', token);
-      // TODO: Sync token to backend here
+      await syncPushToken(token); // Sync the token with the backend
+      Toast.success('Push notifications token turn on!');
     }
 
     console.log('Push token saved successfully:', token);
     return true;
   } catch (err) {
-    console.warn('Error getting push token:', err);
+    console.warn('Failed Fetch and Save Push Token:', err);
     return false;
   }
 }

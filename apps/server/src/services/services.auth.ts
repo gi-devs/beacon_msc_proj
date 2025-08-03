@@ -11,6 +11,7 @@ import {
   getSessionByUserId,
 } from '@/models/models.session';
 import prisma from '@/lib/prisma';
+import { deleteManyPushTokenByUserId } from '@/models/model.pushToken';
 
 async function registerUser(
   data: Omit<SignUpData, 'confirmPassword'>,
@@ -112,6 +113,7 @@ async function loginUser(data: LogInData): Promise<LoginResponse> {
 
     if (existingSession) {
       await deleteSessionByToken(existingSession.token, tx);
+      await deleteManyPushTokenByUserId(userFound.id, tx);
     }
 
     // Create a new session
@@ -137,6 +139,32 @@ async function loginUser(data: LogInData): Promise<LoginResponse> {
       username: userFound.username,
     },
   };
+}
+
+async function logoutUser(userId: string): Promise<void> {
+  const userFound = await getUserById(userId);
+
+  if (!userFound) {
+    throw new CustomError('User not found', 404);
+  }
+
+  const session = await getSessionByUserId(userId);
+  if (!session) {
+    throw new CustomError('No active session found', 404);
+  }
+
+  // things that must happen on logout
+  try {
+    await prisma.$transaction(async (tx) => {
+      // Delete the session
+      await deleteSessionByToken(session.token, tx);
+      // Delete the push token if it exists
+      await deleteManyPushTokenByUserId(userId, tx);
+    });
+  } catch (error) {
+    console.error('Error during logout transaction:', error);
+    throw new CustomError('Failed to logout', 500);
+  }
 }
 
 async function refreshAccessToken(
@@ -182,6 +210,7 @@ async function getProfile(userId: string) {
 export const authService = {
   registerUser,
   loginUser,
+  logoutUser,
   refreshAccessToken,
   getProfile,
 };

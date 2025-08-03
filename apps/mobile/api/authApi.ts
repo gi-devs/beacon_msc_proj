@@ -5,6 +5,7 @@ import {
   getSecureItem,
   saveSecureItem,
 } from '@/lib/secureStore';
+import axiosInstance from '@/lib/axios';
 
 export const getStoredAccessToken = async () => {
   const accessToken = await getSecureItem('accessToken');
@@ -22,8 +23,10 @@ export const storeAccessToken = async (token: string | null | undefined) => {
   }
 
   if (await saveSecureItem('accessToken', token)) {
-    console.log('Failed to store access token');
+    console.log('Access token stored successfully');
+    return;
   }
+  console.log('Failed to store access token');
 };
 
 export const storeRefreshToken = async (token: string | null | undefined) => {
@@ -33,8 +36,10 @@ export const storeRefreshToken = async (token: string | null | undefined) => {
   }
 
   if (await saveSecureItem('refreshToken', token)) {
-    console.log('Failed to store refresh token');
+    console.log('Refresh token stored successfully');
+    return;
   }
+  console.log('Failed to store refresh token');
 };
 
 export const clearTokens = async () => {
@@ -45,7 +50,9 @@ export const clearTokens = async () => {
     console.log('Failed to clear tokens');
     !accessTokenIsDeleted && console.log('Access token deletion failed');
     !refreshTokenIsDeleted && console.log('Refresh token deletion failed');
+    return false;
   }
+  return true;
 };
 
 export const refreshAccessToken = async () => {
@@ -76,5 +83,19 @@ export const refreshAccessToken = async () => {
   } catch (error) {
     console.log('Failed to refresh token:', error);
     return null;
+  }
+};
+
+export const logoutSession = async () => {
+  try {
+    const res = await axiosInstance.delete('/auth/logout');
+    if (res.status !== 200) {
+      throw new Error('Failed to logout session');
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Failed to logout session:', error);
+    return false;
   }
 };

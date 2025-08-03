@@ -9,12 +9,14 @@ import axiosInstance from '@/lib/axios';
 
 import {
   clearTokens,
+  logoutSession,
   storeAccessToken,
   storeRefreshToken,
 } from '@/api/authApi';
 import { AppState } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Toast } from 'toastify-react-native';
+import { deleteSecureItem } from '@/lib/secureStore';
 
 type AuthContextType = {
   user: UserPayload | null;
@@ -142,8 +144,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const logout = async () => {
-    setUser(null);
-    await clearTokens();
+    const isLoggedOut = await logoutSession();
+    if (isLoggedOut) {
+      setUser(null);
+      await clearTokens();
+      await deleteSecureItem('pushToken');
+    } else {
+      Toast.error('Failed to log out');
+    }
   };
 
   return (
