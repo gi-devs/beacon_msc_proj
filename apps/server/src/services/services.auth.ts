@@ -48,13 +48,6 @@ async function registerUser(
     async (tx) => {
       const newUser = await createUser(userData, tx);
 
-      // Generate tokens
-      const accessToken = jwt.sign(
-        { userId: newUser.id },
-        process.env.JWT_SECRET!,
-        { expiresIn: '15m' },
-      );
-
       const session = await createSession(
         {
           userId: newUser.id,
@@ -62,6 +55,9 @@ async function registerUser(
         },
         tx,
       );
+
+      // Generate tokens
+      const accessToken = createAccessToken(newUser.id, session.token);
 
       return { newUser, refreshToken: session.token, accessToken };
     },
@@ -99,34 +95,30 @@ async function loginUser(data: LogInData): Promise<LoginResponse> {
     throw new CustomError('Invalid credentials', 401);
   }
 
-  // Generate tokens
-  const accessToken = jwt.sign(
-    { userId: userFound.id },
-    process.env.JWT_SECRET!,
-    {
-      expiresIn: '15m',
+  const { refreshToken, accessToken } = await prisma.$transaction(
+    async (tx) => {
+      const existingSession = await getSessionByUserId(userFound.id, tx);
+
+      if (existingSession) {
+        await deleteSessionByToken(existingSession.token, tx);
+        await deleteManyPushTokenByUserId(userFound.id, tx);
+      }
+
+      // Create a new session
+      const session = await createSession(
+        {
+          userId: userFound.id,
+          expiresAt: addDays(new Date(), 7), // Set session expiration to 7 days
+        },
+        tx,
+      );
+
+      // Generate tokens
+      const accessToken = createAccessToken(userFound.id, session.token);
+
+      return { refreshToken: session.token, accessToken: accessToken };
     },
   );
-
-  const refreshToken = await prisma.$transaction(async (tx) => {
-    const existingSession = await getSessionByUserId(userFound.id, tx);
-
-    if (existingSession) {
-      await deleteSessionByToken(existingSession.token, tx);
-      await deleteManyPushTokenByUserId(userFound.id, tx);
-    }
-
-    // Create a new session
-    const session = await createSession(
-      {
-        userId: userFound.id,
-        expiresAt: addDays(new Date(), 7), // Set session expiration to 7 days
-      },
-      tx,
-    );
-
-    return session.token;
-  });
 
   console.log({ accessToken, refreshToken });
 
@@ -180,13 +172,7 @@ async function refreshAccessToken(
     throw new CustomError('Invalid refresh token', 401);
   }
 
-  const accessToken = jwt.sign(
-    { userId: session.userId },
-    process.env.JWT_SECRET!,
-    {
-      expiresIn: '15m',
-    },
-  );
+  const accessToken = createAccessToken(session.userId, session.token);
 
   return {
     accessToken,
@@ -214,3 +200,9 @@ export const authService = {
   refreshAccessToken,
   getProfile,
 };
+
+function createAccessToken(userId: string, sessionId: string): string {
+  return jwt.sign({ userId, sessionId }, process.env.JWT_SECRET!, {
+    expiresIn: '15m',
+  });
+}

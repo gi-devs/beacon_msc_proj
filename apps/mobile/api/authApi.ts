@@ -16,6 +16,15 @@ export const getStoredAccessToken = async () => {
   console.log('Failed to get stored access token');
 };
 
+export const getStoredRefreshToken = async () => {
+  const refreshToken = await getSecureItem('refreshToken');
+
+  if (refreshToken) {
+    return refreshToken;
+  }
+  console.log('Failed to get stored access token');
+};
+
 export const storeAccessToken = async (token: string | null | undefined) => {
   if (!token) {
     console.log('Invalid access token provided to storeAccessToken:', token);
@@ -57,7 +66,7 @@ export const clearTokens = async () => {
 
 export const refreshAccessToken = async () => {
   try {
-    const refreshToken = await getSecureItem('refreshToken');
+    const refreshToken = await getStoredRefreshToken();
 
     if (!refreshToken) {
       throw new Error('No refresh token available');

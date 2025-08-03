@@ -2,13 +2,9 @@ import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import Constants from 'expo-constants';
 import { Alert, Linking, Platform } from 'react-native';
-import {
-  getPermissionsAsync,
-  setNotificationHandler,
-} from 'expo-notifications';
+import { getPermissionsAsync } from 'expo-notifications';
 import { getSecureItem, saveSecureItem } from '@/lib/secureStore';
 import { syncPushToken } from '@/api/pushTokenApi';
-import { Toast } from 'toastify-react-native';
 
 export async function requestNotificationPermissions(): Promise<boolean> {
   if (Platform.OS === 'android') {
@@ -103,7 +99,6 @@ export async function fetchAndSavePushToken(): Promise<boolean> {
     if (token !== oldToken || !oldToken) {
       await saveSecureItem('pushToken', token);
       await syncPushToken(token); // Sync the token with the backend
-      Toast.success('Push notifications token turn on!');
     }
 
     console.log('Push token saved successfully:', token);

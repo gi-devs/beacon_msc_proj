@@ -9,6 +9,7 @@ import axiosInstance from '@/lib/axios';
 
 import {
   clearTokens,
+  getStoredRefreshToken,
   logoutSession,
   storeAccessToken,
   storeRefreshToken,
@@ -50,7 +51,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const res = await axiosInstance.get('/auth/profile');
         setUser(res.data);
       } catch (err: any) {
-        console.log('Error during auth initialisation:', err);
+        const status = err?.response?.status;
+        const message =
+          err?.response?.data?.message ||
+          'Issue with finding your profile, please log in again.';
+        const refreshToken = await getStoredRefreshToken();
+
+        // if user was logged in but token expired, or has been logged into another device
+        if (status === 401 && refreshToken) {
+          await clearTokens();
+          await deleteSecureItem('pushToken');
+          Toast.warn(message);
+        }
+
+        console.log('Error during authentication initialisation:', err);
         setUser(null);
       } finally {
         console.log('Authentication initialisation complete');
