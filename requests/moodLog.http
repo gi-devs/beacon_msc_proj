@@ -1,0 +1,12 @@
+POST {{BASE_URL}}/mood-log
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+    "stressScale": 80.8,
+    "anxietyScale": -50.3,
+    "sadnessScale": 7.5,
+    "stressNote": "Note about stress",
+    "anxietyNote": "Note about anxiety",
+    "sadnessNote": "Note about sadness"
+}
