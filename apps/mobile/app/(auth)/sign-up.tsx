@@ -1,6 +1,7 @@
 import {
   Image,
   KeyboardAvoidingView,
+  Platform,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -37,8 +38,6 @@ const SignUp = () => {
   }, []);
   if (!isMounted.current) return null;
 
-  const router = useRouter();
-
   const handleNextPress = async (data: SignUpData) => {
     console.log('Valid form data:', data);
 
@@ -57,11 +56,11 @@ const SignUp = () => {
   return (
     <KeyboardAvoidingView
       className="flex-1"
-      behavior="height"
-      keyboardVerticalOffset={20}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={40}
     >
       <ScrollView
-        className="flex-col h-full pt-[40%] px-8 pb-20 bg-ripple-600 relative"
+        className="flex-col h-full pt-[40%] px-8 pb-20 bg-ripple-600 relative "
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{
           flexGrow: 1,
@@ -81,6 +80,7 @@ const SignUp = () => {
             control={control}
             placeholder="Email"
             placeholderTextColor="#ffff"
+            className="text-white"
           />
           <FormTextInput
             name="username"
@@ -88,12 +88,14 @@ const SignUp = () => {
             placeholder="Username"
             placeholderTextColor="#ffff"
             info="Your username will be visible to others."
+            className="text-white"
           />
           <FormSecureTextInput
             name="password"
             control={control}
             placeholder="Password"
             placeholderTextColor="#ffff"
+            className="text-white"
           />
           <FormTextInput
             name="confirmPassword"
@@ -101,6 +103,7 @@ const SignUp = () => {
             placeholder="Confirm Password"
             placeholderTextColor="#ffff"
             secureTextEntry
+            className="text-white"
           />
         </View>
         <View className="mt-8 w-full">

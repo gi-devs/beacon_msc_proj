@@ -33,7 +33,8 @@ export const FormTextInput = ({
           <TextInput
             {...textInputProps}
             className={clsx(
-              'border-b border-gray-300 rounded-lg p-4 text-white',
+              'border-b border-gray-300 rounded-lg p-4 ',
+              'text-base',
               className,
             )}
             onChangeText={onChange}
@@ -75,7 +76,8 @@ export const FormSecureTextInput = ({
             {...textInputProps}
             secureTextEntry={isHidden}
             className={clsx(
-              'border-b border-gray-300 rounded-lg p-4 text-white pr-12',
+              'border-b border-gray-300 rounded-lg p-4  pr-12',
+              'text-base',
               className,
             )}
             onChangeText={onChange}

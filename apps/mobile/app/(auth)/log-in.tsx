@@ -1,6 +1,7 @@
 import {
   Image,
   KeyboardAvoidingView,
+  Platform,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -49,8 +50,8 @@ const LogIn = () => {
   return (
     <KeyboardAvoidingView
       className="flex-1"
-      behavior="height"
-      keyboardVerticalOffset={20}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={40}
     >
       <ScrollView
         className="flex-col h-full pt-[40%] px-8 pb-20 bg-ripple-600 relative"
@@ -73,12 +74,14 @@ const LogIn = () => {
             control={control}
             placeholder="Email"
             placeholderTextColor="#ffff"
+            className="text-white"
           />
           <FormSecureTextInput
             name="password"
             control={control}
             placeholder="Password"
             placeholderTextColor="#ffff"
+            className="text-white"
           />
         </View>
         <View className="mt-8 w-full">
