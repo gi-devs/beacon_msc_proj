@@ -11,15 +11,11 @@ import { Notification, setNotificationHandler } from 'expo-notifications';
 import { fetchAndSavePushToken } from '@/lib/requestNotificationPermissions';
 import { AppState } from 'react-native';
 import { useAuth } from '@/context/authContext';
+import { LinkProps, useRouter } from 'expo-router';
 
-setNotificationHandler({
-  handleNotification: async () => ({
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-    shouldShowBanner: true,
-    shouldShowList: false,
-  }),
-});
+type NotificationData = {
+  route?: LinkProps['href'];
+};
 
 type NotificationContextType = {
   notification: Notification | null;
@@ -29,6 +25,15 @@ type NotificationContextType = {
 type NotificationProviderProps = {
   children: ReactNode;
 };
+
+setNotificationHandler({
+  handleNotification: async () => ({
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: false,
+  }),
+});
 
 const NotificationContext = createContext<NotificationContextType | undefined>(
   undefined,
@@ -40,6 +45,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   const [notification, setNotification] = useState<Notification | null>(null);
   const [hasNotificationsEnabled, setHasNotificationsEnabled] = useState(false);
   const { isAuthenticated, isLoading: authIsLoading } = useAuth();
+  const router = useRouter();
 
   const notificationListener = useRef<Notifs.EventSubscription | null>(null);
   const responseListener = useRef<Notifs.EventSubscription | null>(null);
@@ -66,16 +72,22 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
       }
     });
 
+    // * what happens when the app is opened in foreground
     notificationListener.current = Notifs.addNotificationReceivedListener(
       (notification) => {
         setNotification(notification);
       },
     );
 
+    // * what happens when the user taps on a notification
     responseListener.current = Notifs.addNotificationResponseReceivedListener(
       (response) => {
-        const data = response.notification.request.content.data;
-        console.log('🔔 Notification tapped, data:', data);
+        const data = response.notification.request.content
+          .data as NotificationData;
+
+        if (data.route) {
+          router.push(data.route);
+        }
       },
     );
 

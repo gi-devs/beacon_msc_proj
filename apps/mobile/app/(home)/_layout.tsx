@@ -1,12 +1,18 @@
 import { Tabs } from 'expo-router';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import OnboardingScreen from '@/components/utils/OnboardingScreen';
 import { useEffect, useState } from 'react';
 import { getSecureItem, saveSecureItem } from '@/lib/secureStore';
+import CustomTabBar from '@/components/ui/CustomTabBar';
 
 export default function HomeTabsLayout() {
   const [isLoading, setIsLoading] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
+
+  const turnOffOnboarding = async () => {
+    await saveSecureItem('onboarding-complete', 'true');
+    setShowOnboarding(false);
+  };
 
   useEffect(() => {
     const checkFirstTime = async () => {
@@ -21,14 +27,7 @@ export default function HomeTabsLayout() {
   if (isLoading) return null; // or splash screen
 
   if (showOnboarding) {
-    return (
-      <OnboardingScreen
-        onFinish={async () => {
-          await saveSecureItem('onboarding-complete', 'true');
-          setShowOnboarding(false);
-        }}
-      />
-    );
+    return <OnboardingScreen onFinish={turnOffOnboarding} />;
   }
 
   return <HomeNavigator />;
@@ -36,7 +35,12 @@ export default function HomeTabsLayout() {
 
 function HomeNavigator() {
   return (
-    <Tabs screenOptions={{ tabBarActiveTintColor: 'blue' }}>
+    <Tabs
+      screenOptions={{
+        headerShown: false,
+      }}
+      tabBar={(props) => <CustomTabBar {...props} />}
+    >
       <Tabs.Screen
         name="index"
         options={{
@@ -44,15 +48,45 @@ function HomeNavigator() {
           tabBarIcon: ({ color }) => (
             <FontAwesome size={28} name="home" color={color} />
           ),
+          sceneStyle: {
+            backgroundColor: '#F2F2F2',
+          },
         }}
       />
       <Tabs.Screen
-        name="settings"
+        name="explore"
         options={{
-          title: 'Settings',
+          title: 'explore',
           tabBarIcon: ({ color }) => (
-            <FontAwesome size={28} name="cog" color={color} />
+            <Ionicons name="compass" size={28} color={color} />
           ),
+          sceneStyle: {
+            backgroundColor: '#F2F2F2',
+          },
+        }}
+      />
+      <Tabs.Screen
+        name="moodLogging"
+        options={{
+          title: 'Mood',
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="journal" size={28} color={color} />
+          ),
+          sceneStyle: {
+            backgroundColor: '#F2F2F2',
+          },
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profile',
+          tabBarIcon: ({ color }) => (
+            <FontAwesome size={28} name="user" color={color} />
+          ),
+          sceneStyle: {
+            backgroundColor: '#F2F2F2',
+          },
         }}
       />
     </Tabs>

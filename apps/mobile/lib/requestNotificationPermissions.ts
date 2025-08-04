@@ -37,7 +37,7 @@ export async function requestNotificationPermissions(): Promise<boolean> {
             style: 'cancel',
           },
           {
-            text: 'Open Settings',
+            text: 'Open Profile',
             onPress: () => Linking.openSettings(),
           },
         ],

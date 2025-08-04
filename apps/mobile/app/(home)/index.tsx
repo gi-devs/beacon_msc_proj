@@ -4,55 +4,34 @@ import { useNotification } from '@/context/notificationContext';
 import UIButton from '@/components/ui/UIButton';
 import { requestNotificationPermissions } from '@/lib/requestNotificationPermissions';
 import { useEffect } from 'react';
-import { getSecureItem, saveSecureItem } from '@/lib/secureStore';
+// import * as Notifications from 'expo-notifications';
 
 const HomeIndex = () => {
   const { logout } = useAuth();
   const { hasNotificationsEnabled } = useNotification();
 
   useEffect(() => {
-    const askForNotificationsFirstTime = async () => {
-      if (hasNotificationsEnabled) return;
-
-      const askedForNotifications = await getSecureItem(
-        'askedForNotifications',
-      );
-
-      if (askedForNotifications === 'true')
-        return console.log('User has already been asked for notifications.');
-
-      await requestNotificationPermissions();
-      await saveSecureItem('askedForNotifications', 'true');
-    };
-
-    askForNotificationsFirstTime();
+    // const sendTestNotification = async () => {
+    //   await Notifications.scheduleNotificationAsync({
+    //     content: {
+    //       title: '🚨 Test Notification',
+    //       body: 'This is a test. Everything is working!',
+    //       data: {
+    //         route: '/(home)/settings',
+    //       },
+    //     },
+    //     trigger: {
+    //       type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+    //       seconds: 10,
+    //     }, // fire in 5 seconds
+    //   });
+    // };
+    // sendTestNotification();
   }, []);
 
   return (
     <View className="mt-safe">
-      <Text>AUTHED IN</Text>
-      <TouchableOpacity onPress={logout}>
-        <Text>Sign Out</Text>
-      </TouchableOpacity>
-
-      <View>
-        <Text className="text-center text-2xl font-bold">
-          {hasNotificationsEnabled
-            ? 'Your notifications are enabled!'
-            : 'Beacon is better with notifications!'}
-        </Text>
-        {hasNotificationsEnabled ? (
-          <Text className="text-center text-lg">Welcome to the Home Page!</Text>
-        ) : (
-          <UIButton
-            onPress={async () => {
-              await requestNotificationPermissions();
-            }}
-          >
-            Click here to enable notifications
-          </UIButton>
-        )}
-      </View>
+      <Text>Welcome to home page!</Text>
     </View>
   );
 };
