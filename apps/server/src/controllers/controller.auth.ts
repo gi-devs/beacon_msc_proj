@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { authService } from '@/services/services.auth';
+import { authService } from '@/services/service.auth';
 import { CustomError, ErrorCodes } from '@/utils/custom-error';
 
 async function register(
