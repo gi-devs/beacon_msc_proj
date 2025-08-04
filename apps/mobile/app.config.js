@@ -18,6 +18,8 @@ export default {
     },
     ios: {
       supportsTablet: false,
+      bundleIdentifier: 'com.gidevs.beaconapp',
+      orientation: 'portrait',
     },
     android: {
       adaptiveIcon: {
@@ -27,6 +29,7 @@ export default {
       edgeToEdgeEnabled: true,
       package: 'com.gidevs.beaconapp',
       googleServicesFile: './google-services.json',
+      orientation: 'portrait',
     },
     plugins: ['expo-router'],
     experiments: {

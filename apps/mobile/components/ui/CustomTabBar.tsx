@@ -4,6 +4,7 @@ import { PlatformPressable } from '@react-navigation/elements';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
+import { useRouter } from 'expo-router';
 
 export default function CustomTabBar({
   state,
@@ -11,6 +12,7 @@ export default function CustomTabBar({
   navigation,
 }: BottomTabBarProps) {
   const { buildHref } = useLinkBuilder();
+  const router = useRouter();
 
   const middleIndex = Math.floor(state.routes.length / 2);
 
@@ -18,6 +20,7 @@ export default function CustomTabBar({
     <View className="flex-row items-center justify-around bg-white absolute bottom-0 pb-safe pt-4 rounded-t-3xl">
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
+
         const isFocused = state.index === index;
 
         const onPress = () => {
@@ -70,6 +73,7 @@ export default function CustomTabBar({
               <PlatformPressable
                 className="bg-ripple-400 w-16 h-16 rounded-full -mt-6 items-center justify-center shadow-lg"
                 android_ripple={{ color: 'transparent' }}
+                onPress={() => router.push('/(mood-logging)')}
               >
                 <Ionicons name="add" size={28} color="white" />
               </PlatformPressable>

@@ -44,10 +44,12 @@ function RootNavigator() {
       screenOptions={{
         headerShown: false,
         contentStyle: { backgroundColor: '#fff' },
+        animation: 'fade',
       }}
     >
       <Stack.Protected guard={isAuthenticated}>
         <Stack.Screen name="(home)" options={{ headerShown: false }} />
+        <Stack.Screen name="(mood-logging)" options={{ headerShown: false }} />
       </Stack.Protected>
       <Stack.Protected guard={!isAuthenticated}>
         <Stack.Screen name="index" options={{ headerShown: false }} />
