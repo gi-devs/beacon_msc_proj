@@ -30,6 +30,7 @@ export default {
       package: 'com.gidevs.beaconapp',
       googleServicesFile: './google-services.json',
       orientation: 'portrait',
+      softwareKeyboardLayoutMode: 'pan',
     },
     plugins: ['expo-router'],
     experiments: {

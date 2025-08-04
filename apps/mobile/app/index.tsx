@@ -107,7 +107,11 @@ const Index = () => {
             .
           </Text>
           <View className="flex w-full items-center gap-4">
-            <UIButton variant="secondary" href="/(auth)/log-in">
+            <UIButton
+              variant="secondary"
+              href="/(auth)/log-in"
+              buttonClassName="w-full"
+            >
               Sign In
             </UIButton>
 

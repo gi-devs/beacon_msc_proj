@@ -4,7 +4,7 @@ import { Link, LinkProps, RelativePathString } from 'expo-router';
 import clsx from 'clsx';
 
 const buttonVariants = {
-  base: 'w-full flex justify-center items-center rounded-full',
+  base: 'flex justify-center items-center rounded-full',
   variants: {
     primary: 'bg-ripple-100',
     secondary: 'bg-secondaryLight',
