@@ -15,6 +15,9 @@ type FormInputProps = {
   control: Control<any>;
   className?: string;
   info?: string;
+  label?: string;
+  wrapperClassName?: string;
+  labelClassName?: string;
 } & Omit<TextInputProps, 'className'>;
 
 export const FormTextInput = ({
@@ -22,33 +25,43 @@ export const FormTextInput = ({
   control,
   className,
   info,
+  label,
+  wrapperClassName,
+  labelClassName,
   ...textInputProps
 }: FormInputProps) => {
   return (
-    <Controller
-      control={control}
-      name={name}
-      render={({ field: { onChange, value }, fieldState: { error } }) => (
-        <View className="w-full">
-          <TextInput
-            {...textInputProps}
-            className={clsx(
-              'border-b border-gray-300 rounded-lg p-4 ',
-              'text-base',
-              className,
-            )}
-            onChangeText={onChange}
-            value={value}
-          />
-          {info && (
-            <Text className="text-gray-400 text-xs mt-2 ml-1">{info}</Text>
-          )}
-          {error && (
-            <Text className="text-red-400 mt-4 pl-1">{error.message}</Text>
-          )}
-        </View>
+    <View className={wrapperClassName}>
+      {label && (
+        <Text className={clsx('text-gray-700 text-sm', labelClassName)}>
+          {label}
+        </Text>
       )}
-    />
+      <Controller
+        control={control}
+        name={name}
+        render={({ field: { onChange, value }, fieldState: { error } }) => (
+          <View className="w-full">
+            <TextInput
+              {...textInputProps}
+              className={clsx(
+                'border-b border-gray-300 rounded-lg p-4 ',
+                'text-base',
+                className,
+              )}
+              onChangeText={onChange}
+              value={value}
+            />
+            {info && (
+              <Text className="text-gray-400 text-xs mt-2 ml-1">{info}</Text>
+            )}
+            {error && (
+              <Text className="text-red-400 mt-4 pl-1">{error.message}</Text>
+            )}
+          </View>
+        )}
+      />
+    </View>
   );
 };
 

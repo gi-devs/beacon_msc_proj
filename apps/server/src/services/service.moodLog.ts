@@ -1,11 +1,11 @@
 import { createMoodLog } from '@/models/model.moodLog';
 import { CustomError } from '@/utils/custom-error';
-import { MoodLog, Prisma } from '@/generated/prisma';
+import { CreateMoodLogData } from '@beacon/validation';
 
 async function create(
-  data: Omit<Prisma.MoodLogCreateInput, 'userId'>,
+  data: CreateMoodLogData,
   userId: string,
-): Promise<MoodLog> {
+): Promise<MoodLogDTO> {
   let {
     stressScale,
     anxietyScale,
@@ -31,7 +31,7 @@ async function create(
     );
   }
 
-  return await createMoodLog({
+  const createdMoodLog = await createMoodLog({
     stressScale,
     anxietyScale,
     sadnessScale,
@@ -42,6 +42,10 @@ async function create(
       connect: { id: userId },
     },
   });
+
+  const { userId: strippedUserId, ...sanitisedMoodLog } = createdMoodLog;
+
+  return sanitisedMoodLog;
 }
 
 export const moodLogService = {

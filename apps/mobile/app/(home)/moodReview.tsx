@@ -1,7 +1,7 @@
 import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const MoodLogging = () => {
+const MoodReview = () => {
   return (
     <SafeAreaView>
       <Text>
@@ -11,4 +11,4 @@ const MoodLogging = () => {
   );
 };
 
-export default MoodLogging;
+export default MoodReview;

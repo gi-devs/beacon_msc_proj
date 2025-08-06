@@ -66,7 +66,7 @@ function HomeNavigator() {
         }}
       />
       <Tabs.Screen
-        name="moodLogging"
+        name="moodReview"
         options={{
           title: 'Mood',
           tabBarIcon: ({ color }) => (
