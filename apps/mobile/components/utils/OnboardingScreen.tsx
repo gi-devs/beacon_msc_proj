@@ -3,7 +3,7 @@
 import React, { useRef, useState } from 'react';
 import { View, Text, FlatList, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { requestNotificationPermissions } from '@/lib/requestNotificationPermissions';
+import { requestNotificationPermissions } from '@/lib/notification';
 import UIButton from '@/components/ui/UIButton';
 import { saveSecureItem } from '@/lib/secureStore';
 

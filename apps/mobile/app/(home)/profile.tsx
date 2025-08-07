@@ -1,7 +1,7 @@
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '@/context/authContext';
 import UIButton from '@/components/ui/UIButton';
-import { requestNotificationPermissions } from '@/lib/requestNotificationPermissions';
+import { requestNotificationPermissions } from '@/lib/notification';
 import { useNotification } from '@/context/notificationContext';
 
 const Profile = () => {

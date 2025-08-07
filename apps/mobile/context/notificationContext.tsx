@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import * as Notifs from 'expo-notifications';
 import { Notification, setNotificationHandler } from 'expo-notifications';
-import { fetchAndSavePushToken } from '@/lib/requestNotificationPermissions';
+import { fetchAndSavePushToken } from '@/lib/notification';
 import { AppState } from 'react-native';
 import { useAuth } from '@/context/authContext';
 import { LinkProps, useRouter } from 'expo-router';

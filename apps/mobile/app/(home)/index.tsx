@@ -2,7 +2,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '@/context/authContext';
 import { useNotification } from '@/context/notificationContext';
 import UIButton from '@/components/ui/UIButton';
-import { requestNotificationPermissions } from '@/lib/requestNotificationPermissions';
+import { requestNotificationPermissions } from '@/lib/notification';
 import { useEffect } from 'react';
 import { Link } from 'expo-router';
 import * as Notifications from 'expo-notifications';
