@@ -161,7 +161,12 @@ export async function toggleDailyCheckInNotification() {
     await deleteAsyncItem(AsyncItemKey.DailyCheckInNotificationId); // <- key name fix
 
     if (__DEV__) {
-      console.log('[Notifs] Daily check-in notification cancelled');
+      const allScheduledKeys = await getScheduledKeys();
+
+      console.log(
+        '[Notifs]Daily check-in notification, remaining keys:',
+        allScheduledKeys,
+      );
     }
 
     return; // toggled off
@@ -177,10 +182,11 @@ export async function toggleDailyCheckInNotification() {
         key: 'DAILY_CHECK_IN',
       },
     },
+    // TODO: Allow user to change the time in settings
     trigger: {
       type: SchedulableTriggerInputTypes.DAILY,
-      hour: 22,
-      minute: 10,
+      hour: 14,
+      minute: 30,
     },
   });
 
@@ -191,4 +197,12 @@ export async function toggleDailyCheckInNotification() {
   }
 
   return; // toggled on
+}
+
+async function getScheduledKeys() {
+  const allScheduled = await Notifications.getAllScheduledNotificationsAsync();
+
+  return allScheduled
+    .map((n) => n.content?.data?.key)
+    .filter((key): key is string => typeof key === 'string');
 }
