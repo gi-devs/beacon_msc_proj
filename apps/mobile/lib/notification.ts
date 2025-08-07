@@ -1,10 +1,23 @@
 import * as Notifications from 'expo-notifications';
+import {
+  getPermissionsAsync,
+  SchedulableTriggerInputTypes,
+} from 'expo-notifications';
 import * as Device from 'expo-device';
 import Constants from 'expo-constants';
 import { Alert, Linking, Platform } from 'react-native';
-import { getPermissionsAsync } from 'expo-notifications';
-import { getSecureItem, saveSecureItem } from '@/lib/secureStore';
+import {
+  getSecureItem,
+  saveSecureItem,
+  SecureItemKey,
+} from '@/lib/secureStore';
 import { syncPushToken } from '@/api/pushTokenApi';
+import {
+  AsyncItemKey,
+  deleteAsyncItem,
+  getAsyncItem,
+  saveAsyncItem,
+} from '@/lib/aysncStorage';
 
 export async function requestNotificationPermissions(): Promise<boolean> {
   if (Platform.OS === 'android') {
@@ -94,10 +107,10 @@ export async function fetchAndSavePushToken(): Promise<boolean> {
     const { data: token } = await Notifications.getExpoPushTokenAsync({
       projectId,
     });
-    const oldToken = await getSecureItem('pushToken');
+    const oldToken = await getSecureItem(SecureItemKey.PushToken);
 
     if (token !== oldToken || !oldToken) {
-      await saveSecureItem('pushToken', token);
+      await saveSecureItem(SecureItemKey.PushToken, token);
       await syncPushToken(token); // Sync the token with the backend
     }
 
@@ -107,4 +120,75 @@ export async function fetchAndSavePushToken(): Promise<boolean> {
     console.warn('Failed Fetch and Save Push Token:', err);
     return false;
   }
+}
+
+const listOfScheduledNotifications = [
+  {
+    title: 'Hey there! How you feeling today?',
+    body: 'Logging your mood helps you understand yourself better.',
+    data: {
+      route: '/(mood-logging)?mode=daily-log',
+    },
+    trigger: {
+      type: 'daily',
+      hour: 22,
+      minute: 10,
+      repeats: true,
+    },
+  },
+];
+
+export async function toggleDailyCheckInNotification() {
+  const { status: existingStatus } = await Notifications.getPermissionsAsync();
+  if (existingStatus !== 'granted') return; // exit if permissions are not granted
+
+  const existing = await Notifications.getAllScheduledNotificationsAsync();
+  const storedId = await getAsyncItem(AsyncItemKey.DailyCheckInNotificationId); // <- key name fix
+  const existingNotification = existing.find(
+    (n) => n.content?.data?.key === 'DAILY_CHECK_IN',
+  );
+
+  if (storedId || existingNotification) {
+    // Turn off the notification
+    if (storedId) {
+      await Notifications.cancelScheduledNotificationAsync(storedId);
+    } else if (existingNotification) {
+      await Notifications.cancelScheduledNotificationAsync(
+        existingNotification.identifier,
+      );
+    }
+
+    await deleteAsyncItem(AsyncItemKey.DailyCheckInNotificationId); // <- key name fix
+
+    if (__DEV__) {
+      console.log('[Notifs] Daily check-in notification cancelled');
+    }
+
+    return; // toggled off
+  }
+
+  // Schedule new notification
+  const id = await Notifications.scheduleNotificationAsync({
+    content: {
+      title: 'Hey there! How you feeling today?',
+      body: 'Logging your mood helps you understand yourself better.',
+      data: {
+        route: '/(mood-logging)?mode=daily-log',
+        key: 'DAILY_CHECK_IN',
+      },
+    },
+    trigger: {
+      type: SchedulableTriggerInputTypes.DAILY,
+      hour: 22,
+      minute: 10,
+    },
+  });
+
+  await saveAsyncItem(AsyncItemKey.DailyCheckInNotificationId, id); // <- key name fix
+
+  if (__DEV__) {
+    console.log('[Notifs] Daily check-in scheduled:', id);
+  }
+
+  return; // toggled on
 }

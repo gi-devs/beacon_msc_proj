@@ -1,12 +1,18 @@
 import * as SecureStore from 'expo-secure-store';
 
+export enum SecureItemKey {
+  PushToken = 'pushToken',
+  AccessToken = 'accessToken',
+  RefreshToken = 'refreshToken',
+}
+
 const isSecureStoreAvailable = SecureStore.isAvailableAsync;
 const prefix = 'beacon-';
 
-const getPrefixedKey = (key: string) => `${prefix}${key}`;
+const getPrefixedKey = (key: SecureItemKey) => `${prefix}${key}`;
 
 export const saveSecureItem = async (
-  key: string,
+  key: SecureItemKey,
   value: string,
 ): Promise<boolean> => {
   try {
@@ -29,7 +35,9 @@ export const saveSecureItem = async (
   }
 };
 
-export const getSecureItem = async (key: string): Promise<string | null> => {
+export const getSecureItem = async (
+  key: SecureItemKey,
+): Promise<string | null> => {
   try {
     const available = await isSecureStoreAvailable();
     if (!available) {
@@ -44,7 +52,9 @@ export const getSecureItem = async (key: string): Promise<string | null> => {
   }
 };
 
-export const deleteSecureItem = async (key: string): Promise<boolean> => {
+export const deleteSecureItem = async (
+  key: SecureItemKey,
+): Promise<boolean> => {
   try {
     const available = await isSecureStoreAvailable();
     if (!available) {

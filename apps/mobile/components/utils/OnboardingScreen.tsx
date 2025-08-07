@@ -1,11 +1,12 @@
-// app/(auth)/Onboarding.tsx or screens/Onboarding.tsx
-
 import React, { useRef, useState } from 'react';
-import { View, Text, FlatList, Dimensions } from 'react-native';
+import { Dimensions, FlatList, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { requestNotificationPermissions } from '@/lib/notification';
+import {
+  requestNotificationPermissions,
+  toggleDailyCheckInNotification,
+} from '@/lib/notification';
 import UIButton from '@/components/ui/UIButton';
-import { saveSecureItem } from '@/lib/secureStore';
+import { AsyncItemKey, saveAsyncItem } from '@/lib/aysncStorage';
 
 const { width } = Dimensions.get('window');
 
@@ -40,7 +41,8 @@ export default function OnboardingScreen({
 
   const complete = async () => {
     await requestNotificationPermissions();
-    await saveSecureItem('onboarding-complete', 'true');
+    await toggleDailyCheckInNotification();
+    await saveAsyncItem(AsyncItemKey.OnboardingComplete, 'true');
     onFinish(); // to show main app
   };
 

@@ -1,11 +1,16 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+export enum AsyncItemKey {
+  OnboardingComplete = 'onboarding-complete',
+  DailyCheckInNotificationId = 'daily-check-in-notification-id',
+}
+
 const prefix = 'beacon-';
 
 const getPrefixedKey = (key: string) => `${prefix}${key}`;
 
 export const saveAsyncItem = async (
-  key: string,
+  key: AsyncItemKey,
   value: string,
 ): Promise<boolean> => {
   try {
@@ -22,7 +27,9 @@ export const saveAsyncItem = async (
   }
 };
 
-export const getAsyncItem = async (key: string): Promise<string | null> => {
+export const getAsyncItem = async (
+  key: AsyncItemKey,
+): Promise<string | null> => {
   try {
     return await AsyncStorage.getItem(getPrefixedKey(key));
   } catch (err) {
@@ -31,7 +38,7 @@ export const getAsyncItem = async (key: string): Promise<string | null> => {
   }
 };
 
-export const deleteAsyncItem = async (key: string): Promise<boolean> => {
+export const deleteAsyncItem = async (key: AsyncItemKey): Promise<boolean> => {
   try {
     await AsyncStorage.removeItem(getPrefixedKey(key));
     return true;

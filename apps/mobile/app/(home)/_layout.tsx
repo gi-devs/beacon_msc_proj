@@ -3,20 +3,20 @@ import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import OnboardingScreen from '@/components/utils/OnboardingScreen';
 import { useEffect, useState } from 'react';
 import CustomTabBar from '@/components/ui/CustomTabBar';
-import { getAsyncItem, saveAsyncItem } from '@/lib/aysncStorage';
+import { AsyncItemKey, getAsyncItem, saveAsyncItem } from '@/lib/aysncStorage';
 
 export default function HomeTabsLayout() {
   const [isLoading, setIsLoading] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   const turnOffOnboarding = async () => {
-    await saveAsyncItem('onboarding-complete', 'true');
+    await saveAsyncItem(AsyncItemKey.OnboardingComplete, 'true');
     setShowOnboarding(false);
   };
 
   useEffect(() => {
     const checkFirstTime = async () => {
-      const onboarded = await getAsyncItem('onboarding-complete');
+      const onboarded = await getAsyncItem(AsyncItemKey.OnboardingComplete);
       setShowOnboarding(!onboarded); // show onboarding if not complete
       setIsLoading(false);
     };

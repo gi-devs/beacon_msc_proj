@@ -17,7 +17,7 @@ import {
 import { AppState } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Toast } from 'toastify-react-native';
-import { deleteSecureItem } from '@/lib/secureStore';
+import { deleteSecureItem, SecureItemKey } from '@/lib/secureStore';
 
 type AuthContextType = {
   user: UserPayload | null;
@@ -60,7 +60,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         // if user was logged in but token expired, or has been logged into another device
         if (status === 401 && refreshToken) {
           await clearTokens();
-          await deleteSecureItem('pushToken');
+          await deleteSecureItem(SecureItemKey.PushToken);
           Toast.warn(message);
         }
 
@@ -162,7 +162,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (isLoggedOut) {
       setUser(null);
       await clearTokens();
-      await deleteSecureItem('pushToken');
+      await deleteSecureItem(SecureItemKey.PushToken);
     } else {
       Toast.error('Failed to log out');
     }

@@ -4,11 +4,12 @@ import {
   deleteSecureItem,
   getSecureItem,
   saveSecureItem,
+  SecureItemKey,
 } from '@/lib/secureStore';
 import axiosInstance from '@/lib/axios';
 
 export const getStoredAccessToken = async () => {
-  const accessToken = await getSecureItem('accessToken');
+  const accessToken = await getSecureItem(SecureItemKey.AccessToken);
 
   if (accessToken) {
     return accessToken;
@@ -17,7 +18,7 @@ export const getStoredAccessToken = async () => {
 };
 
 export const getStoredRefreshToken = async () => {
-  const refreshToken = await getSecureItem('refreshToken');
+  const refreshToken = await getSecureItem(SecureItemKey.RefreshToken);
 
   if (refreshToken) {
     return refreshToken;
@@ -31,7 +32,7 @@ export const storeAccessToken = async (token: string | null | undefined) => {
     return;
   }
 
-  if (await saveSecureItem('accessToken', token)) {
+  if (await saveSecureItem(SecureItemKey.AccessToken, token)) {
     console.log('Access token stored successfully');
     return;
   }
@@ -44,7 +45,7 @@ export const storeRefreshToken = async (token: string | null | undefined) => {
     return;
   }
 
-  if (await saveSecureItem('refreshToken', token)) {
+  if (await saveSecureItem(SecureItemKey.RefreshToken, token)) {
     console.log('Refresh token stored successfully');
     return;
   }
@@ -52,8 +53,12 @@ export const storeRefreshToken = async (token: string | null | undefined) => {
 };
 
 export const clearTokens = async () => {
-  const accessTokenIsDeleted = await deleteSecureItem('accessToken');
-  const refreshTokenIsDeleted = await deleteSecureItem('refreshToken');
+  const accessTokenIsDeleted = await deleteSecureItem(
+    SecureItemKey.AccessToken,
+  );
+  const refreshTokenIsDeleted = await deleteSecureItem(
+    SecureItemKey.RefreshToken,
+  );
 
   if (!accessTokenIsDeleted || !refreshTokenIsDeleted) {
     console.log('Failed to clear tokens');

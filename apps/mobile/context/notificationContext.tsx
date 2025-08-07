@@ -55,20 +55,17 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
     const isGranted = permissions.status === 'granted';
     setHasNotificationsEnabled(isGranted);
 
-    if (!isAuthenticated)
-      return console.warn(
-        'User not authenticated, skipping notification token fetch',
-      );
-
     await fetchAndSavePushToken(); // this will fetch and save the token if permissions are granted and token is not already saved
   };
 
   useEffect(() => {
-    fetchTokenIfNeeded();
+    if (isAuthenticated) {
+      void fetchTokenIfNeeded();
+    }
 
     const subscription = AppState.addEventListener('change', (state) => {
       if (state === 'active' && !authIsLoading) {
-        fetchTokenIfNeeded();
+        void fetchTokenIfNeeded();
       }
     });
 
