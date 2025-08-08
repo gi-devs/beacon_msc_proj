@@ -11,6 +11,7 @@ import { useLogCreator } from '@/context/logCreatorContext';
 import { Toast } from 'toastify-react-native';
 import { parseToSeverError } from '@/utils/parseToSeverError';
 import { createMoodLogRequest } from '@/api/moodLogApi';
+import { AppStyles } from '@/constants/AppStyles';
 
 const MoodLogForm = ({
   shouldPost,
@@ -71,7 +72,10 @@ const MoodLogForm = ({
 
   return (
     <>
-      <View className="bg-white p-6 rounded-3xl w-full max-w-md">
+      <View
+        className="bg-white p-6 rounded-3xl w-full max-w-md z-10"
+        style={AppStyles.containerShadow}
+      >
         <Text className="text-center text-lg font-medium mb-4">
           {format(new Date(), 'EEEE do MMMM')}
         </Text>
