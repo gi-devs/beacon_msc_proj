@@ -10,7 +10,7 @@ import UIButton from '@/components/ui/UIButton';
 import { useLogCreator } from '@/context/logCreatorContext';
 import { Toast } from 'toastify-react-native';
 import { parseToSeverError } from '@/utils/parseToSeverError';
-import { createMoodLogRequest } from '@/api/moodLogApi';
+import { createMoodLogRequest } from '@/api/moodLoggerApi';
 import { AppStyles } from '@/constants/AppStyles';
 
 const MoodLogForm = ({

@@ -2,6 +2,7 @@ import { CreateMoodLogData } from '@beacon/validation';
 import axiosInstance from '@/lib/axios';
 import { parseToSeverError } from '@/utils/parseToSeverError';
 
+// Mood log
 export async function createMoodLogRequest(data: CreateMoodLogData) {
   try {
     const res = await axiosInstance.post('/mood-log', data);
@@ -21,3 +22,5 @@ export async function getMoodLogsRequest() {
     throw error;
   }
 }
+
+// Journal entry
