@@ -24,9 +24,10 @@ model User {
   isEmailVerified Boolean  @default(false)
 
   // relationships
-  pushToken      PushToken? @relation("UserPushToken")
-  currentSession Session?   @relation("UserCurrentSession")
-  MoodLog        MoodLog[]
+  pushToken      PushToken?     @relation("UserPushToken")
+  currentSession Session?       @relation("UserCurrentSession")
+  MoodLogs       MoodLog[]      @relation("UserMoodLog")
+  JournalEntries JournalEntry[] @relation("UserJournalEntry")
 }
 
 model Session {
@@ -62,7 +63,28 @@ model MoodLog {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Relationships
+  journalEntryId Int?
+  JournalEntry   JournalEntry? @relation("MoodLogJournalEntry")
+
+  user User @relation("UserMoodLog", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])
+}
+
+model JournalEntry {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  moodFace  Int
+  tags      Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  moodLogId Int?     @unique
+  moodLog   MoodLog? @relation("MoodLogJournalEntry", fields: [moodLogId], references: [id])
+
+  userId String
+  user   User   @relation("UserJournalEntry", fields: [userId], references: [id], onDelete: Cascade)
 }

@@ -3,7 +3,12 @@ import cors from 'cors';
 import morgan from 'morgan';
 import { error, notFound } from '@/middleware';
 import prisma from '@/lib/prisma';
-import { authRoutes, moodLogRoutes, pushTokenRoutes } from '@/routes';
+import {
+  authRoutes,
+  moodLogRoutes,
+  pushTokenRoutes,
+  journalEntryRoutes,
+} from '@/routes';
 
 const app = express();
 app.use(json());
@@ -23,6 +28,7 @@ app.get('/', async (req, res) => {
 app.use('/auth', authRoutes); // Authentication routes
 app.use('/push-token', pushTokenRoutes);
 app.use('/mood-log', moodLogRoutes);
+app.use('/journal-entry', journalEntryRoutes);
 
 // Not found handler
 app.use(notFound);

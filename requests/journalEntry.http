@@ -1,0 +1,16 @@
+POST {{BASE_URL}}/journal-entry
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "This is a test journal entry",
+  "content": "This is the content of the journal entry. It can be as long as you want.",
+  "moodFace": 1,
+  "tags": [
+    {
+      "category": "mood",
+      "keywords": [
+      ]
+    }
+  ]
+}
