@@ -19,7 +19,7 @@ export const createJournalEntrySchema = z.object({
     .int()
     .min(1, { message: 'Mood is required' })
     .max(100, { message: 'Mood cannot be more that 100' }),
-  tags: z.array(journalTagsSchema).optional().default([]),
+  tags: z.array(journalTagsSchema),
 });
 
 export type CreateJournalEntryData = z.infer<typeof createJournalEntrySchema>;

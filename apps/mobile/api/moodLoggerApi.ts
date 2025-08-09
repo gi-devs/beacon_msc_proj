@@ -1,8 +1,10 @@
-import { CreateMoodLogData } from '@beacon/validation';
+import { CreateJournalEntryData, CreateMoodLogData } from '@beacon/validation';
 import axiosInstance from '@/lib/axios';
 import { parseToSeverError } from '@/utils/parseToSeverError';
 
-// Mood log
+// ----------------------
+//        Mood log
+// ----------------------
 export async function createMoodLogRequest(data: CreateMoodLogData) {
   try {
     const res = await axiosInstance.post('/mood-log', data);
@@ -23,4 +25,15 @@ export async function getMoodLogsRequest() {
   }
 }
 
-// Journal entry
+// ------------------------
+//      Journal entry
+// ------------------------
+export async function createJournalEntryRequest(data: CreateJournalEntryData) {
+  try {
+    const res = await axiosInstance.post('/journal-entry', data);
+    return res.data;
+  } catch (error) {
+    console.log(parseToSeverError(error).message);
+    throw error;
+  }
+}

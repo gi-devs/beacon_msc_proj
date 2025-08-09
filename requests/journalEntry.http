@@ -10,6 +10,8 @@ Authorization: Bearer {{access_token}}
     {
       "category": "mood",
       "keywords": [
+        "happy",
+        "joyful"
       ]
     }
   ]

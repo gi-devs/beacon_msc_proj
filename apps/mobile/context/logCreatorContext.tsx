@@ -1,11 +1,16 @@
 import React, { createContext, useContext, useState } from 'react';
-import { CreateMoodLogData } from '@beacon/validation';
-import { createMoodLogRequest } from '@/api/moodLogApi';
+import { CreateJournalEntryData, CreateMoodLogData } from '@beacon/validation';
 
 type LogCreatorContextType = {
   createMoodLogData: CreateMoodLogData;
   setCreateMoodLogData: (data: CreateMoodLogData) => void;
   resetCreateMoodLogData: () => void;
+  createJournalEntryData: CreateJournalEntryData;
+  setCreateJournalEntryData: (data: CreateJournalEntryData) => void;
+  resetCreateJournalEntryData: () => void;
+
+  // reset all
+  resetAllCreateData: () => void;
 };
 
 type LogCreatorProviderProps = {
@@ -25,6 +30,22 @@ export const MoodLogProvider: React.FC<LogCreatorProviderProps> = ({
       sadnessNote: '',
     },
   );
+  const [createJournalEntryData, setCreateJournalEntryData] =
+    useState<CreateJournalEntryData>({
+      title: '',
+      content: '',
+      moodFace: 0,
+      tags: [],
+    });
+
+  const resetCreateJournalEntryData = () => {
+    setCreateJournalEntryData({
+      title: '',
+      content: '',
+      moodFace: 0,
+      tags: [],
+    });
+  };
 
   const resetCreateMoodLogData = () => {
     setCreateMoodLogData({
@@ -37,12 +58,21 @@ export const MoodLogProvider: React.FC<LogCreatorProviderProps> = ({
     });
   };
 
+  const resetAllCreateData = () => {
+    resetCreateMoodLogData();
+    resetCreateJournalEntryData();
+  };
+
   return (
     <LogCreatorContext.Provider
       value={{
         createMoodLogData,
         setCreateMoodLogData,
         resetCreateMoodLogData,
+        createJournalEntryData,
+        setCreateJournalEntryData,
+        resetCreateJournalEntryData,
+        resetAllCreateData,
       }}
     >
       {children}

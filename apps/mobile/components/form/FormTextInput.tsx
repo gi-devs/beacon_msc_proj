@@ -4,11 +4,22 @@ import {
   View,
   TextInputProps,
   TouchableOpacity,
+  StyleProp,
+  TextStyle,
 } from 'react-native';
 import { Controller, Control } from 'react-hook-form';
 import clsx from 'clsx';
 import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
+
+const textFieldVariants = {
+  variants: {
+    base: 'border-b border-gray-300 rounded-lg p-4',
+    textarea: 'border border-gray-300 rounded-md p-4 mt-4',
+  },
+};
+
+type Variant = keyof typeof textFieldVariants.variants;
 
 type FormInputProps = {
   name: string;
@@ -18,6 +29,7 @@ type FormInputProps = {
   label?: string;
   wrapperClassName?: string;
   labelClassName?: string;
+  variant?: Variant;
 } & Omit<TextInputProps, 'className'>;
 
 export const FormTextInput = ({
@@ -28,8 +40,15 @@ export const FormTextInput = ({
   label,
   wrapperClassName,
   labelClassName,
+  variant = 'base',
   ...textInputProps
 }: FormInputProps) => {
+  const isTextArea = variant === 'textarea';
+  const baseStyle = {
+    minHeight: isTextArea ? 350 : undefined,
+    textAlignVertical: isTextArea ? 'top' : undefined,
+  };
+
   return (
     <View className={wrapperClassName}>
       {label && (
@@ -45,12 +64,15 @@ export const FormTextInput = ({
             <TextInput
               {...textInputProps}
               className={clsx(
-                'border-b border-gray-300 rounded-lg p-4 ',
+                textFieldVariants.variants[variant],
                 'text-base',
                 className,
               )}
               onChangeText={onChange}
               value={value}
+              multiline={isTextArea}
+              numberOfLines={isTextArea ? 5 : undefined}
+              style={[baseStyle, textInputProps.style] as StyleProp<TextStyle>}
             />
             {info && (
               <Text className="text-gray-400 text-xs mt-2 ml-1">{info}</Text>

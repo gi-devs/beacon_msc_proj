@@ -24,7 +24,7 @@ export default function MoodLoggingIndex() {
 
   const handleSubmit = () => {
     if (mode === 'daily-log') {
-      return router.push('/(mood-logging)/journal');
+      return router.push('/(mood-logging)/journal?mode=daily-log');
     }
 
     if (router.canGoBack()) {

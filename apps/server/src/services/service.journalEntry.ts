@@ -3,8 +3,7 @@ import {
   CreateJournalEntryData,
   createJournalEntrySchema,
 } from '@beacon/validation';
-import { CustomError } from '@/utils/custom-error';
-import { z } from 'zod';
+import { handleZodError } from '@/utils/handle-zod-error';
 
 async function create(
   data: CreateJournalEntryData,
@@ -15,21 +14,7 @@ async function create(
   try {
     parsedData = createJournalEntrySchema.parse(data);
   } catch (e) {
-    if (e instanceof z.ZodError) {
-      const customIssue = e.issues.find((i) => i.code === 'custom');
-      const issueToShow = customIssue ?? e.issues[0];
-
-      let message = issueToShow.message;
-
-      // Customise invalid_type messages
-      if (issueToShow.code === 'invalid_type' && issueToShow.path.length > 0) {
-        const fieldName = String(issueToShow.path.at(-1)); // last element in path
-        message = `${fieldName} must be a ${issueToShow.expected}`;
-      }
-
-      throw new CustomError(message, 400);
-    }
-    throw e;
+    handleZodError(e);
   }
 
   const { title, content, moodFace, tags } = parsedData;
