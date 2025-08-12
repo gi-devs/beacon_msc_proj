@@ -28,6 +28,8 @@ model User {
   currentSession Session?       @relation("UserCurrentSession")
   MoodLogs       MoodLog[]      @relation("UserMoodLog")
   JournalEntries JournalEntry[] @relation("UserJournalEntry")
+
+  dailyCheckIn DailyCheckIn[]
 }
 
 model Session {
@@ -67,7 +69,8 @@ model MoodLog {
   journalEntryId Int?
   JournalEntry   JournalEntry? @relation("MoodLogJournalEntry")
 
-  user User @relation("UserMoodLog", fields: [userId], references: [id], onDelete: Cascade)
+  user         User          @relation("UserMoodLog", fields: [userId], references: [id], onDelete: Cascade)
+  DailyCheckIn DailyCheckIn? @relation("DailyCheckInMoodLog")
 
   @@index([userId, createdAt])
 }
@@ -83,8 +86,22 @@ model JournalEntry {
 
   // Relationships
   moodLogId Int?     @unique
-  moodLog   MoodLog? @relation("MoodLogJournalEntry", fields: [moodLogId], references: [id])
+  moodLog   MoodLog? @relation("MoodLogJournalEntry", fields: [moodLogId], references: [id], onDelete: Cascade)
 
   userId String
   user   User   @relation("UserJournalEntry", fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model DailyCheckIn {
+  userId      String
+  date        DateTime
+  broadcasted Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  // Relationships
+  moodLogId Int?     @unique
+  MoodLog   MoodLog? @relation("DailyCheckInMoodLog", fields: [moodLogId], references: [id], onDelete: Cascade)
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, date])
 }

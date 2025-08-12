@@ -10,3 +10,6 @@ export * from './moodLog/createMoodLoggingSchema';
 
 // journal schemas
 export * from './journalEntry/createJournalEntrySchema';
+
+// daily log schemas
+export * from './dailyLog/createDailyLogSchema';

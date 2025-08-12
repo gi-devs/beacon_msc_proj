@@ -4,6 +4,7 @@ import { Controller, useForm } from 'react-hook-form';
 import {
   CreateJournalEntryData,
   createJournalEntrySchema,
+  createJournalEntrySchemaWithOptionalTags,
 } from '@beacon/validation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createJournalEntryRequest } from '@/api/moodLoggerApi';
@@ -22,7 +23,9 @@ const JournalEntryForm = ({
   saveLabel = 'Save',
 }: {
   shouldPost: boolean;
-  callback?: () => void;
+  callback?: (
+    journalEntryDataFromForm: CreateJournalEntryData,
+  ) => void | Promise<void>;
   saveLabel?: string;
 }) => {
   const {
@@ -32,8 +35,12 @@ const JournalEntryForm = ({
     createMoodLogData: { stressScale, sadnessScale, anxietyScale },
   } = useLogCreator();
   const moodAverage = (stressScale + sadnessScale + anxietyScale) / 3;
+  const schema = shouldPost
+    ? createJournalEntrySchema
+    : createJournalEntrySchemaWithOptionalTags;
+
   const { control, handleSubmit, reset } = useForm<CreateJournalEntryData>({
-    resolver: zodResolver(createJournalEntrySchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       title: createJournalEntryData.title || '',
       content: createJournalEntryData.content || '',
@@ -53,11 +60,13 @@ const JournalEntryForm = ({
         resetCreateJournalEntryData();
         Toast.success('Journal entry created successfully!');
       } else {
+        // If not posting, just set the data in context
+        data.moodFace = moodAverage;
         setCreateJournalEntryData(data);
       }
 
       if (callback) {
-        callback();
+        await callback(data);
       }
     } catch (e) {
       console.error('Error submitting journal entry:', e);

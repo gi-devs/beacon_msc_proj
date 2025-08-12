@@ -8,6 +8,7 @@ import {
   moodLogRoutes,
   pushTokenRoutes,
   journalEntryRoutes,
+  dailyLogRoutes,
 } from '@/routes';
 
 const app = express();
@@ -29,6 +30,7 @@ app.use('/auth', authRoutes); // Authentication routes
 app.use('/push-token', pushTokenRoutes);
 app.use('/mood-log', moodLogRoutes);
 app.use('/journal-entry', journalEntryRoutes);
+app.use('/daily-log', dailyLogRoutes);
 
 // Not found handler
 app.use(notFound);

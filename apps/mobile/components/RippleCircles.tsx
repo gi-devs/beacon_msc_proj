@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { View, StyleSheet, Button, Text, TouchableOpacity } from 'react-native';
+import React, { useRef } from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedProps,
@@ -12,11 +12,15 @@ import { Svg, Circle as SVGCircle } from 'react-native-svg';
 
 const AnimatedCircle = Animated.createAnimatedComponent(SVGCircle);
 
-const RippleCircles = () => {
+const RippleCircles = ({
+  callback,
+  onAnimateEnd,
+}: {
+  callback?: () => void | Promise<void>;
+  onAnimateEnd?: () => void | Promise<void>;
+}) => {
   const vWidth = 981;
   const vHeight = 981;
-
-  const svgScaleStyle = { width: vWidth, height: vHeight };
 
   const shapes = [
     {
@@ -64,30 +68,35 @@ const RippleCircles = () => {
   ];
 
   const progressList = shapes.map(() => useSharedValue(0));
+  const loopInterval = useRef<number | null>(null);
 
-  useEffect(() => {
-    progressList.forEach((_, i) => {
-      const reverseIndex = progressList.length - 1 - i;
-      progressList[reverseIndex].value = withDelay(
-        i * 200,
-        withSequence(
-          withTiming(1, { duration: 500 }),
-          withTiming(0, { duration: 500 }),
-        ),
-      );
-    });
-  }, []);
-
-  const onClickPlayAnimation = () => {
+  const animateOnce = () => {
     for (let i = 0; i < progressList.length; i++) {
       const reverseIndex = progressList.length - 1 - i;
       progressList[reverseIndex].value = withDelay(
         i * 200,
         withSequence(
-          withTiming(1, { duration: 500 }),
-          withTiming(0, { duration: 500 }),
+          withTiming(1, { duration: 1200 }),
+          withTiming(0, { duration: 1200 }),
         ),
       );
+    }
+  };
+
+  const startRippleLoop = () => {
+    if (loopInterval.current) return; // prevent multiple loops
+
+    animateOnce(); // kick off once immediately
+
+    loopInterval.current = setInterval(() => {
+      animateOnce();
+    }, 3400);
+  };
+
+  const stopRippleLoop = () => {
+    if (loopInterval.current) {
+      clearInterval(loopInterval.current);
+      loopInterval.current = null;
     }
   };
 
@@ -126,11 +135,27 @@ const RippleCircles = () => {
           );
         })}
       </Svg>
+
       <TouchableOpacity
-        onPress={onClickPlayAnimation}
+        onPress={async () => {
+          startRippleLoop();
+
+          try {
+            if (callback) {
+              await callback();
+            }
+
+            if (onAnimateEnd) {
+              await onAnimateEnd();
+            }
+          } catch (_) {
+          } finally {
+            stopRippleLoop();
+          }
+        }}
         className="absolute bottom-1/4"
       >
-        <Text className="text-white font-semibold text-4xl uppercase w-full">
+        <Text className="text-white font-semibold text-4xl uppercase w-full text-center">
           Send Beacon
         </Text>
       </TouchableOpacity>

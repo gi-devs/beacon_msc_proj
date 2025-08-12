@@ -9,6 +9,9 @@ type LogCreatorContextType = {
   setCreateJournalEntryData: (data: CreateJournalEntryData) => void;
   resetCreateJournalEntryData: () => void;
 
+  shouldBroadcast: boolean;
+  setShouldBroadcast: (shouldBroadcast: boolean) => void;
+
   // reset all
   resetAllCreateData: () => void;
 };
@@ -58,6 +61,8 @@ export const MoodLogProvider: React.FC<LogCreatorProviderProps> = ({
     });
   };
 
+  const [shouldBroadcast, setShouldBroadcast] = useState<boolean>(false);
+
   const resetAllCreateData = () => {
     resetCreateMoodLogData();
     resetCreateJournalEntryData();
@@ -72,6 +77,8 @@ export const MoodLogProvider: React.FC<LogCreatorProviderProps> = ({
         createJournalEntryData,
         setCreateJournalEntryData,
         resetCreateJournalEntryData,
+        shouldBroadcast,
+        setShouldBroadcast,
         resetAllCreateData,
       }}
     >

@@ -1,4 +1,8 @@
-import { CreateJournalEntryData, CreateMoodLogData } from '@beacon/validation';
+import {
+  CreateDailyLogData,
+  CreateJournalEntryData,
+  CreateMoodLogData,
+} from '@beacon/validation';
 import axiosInstance from '@/lib/axios';
 import { parseToSeverError } from '@/utils/parseToSeverError';
 
@@ -31,6 +35,20 @@ export async function getMoodLogsRequest() {
 export async function createJournalEntryRequest(data: CreateJournalEntryData) {
   try {
     const res = await axiosInstance.post('/journal-entry', data);
+    return res.data;
+  } catch (error) {
+    console.log(parseToSeverError(error).message);
+    throw error;
+  }
+}
+
+// -------------------------
+//        Daily log
+// -------------------------
+
+export async function createDailyLogRequest(data: CreateDailyLogData) {
+  try {
+    const res = await axiosInstance.post('/daily-log', data);
     return res.data;
   } catch (error) {
     console.log(parseToSeverError(error).message);

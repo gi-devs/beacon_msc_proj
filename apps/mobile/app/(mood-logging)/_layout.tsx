@@ -1,14 +1,17 @@
-import { Stack, useRouter } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import { MoodLogProvider } from '@/context/logCreatorContext';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { ScrollProvider, useScroll } from '@/context/scrollContext';
 import UIButton from '@/components/ui/UIButton';
 
 export default function MoodLoggingLayout() {
+  const segments = useSegments();
+  const currentRoute = segments.at(-1);
+
   return (
     <MoodLogProvider>
       <ScrollProvider>
-        <MoodLoggingHeader />
+        {currentRoute !== 'broadcast' && <MoodLoggingHeader />}
         <MoodLoggingNavigator />
       </ScrollProvider>
     </MoodLogProvider>
@@ -24,6 +27,7 @@ function MoodLoggingNavigator() {
     >
       <Stack.Screen name="index" />
       <Stack.Screen name="journal" />
+      <Stack.Screen name="broadcast" />
     </Stack>
   );
 }
