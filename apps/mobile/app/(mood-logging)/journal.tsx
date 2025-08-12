@@ -96,14 +96,25 @@ const Journal = () => {
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
-          setModalVisible(!modalVisible);
+          setModalVisible(false);
         }}
       >
-        <View className="flex-1 justify-center items-center bg-gray-800/80 bg-opacity-50">
+        <View className="flex-1 justify-center items-center ">
+          <View
+            className="absolute inset-0 bg-gray-800/80"
+            onTouchEnd={() => setModalVisible(false)}
+          />
           <View className="bg-white h-1/2 rounded-lg p-6 w-11/12 max-w-md justify-center gap-16">
+            <UIButton
+              buttonClassName="absolute top-6 left-6"
+              variant="ghost"
+              onPress={() => setModalVisible(false)}
+            >
+              Back
+            </UIButton>
             <View>
               <Text className="text-2xl font-medium mb-4">
-                Hey sorry your having a rough time :(
+                Hey sorry you're having a rough time :(
               </Text>
               <Text>
                 Would you like to send a beacon and so other people can check up
