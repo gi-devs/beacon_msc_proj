@@ -153,10 +153,10 @@ const RippleCircles = ({
             stopRippleLoop();
           }
         }}
-        className="absolute bottom-1/4"
+        className="absolute bottom-20 h-[330px] w-[330px] rounded-full items-center justify-center"
       >
         <Text className="text-white font-semibold text-4xl uppercase w-full text-center">
-          Send Beacon
+          Send a Beacon
         </Text>
       </TouchableOpacity>
     </View>

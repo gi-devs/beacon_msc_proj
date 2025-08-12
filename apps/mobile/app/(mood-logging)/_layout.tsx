@@ -11,7 +11,7 @@ export default function MoodLoggingLayout() {
   return (
     <MoodLogProvider>
       <ScrollProvider>
-        {currentRoute !== 'broadcast' && <MoodLoggingHeader />}
+        <MoodLoggingHeader headerTransparent={currentRoute === 'broadcast'} />
         <MoodLoggingNavigator />
       </ScrollProvider>
     </MoodLogProvider>
@@ -27,12 +27,21 @@ function MoodLoggingNavigator() {
     >
       <Stack.Screen name="index" />
       <Stack.Screen name="journal" />
-      <Stack.Screen name="broadcast" />
+      <Stack.Screen
+        name="broadcast"
+        options={{
+          animation: 'fade',
+        }}
+      />
     </Stack>
   );
 }
 
-function MoodLoggingHeader() {
+function MoodLoggingHeader({
+  headerTransparent = false,
+}: {
+  headerTransparent?: boolean;
+}) {
   const { hasScrolled } = useScroll();
   const router = useRouter();
 
@@ -45,9 +54,18 @@ function MoodLoggingHeader() {
   };
 
   return (
-    <View style={[styles.headerContainer, hasScrolled && styles.headerShadow]}>
+    <View
+      style={[
+        headerTransparent ? styles.headerTransparent : styles.headerContainer,
+        hasScrolled && styles.headerShadow,
+      ]}
+    >
       <View className="pt-safe flex-row px-4 py-4">
-        <UIButton onPress={backAction} variant="ghost">
+        <UIButton
+          onPress={backAction}
+          variant="ghost"
+          textClassName={headerTransparent ? 'text-white' : 'text-gray-800'}
+        >
           Back
         </UIButton>
       </View>
@@ -57,8 +75,16 @@ function MoodLoggingHeader() {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    backgroundColor: 'white',
     zIndex: 10,
+    backgroundColor: 'white',
+  },
+  headerTransparent: {
+    zIndex: 10,
+    backgroundColor: 'transparent',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
   },
   headerShadow: {
     shadowColor: '#a8a8a8',

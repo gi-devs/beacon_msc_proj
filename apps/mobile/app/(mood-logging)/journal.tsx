@@ -92,11 +92,10 @@ const Journal = () => {
   return (
     <View className="flex-1 bg-gray-100">
       <Modal
-        animationType="slide"
+        animationType="fade"
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
           setModalVisible(!modalVisible);
         }}
       >
@@ -150,12 +149,6 @@ const Journal = () => {
           onScroll={handleScroll}
           scrollEventThrottle={16}
         >
-          <Text
-            className="text-2xl font-bold mb-4"
-            onPress={() => setModalVisible(true)}
-          >
-            testing modal
-          </Text>
           <JournalEntryForm shouldPost={!mode} callback={handlePost} />
         </ScrollView>
       </KeyboardAvoidingView>
