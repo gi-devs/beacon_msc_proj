@@ -40,28 +40,46 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
     longitude: number;
   } | null>(null);
 
-  const pushLocation = async () => {
-    const isPermitted = await getLocationStatus();
-    setIsLocationEnabled(isPermitted);
-    await pushLocationIfPermitted(isPermitted);
+  const pushLocation = async (isPermitted?: boolean) => {
+    const allowed = isPermitted ?? (await checkPermissions()).allowed;
+    if (allowed) {
+      await pushLocationIfPermitted(allowed);
+    }
+  };
+
+  const checkPermissions = async (): Promise<{
+    allowed: boolean;
+    wasAllowed: boolean;
+  }> => {
+    const wasAllowed = isLocationEnabled;
+    const allowed = await getLocationStatus();
+    setIsLocationEnabled(allowed);
+    return { allowed, wasAllowed };
+  };
+
+  const checkAndPush = async () => {
+    if (isAuthenticated && !authIsLoading) {
+      try {
+        await pushLocation();
+      } catch (err) {
+        console.error('Error pushing location:', err);
+      }
+    }
   };
 
   useEffect(() => {
-    // auth check and push location if idle time exceeded
-    const checkAndPush = async () => {
-      if (isAuthenticated && !authIsLoading) {
-        try {
-          await pushLocation();
-        } catch (err) {
-          console.error('Error pushing location:', err);
-        }
-      }
-    };
-
     void checkAndPush(); // call async function immediately on mount
 
     const subscription = AppState.addEventListener('change', (state) => {
       if (state === 'active') {
+        void (async () => {
+          const { allowed, wasAllowed } = await checkPermissions();
+
+          if (allowed && !wasAllowed) {
+            await pushLocation(true);
+          }
+        })();
+        // auth check and push location if idle time exceeded
         void runIfIdleTimeExceeded(() => checkAndPush());
       }
     });
@@ -73,7 +91,12 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
 
   return (
     <LocationContext.Provider
-      value={{ location, setLocation, isLocationEnabled, setIsLocationEnabled }}
+      value={{
+        location,
+        setLocation,
+        isLocationEnabled,
+        setIsLocationEnabled,
+      }}
     >
       {children}
     </LocationContext.Provider>

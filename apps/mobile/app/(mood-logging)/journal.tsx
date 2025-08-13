@@ -24,7 +24,7 @@ import { parseToSeverError } from '@/utils/parseToSeverError';
 const Journal = () => {
   const { setHasScrolled } = useScroll();
   const router = useRouter();
-  const { mode } = useLocalSearchParams();
+  const { mode, noLocationServices } = useLocalSearchParams();
   const {
     createMoodLogData,
     setShouldBroadcast,
@@ -50,7 +50,7 @@ const Journal = () => {
 
       let wantsBroadcast = false;
 
-      if (shouldPromptBroadcast) {
+      if (shouldPromptBroadcast && !noLocationServices) {
         wantsBroadcast = await showBroadcastPrompt();
         setShouldBroadcast(wantsBroadcast);
       }

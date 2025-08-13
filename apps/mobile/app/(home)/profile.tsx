@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Linking, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '@/context/authContext';
 import UIButton from '@/components/ui/UIButton';
 import {
@@ -75,6 +75,21 @@ const Profile = () => {
         buttonClassName="mt-4"
       >
         Get location
+      </UIButton>
+      <UIButton
+        variant="ghost"
+        onPress={async () => {
+          if (Platform.OS === 'ios') {
+            return await Linking.openURL('app-settings:');
+          }
+
+          if (Platform.OS === 'android') {
+            return await Linking.openSettings();
+          }
+        }}
+        buttonClassName="mt-4"
+      >
+        App settings
       </UIButton>
     </View>
   );

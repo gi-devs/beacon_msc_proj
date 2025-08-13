@@ -14,9 +14,11 @@ const AnimatedCircle = Animated.createAnimatedComponent(SVGCircle);
 
 const RippleCircles = ({
   callback,
+  disabled = false,
   onAnimateEnd,
 }: {
   callback?: () => void | Promise<void>;
+  disabled?: boolean;
   onAnimateEnd?: () => void | Promise<void>;
 }) => {
   const vWidth = 981;
@@ -153,7 +155,8 @@ const RippleCircles = ({
             stopRippleLoop();
           }
         }}
-        className="absolute bottom-20 h-[330px] w-[330px] rounded-full items-center justify-center"
+        className="absolute bottom-20 h-[330px] w-[330px] rounded-full items-center justify-center disabled:opacity-50"
+        disabled={disabled}
       >
         <Text className="text-white font-semibold text-4xl uppercase w-full text-center">
           Send a Beacon

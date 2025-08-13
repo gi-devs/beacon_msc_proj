@@ -4,21 +4,17 @@ import {
   encodeGeohash,
 } from '@beacon/utils';
 import { AsyncItemKey, getAsyncItem, saveAsyncItem } from '@/lib/aysncStorage';
-import {
-  createLocationSettingRequest,
-  updateLocationSettingRequest,
-} from '@/api/locationSettingApi';
+import { updateLocationSettingRequest } from '@/api/locationSettingApi';
 import { parseToSeverError } from '@/utils/parseToSeverError';
 
 export async function requestLocationPermissions() {
   const { status } = await Location.requestForegroundPermissionsAsync();
-  if (status !== 'granted') {
-    console.warn('Location permission not granted');
-    return false;
+  if (status === 'granted') {
+    console.warn('Location permission granted');
+    await pushLocationIfPermitted(true);
   }
 
-  await pushLocationIfPermitted(true);
-  return true;
+  return status;
 }
 
 export async function pushLocationIfPermitted(granted: boolean) {
@@ -44,7 +40,6 @@ export async function pushLocationIfPermitted(granted: boolean) {
 
     // check if the stored location is the same as the new one
     if (storedLocation == geohashedLocation) {
-      console.log('User location has not changed, no update needed');
       return false;
     }
 
