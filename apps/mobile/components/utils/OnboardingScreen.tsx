@@ -7,6 +7,7 @@ import {
 } from '@/lib/notification';
 import UIButton from '@/components/ui/UIButton';
 import { AsyncItemKey, saveAsyncItem } from '@/lib/aysncStorage';
+import { requestLocationPermissions } from '@/lib/location';
 
 const { width } = Dimensions.get('window');
 
@@ -42,6 +43,7 @@ export default function OnboardingScreen({
   const complete = async () => {
     await requestNotificationPermissions();
     await toggleDailyCheckInNotification();
+    await requestLocationPermissions();
     await saveAsyncItem(AsyncItemKey.OnboardingComplete, 'true');
     onFinish(); // to show main app
   };

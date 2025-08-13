@@ -10,6 +10,7 @@ import {
   journalEntryRoutes,
   dailyLogRoutes,
   locationSettingRoutes,
+  notificationSettingRoutes,
 } from '@/routes';
 
 const app = express();
@@ -33,6 +34,7 @@ app.use('/mood-log', moodLogRoutes);
 app.use('/journal-entry', journalEntryRoutes);
 app.use('/daily-log', dailyLogRoutes);
 app.use('/location-setting', locationSettingRoutes);
+app.use('/notification-setting', notificationSettingRoutes);
 
 // Not found handler
 app.use(notFound);

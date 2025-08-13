@@ -16,3 +16,6 @@ export * from './dailyLog/createDailyLogSchema';
 
 // location setting schemas
 export * from './locationSetting/createLocationSetting';
+
+// notification setting schemas
+export * from './notificationSetting/createNotificationSetting';

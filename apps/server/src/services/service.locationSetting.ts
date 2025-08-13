@@ -59,7 +59,7 @@ async function createUserLocationSetting(
     },
   });
 }
-// make
+
 async function updateUserLocationSetting(
   userId: string,
   data: Partial<CreateLocationSettingData>,
@@ -89,10 +89,9 @@ async function updateUserLocationSetting(
     });
   }
 
-  const updatedLocationSetting = await updateLocationSettingByUserId(userId, {
+  return await updateLocationSettingByUserId(userId, {
     ...parsedData,
   });
-  return updatedLocationSetting;
 }
 
 async function deleteUserLocationSetting(userId: string) {

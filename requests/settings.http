@@ -1,0 +1,21 @@
+### Settings API Requests
+### Post location setting
+POST {{BASE_URL}}/location-setting
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "geohash": "something",
+  "beaconRadius": 1000
+}
+
+### Post notification setting
+POST {{BASE_URL}}/notification-setting
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "push": true,
+  "maxBeaconPushes": 3,
+  "beaconMinPushInterval": 7200
+}
