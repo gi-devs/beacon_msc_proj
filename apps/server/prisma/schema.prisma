@@ -29,7 +29,34 @@ model User {
   MoodLogs       MoodLog[]      @relation("UserMoodLog")
   JournalEntries JournalEntry[] @relation("UserJournalEntry")
 
-  dailyCheckIn DailyCheckIn[]
+  dailyCheckIn        DailyCheckIn[]
+  NotificationSetting NotificationSetting? @relation("UserNotificationSetting")
+  LocationSetting     LocationSetting?     @relation("UserLocationSetting")
+}
+
+model NotificationSetting {
+  userId                String   @id
+  push                  Boolean  @default(true)
+  maxBeaconPushes       Int      @default(3)
+  beaconMinPushInterval Int      @default(3600) // in seconds (1 hour)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  user User @relation("UserNotificationSetting", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model LocationSetting {
+  userId       String   @id
+  geohash      String?
+  beaconRadius Int      @default(500) // in meters
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation("UserLocationSetting", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Session {

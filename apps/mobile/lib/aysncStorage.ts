@@ -6,6 +6,7 @@ export enum AsyncItemKey {
   AuthIdleCheck = 'auth-idle-check',
   NotificationIdleCheck = 'notification-idle-check',
   LocationIdleCheck = 'location-idle-check',
+  LastLocation = 'last-location',
 }
 
 const prefix = 'beacon-';

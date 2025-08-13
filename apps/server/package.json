@@ -29,7 +29,8 @@
     "jest-mock-extended": "^4.0.0",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.1",
-    "@beacon/validation": "*"
+    "@beacon/validation": "*",
+    "@beacon/utils": "*"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",

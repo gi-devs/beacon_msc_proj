@@ -9,6 +9,7 @@ import {
   pushTokenRoutes,
   journalEntryRoutes,
   dailyLogRoutes,
+  locationSettingRoutes,
 } from '@/routes';
 
 const app = express();
@@ -31,6 +32,7 @@ app.use('/push-token', pushTokenRoutes);
 app.use('/mood-log', moodLogRoutes);
 app.use('/journal-entry', journalEntryRoutes);
 app.use('/daily-log', dailyLogRoutes);
+app.use('/location-setting', locationSettingRoutes);
 
 // Not found handler
 app.use(notFound);

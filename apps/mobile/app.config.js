@@ -32,7 +32,17 @@ export default {
       orientation: 'portrait',
       softwareKeyboardLayoutMode: 'pan',
     },
-    plugins: ['expo-router'],
+    plugins: [
+      'expo-router',
+      [
+        'expo-location',
+        {
+          locationAlwaysAndWhenInUsePermission:
+            'Allow Beacon to use your location.',
+          isAndroidForegroundServiceEnabled: true,
+        },
+      ],
+    ],
     experiments: {
       typedRoutes: true,
     },

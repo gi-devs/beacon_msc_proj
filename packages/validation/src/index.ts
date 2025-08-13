@@ -13,3 +13,6 @@ export * from './journalEntry/createJournalEntrySchema';
 
 // daily log schemas
 export * from './dailyLog/createDailyLogSchema';
+
+// location setting schemas
+export * from './locationSetting/createLocationSetting';

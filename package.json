@@ -28,10 +28,12 @@
   "dependencies": {
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.0",
+    "ngeohash": "^0.6.3",
     "zod": "^4.0.10"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
+    "@types/ngeohash": "^0.6.8",
     "concurrently": "^9.2.0",
     "eslint": "^9.31.0",
     "jest": "^30.0.4",

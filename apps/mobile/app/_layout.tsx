@@ -7,6 +7,7 @@ import ToastManager from 'toastify-react-native';
 import { UIProvider } from '@/context/uiContext';
 import { NotificationProvider } from '@/context/notificationContext';
 import { useEffect } from 'react';
+import { LocationProvider } from '@/context/locationContext';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -15,11 +16,13 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <AuthProvider>
         <NotificationProvider>
-          <UIProvider>
-            <StatusBar backgroundColor="transparent" translucent={true} />
-            <ToastManager />
-            <RootNavigator />
-          </UIProvider>
+          <LocationProvider>
+            <UIProvider>
+              <StatusBar backgroundColor="transparent" translucent={true} />
+              <ToastManager />
+              <RootNavigator />
+            </UIProvider>
+          </LocationProvider>
         </NotificationProvider>
       </AuthProvider>
     </SafeAreaProvider>

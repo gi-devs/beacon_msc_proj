@@ -1,0 +1,8 @@
+POST {{BASE_URL}}/location-setting
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "geohash": "something",
+  "beaconRadius": 1000
+}

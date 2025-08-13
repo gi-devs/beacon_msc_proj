@@ -14,5 +14,9 @@ export function handleZodError(e: unknown): never {
     message = `${fieldName} must be a ${issueToShow.expected}`;
   }
 
+  if (!message) {
+    message = 'Bad Request, invalid input data.';
+  }
+
   throw new CustomError(message, 400);
 }
