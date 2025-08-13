@@ -64,7 +64,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
     }
 
     const subscription = AppState.addEventListener('change', (state) => {
-      if (state === 'active' && !authIsLoading) {
+      if (state === 'active' && !authIsLoading && isAuthenticated) {
         void fetchTokenIfNeeded();
       }
     });
