@@ -1,10 +1,10 @@
 import React, {
   createContext,
+  ReactNode,
   useContext,
-  useState,
   useEffect,
   useRef,
-  ReactNode,
+  useState,
 } from 'react';
 import * as Notifs from 'expo-notifications';
 import { Notification, setNotificationHandler } from 'expo-notifications';
@@ -12,6 +12,8 @@ import { fetchAndSavePushToken } from '@/lib/notification';
 import { AppState } from 'react-native';
 import { useAuth } from '@/context/authContext';
 import { LinkProps, useRouter } from 'expo-router';
+import { useIdleTime } from '@/hooks/useIdleTime';
+import { AsyncItemKey } from '@/lib/aysncStorage';
 
 type NotificationData = {
   route?: LinkProps['href'];
@@ -44,6 +46,10 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
 }) => {
   const [notification, setNotification] = useState<Notification | null>(null);
   const [hasNotificationsEnabled, setHasNotificationsEnabled] = useState(false);
+  const { runIfIdleTimeExceeded } = useIdleTime(
+    15,
+    AsyncItemKey.NotificationIdleCheck,
+  );
   const { isAuthenticated, isLoading: authIsLoading } = useAuth();
   const router = useRouter();
 
@@ -59,13 +65,18 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   };
 
   useEffect(() => {
-    if (isAuthenticated) {
-      void fetchTokenIfNeeded();
-    }
+    // auth check and fetch token if needed
+    const checkAndFetchToken = async () => {
+      if (isAuthenticated && !authIsLoading) {
+        await fetchTokenIfNeeded();
+      }
+    };
+
+    void checkAndFetchToken();
 
     const subscription = AppState.addEventListener('change', (state) => {
-      if (state === 'active' && !authIsLoading && isAuthenticated) {
-        void fetchTokenIfNeeded();
+      if (state === 'active') {
+        void runIfIdleTimeExceeded(() => checkAndFetchToken());
       }
     });
 

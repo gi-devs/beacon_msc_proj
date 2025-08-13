@@ -3,6 +3,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export enum AsyncItemKey {
   OnboardingComplete = 'onboarding-complete',
   DailyCheckInNotificationId = 'daily-check-in-notification-id',
+  AuthIdleCheck = 'auth-idle-check',
+  NotificationIdleCheck = 'notification-idle-check',
+  LocationIdleCheck = 'location-idle-check',
 }
 
 const prefix = 'beacon-';

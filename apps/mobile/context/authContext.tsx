@@ -18,6 +18,8 @@ import { AppState } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Toast } from 'toastify-react-native';
 import { deleteSecureItem, SecureItemKey } from '@/lib/secureStore';
+import { useIdleTime } from '@/hooks/useIdleTime';
+import { AsyncItemKey } from '@/lib/aysncStorage';
 
 type AuthContextType = {
   user: UserPayload | null;
@@ -35,14 +37,13 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const lastCheckRef = useRef(Date.now());
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { runIfIdleTimeExceeded } = useIdleTime(15, AsyncItemKey.AuthIdleCheck); // 15 minutes idle time
   const router = useRouter();
   const isAuthenticated = !!user;
 
   // Load user when provider mounts
-  // TODO: no need for toast should load user silently and redirect to home if user is authenticated
   useEffect(() => {
     const initialiseAuth = async () => {
       try {
@@ -72,28 +73,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
     };
 
-    initialiseAuth();
+    void initialiseAuth();
 
     const subscription = AppState.addEventListener('change', async (state) => {
       if (state === 'active') {
-        console.log('App is active, checking authentication status...');
-        const now = Date.now();
-        const idleTime = now - lastCheckRef.current;
-
-        let shouldReinitialise = false;
-        if (idleTime > 15 * 60 * 1000) {
-          console.log(
-            'More than 15 minutes since last check, reinitialising auth...',
-          );
-          await initialiseAuth();
-          shouldReinitialise = true;
-        }
-
-        shouldReinitialise
-          ? console.log('Reinitialised auth after idle time')
-          : console.log('No reinitialisation needed');
-
-        lastCheckRef.current = now;
+        void runIfIdleTimeExceeded(() => initialiseAuth());
       }
     });
 
