@@ -35,7 +35,7 @@ model User {
 }
 
 model NotificationSetting {
-  userId                String   @id
+  userId                String   @id @unique
   push                  Boolean  @default(true)
   maxBeaconPushes       Int      @default(3)
   beaconMinPushInterval Int      @default(7200) // in seconds (1 hour)
@@ -48,7 +48,7 @@ model NotificationSetting {
 }
 
 model LocationSetting {
-  userId       String   @id
+  userId       String   @id @unique
   geohash      String?
   beaconRadius Int      @default(500) // in meters - determines how far you can be to receive another users beacon push
   createdAt    DateTime @default(now())

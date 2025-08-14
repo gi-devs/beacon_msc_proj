@@ -18,6 +18,7 @@ import {
   getAsyncItem,
   saveAsyncItem,
 } from '@/lib/aysncStorage';
+import { updateNotificationSettingRequest } from '@/api/notificationSettingApi';
 
 export async function requestNotificationPermissions(): Promise<boolean> {
   if (Platform.OS === 'android') {
@@ -75,6 +76,16 @@ export async function requestNotificationPermissions(): Promise<boolean> {
     return false;
   }
 
+  try {
+    console.log(
+      '[notification.ts] Updating server push notification setting to true',
+    );
+    await updateServerPushNotificationSetting(true);
+  } catch (error) {
+    console.error('Failed to update notification setting:', error);
+    return false;
+  }
+
   return await fetchAndSavePushToken();
 }
 
@@ -122,21 +133,41 @@ export async function fetchAndSavePushToken(): Promise<boolean> {
   }
 }
 
-const listOfScheduledNotifications = [
-  {
-    title: 'Hey there! How you feeling today?',
-    body: 'Logging your mood helps you understand yourself better.',
-    data: {
-      route: '/(mood-logging)?mode=daily-log',
-    },
-    trigger: {
-      type: 'daily',
-      hour: 22,
-      minute: 10,
-      repeats: true,
-    },
-  },
-];
+export async function checkLocalStorageAndUpdatePushSetting() {
+  const hasPushNotificationsEnabled = await getAsyncItem(
+    AsyncItemKey.HasPushNotificationsEnabled,
+  );
+  const granted = await getNotificationPermissions();
+
+  if (hasPushNotificationsEnabled === null) {
+    await updateServerPushNotificationSetting(granted);
+    console.log('[notification.ts] First-time push setting sync:', granted);
+    return true;
+  }
+
+  const storedEnabled = hasPushNotificationsEnabled === 'true';
+
+  if (!granted && storedEnabled) {
+    await updateServerPushNotificationSetting(false);
+    console.log(
+      '[notification.ts] Push notifications disabled by user, updating server setting',
+    );
+    return true;
+  }
+
+  if (granted && !storedEnabled) {
+    await updateServerPushNotificationSetting(true);
+    console.log(
+      '[notification.ts] Push notifications enabled by user, updating server setting',
+    );
+    return true;
+  }
+
+  console.log(
+    '[notification.ts] No changes needed for push notification setting',
+  );
+  return false;
+}
 
 export async function toggleDailyCheckInNotification() {
   const { status: existingStatus } = await Notifications.getPermissionsAsync();
@@ -205,4 +236,30 @@ async function getScheduledKeys() {
   return allScheduled
     .map((n) => n.content?.data?.key)
     .filter((key): key is string => typeof key === 'string');
+}
+
+// ---------------------------
+//    Notification helpers
+// ---------------------------
+
+export async function getNotificationPermissions() {
+  const { granted } = await getPermissionsAsync();
+  return granted;
+}
+
+export async function updateServerPushNotificationSetting(
+  enabled: boolean,
+): Promise<void> {
+  try {
+    console.log('[notification.ts] pushing...');
+    await updateNotificationSettingRequest({
+      push: enabled,
+    });
+    await saveAsyncItem(
+      AsyncItemKey.HasPushNotificationsEnabled,
+      String(enabled),
+    );
+  } catch (error) {
+    console.error('Failed to update notification setting:', error);
+  }
 }
