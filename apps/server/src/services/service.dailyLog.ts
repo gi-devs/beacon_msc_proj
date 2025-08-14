@@ -9,6 +9,7 @@ import { CreateDailyLogData, createDailyLogSchema } from '@beacon/validation';
 import { normaliseDate } from '@/utils/dates';
 import { CustomError } from '@/utils/custom-error';
 import { handleZodError } from '@/utils/handle-zod-error';
+import { createBeacon } from '@/models/model.beacon';
 
 async function create(data: CreateDailyLogData, userId: string) {
   let parsedData;
@@ -100,6 +101,29 @@ async function create(data: CreateDailyLogData, userId: string) {
       },
       tx,
     );
+
+    if (dailyLog.broadcasted) {
+      const expiresAt = new Date();
+      expiresAt.setHours(expiresAt.getHours() + 4);
+
+      await createBeacon(
+        {
+          expiresAt,
+          user: {
+            connect: { id: userId },
+          },
+          dailyCheckIn: {
+            connect: {
+              userId_date: {
+                userId,
+                date: dailyLog.date, // must be EXACT same value from createDailyCheckIn
+              },
+            },
+          },
+        },
+        tx,
+      );
+    }
 
     if (journal) {
       return { mood, journal, dailyLog };

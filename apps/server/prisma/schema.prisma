@@ -32,6 +32,7 @@ model User {
   dailyCheckIn        DailyCheckIn[]
   NotificationSetting NotificationSetting? @relation("UserNotificationSetting")
   LocationSetting     LocationSetting?     @relation("UserLocationSetting")
+  beacons             Beacon[]
 }
 
 model NotificationSetting {
@@ -130,5 +131,23 @@ model DailyCheckIn {
   MoodLog   MoodLog? @relation("DailyCheckInMoodLog", fields: [moodLogId], references: [id], onDelete: Cascade)
   User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  Beacon Beacon?
+
   @@id([userId, date])
+}
+
+model Beacon {
+  id               Int      @id @default(autoincrement())
+  userId           String
+  dailyCheckInDate DateTime
+  expiresAt        DateTime
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  active           Boolean  @default(true)
+
+  // Relationships
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dailyCheckIn DailyCheckIn @relation(fields: [userId, dailyCheckInDate], references: [userId, date], onDelete: Cascade)
+
+  @@unique([userId, dailyCheckInDate])
 }

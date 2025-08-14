@@ -1,5 +1,10 @@
 import { decodeGeohash } from './geohash';
 
+// This function was created with the help of AI (ChatGPT) and is based on the Haversine formula.
+// Prompt used: 'write function which check if two geohash are within a certain distance in meters'
+// Why was it used: My mathematics skills are not good enough to write this function,
+// after attempts to write it myself, I decided to use AI to help me with this task.
+
 const EARTH_RADIUS = 6371000; // Earth radius in meters
 const toRadius = (deg: number) => (deg * Math.PI) / 180;
 
