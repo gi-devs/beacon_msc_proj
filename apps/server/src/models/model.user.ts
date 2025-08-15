@@ -56,3 +56,25 @@ export async function createUser(
     throw new CustomError('Error creating user', 500);
   }
 }
+
+// ! ---------------
+// ! For Testing
+// ! ---------------
+export async function getAllUsersAndLocationSettings(tx: DbClient = prisma) {
+  try {
+    return await prisma.user.findMany({
+      where: {
+        LocationSetting: {
+          geohash: { not: null },
+        },
+      },
+      include: {
+        LocationSetting: {
+          select: { geohash: true, beaconRadius: true },
+        },
+      },
+    });
+  } catch (error) {
+    throw new CustomError('Error fetching users and location settings', 500);
+  }
+}

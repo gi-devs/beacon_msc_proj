@@ -20,14 +20,16 @@ export async function requestLocationPermissions() {
 export async function pushLocationIfPermitted(granted: boolean) {
   // use check to ensure it's not called without permission
   if (!granted) {
-    console.warn('Location permission not granted, cannot push location');
+    console.warn(
+      '[location.ts] Location permission not granted, cannot push location',
+    );
     return false;
   }
   try {
     const location = await getLocation();
 
     if (!location || !location.coords.latitude || !location.coords.longitude) {
-      console.warn('No location data available');
+      console.warn('[location.ts] No location data available');
       return false;
     }
 
@@ -40,6 +42,7 @@ export async function pushLocationIfPermitted(granted: boolean) {
 
     // check if the stored location is the same as the new one
     if (storedLocation == geohashedLocation) {
+      console.log('[location.ts] Location has not changed, no update needed');
       return false;
     }
 
@@ -48,10 +51,12 @@ export async function pushLocationIfPermitted(granted: boolean) {
       const withinDistance = checkIfGeohashesAreWithinDistance(
         storedLocation,
         geohashedLocation,
-        150,
+        50,
       );
       if (withinDistance) {
-        console.log('User is within 150m of last location, no update needed');
+        console.log(
+          '[location.ts] User is within 50m of last location, no update needed',
+        );
         return false;
       }
     }
@@ -62,6 +67,7 @@ export async function pushLocationIfPermitted(granted: boolean) {
     });
     // If update works, store the new location locally
     await saveAsyncItem(AsyncItemKey.LastLocation, geohashedLocation);
+    console.log('[location.ts] Location updated successfully');
   } catch (e) {
     const error = parseToSeverError(e);
     console.log('Error updating location setting: ', error.message);

@@ -17,6 +17,7 @@ const Profile = () => {
   return (
     <View className="mt-safe">
       <Text>AUTHED IN</Text>
+      {/*Should clear a storage items for this user if they log out LIKE IN DEV MODE*/}
       <TouchableOpacity onPress={logout}>
         <Text>Sign Out</Text>
       </TouchableOpacity>
@@ -48,7 +49,10 @@ const Profile = () => {
       <UIButton
         variant="destructive"
         size="sm"
-        onPress={() => resetApp()}
+        onPress={() => {
+          void logout();
+          void resetApp();
+        }}
         buttonClassName="mt-4"
       >
         Reset App

@@ -9,7 +9,15 @@ import {
 } from '@beacon/validation';
 import { handleZodError } from '@/utils/handle-zod-error';
 import { CustomError } from '@/utils/custom-error';
-import { getUserById } from '@/models/model.user';
+import {
+  getAllUsersAndLocationSettings,
+  getUserById,
+} from '@/models/model.user';
+import {
+  decodeGeohash,
+  encodeGeohash,
+  getDistanceFromGeohashes,
+} from '@beacon/utils';
 
 async function fetchUserLocationSetting(userId: string) {
   const locationSetting = await getLocationSettingByUserId(userId);
@@ -100,9 +108,59 @@ async function deleteUserLocationSetting(userId: string) {
   return;
 }
 
+// ! ---------------
+// ! For Testing
+// ! ---------------
+async function fetchIntersectingUsers() {
+  const data = await getAllUsersAndLocationSettings();
+
+  const users = data
+    .filter((u) => u.LocationSetting?.geohash)
+    .map((u) => {
+      const { latitude, longitude } = decodeGeohash(
+        u.LocationSetting!.geohash!,
+      );
+      return {
+        id: u.id,
+        email: u.email,
+        username: u.username,
+        lat: latitude,
+        lon: longitude,
+        geohash: u.LocationSetting!.geohash!,
+        radius: u.LocationSetting!.beaconRadius, // meters
+      };
+    });
+
+  const mutualMap: Record<string, string[]> = {};
+
+  for (let i = 0; i < users.length; i++) {
+    const u1 = users[i];
+    mutualMap[u1.username] = [];
+
+    for (let j = 0; j < users.length; j++) {
+      if (i === j) continue;
+      const u2 = users[j];
+
+      const distance = getDistanceFromGeohashes(u1.geohash, u2.geohash);
+
+      const u1ContainsU2 = distance <= u1.radius;
+      const u2ContainsU1 = distance <= u2.radius;
+
+      if (u1ContainsU2 && u2ContainsU1) {
+        mutualMap[u1.username].push(
+          `${u2.username} - (${distance.toFixed(2)}m)`,
+        );
+      }
+    }
+  }
+
+  return mutualMap;
+}
+
 export const locationSettingService = {
   fetchUserLocationSetting,
   createUserLocationSetting,
   updateUserLocationSetting,
   deleteUserLocationSetting,
+  fetchIntersectingUsers,
 };

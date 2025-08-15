@@ -54,8 +54,26 @@ async function update(
   }
 }
 
+// ! ---------------
+// ! For Testing
+// ! ---------------
+async function getIntersectingUsers(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    const usersAndLocations =
+      await locationSettingService.fetchIntersectingUsers();
+    res.status(200).json(usersAndLocations);
+  } catch (e) {
+    next(e);
+  }
+}
+
 export const locationSettingController = {
   create,
   getByUserId,
   update,
+  getIntersectingUsers,
 };

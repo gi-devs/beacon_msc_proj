@@ -8,6 +8,9 @@ Authorization: Bearer {{access_token}}
   "geohash": "something",
   "beaconRadius": 1000
 }
+### Get users and their locations setttings
+GET {{BASE_URL}}/location-setting/users
+Authorization: Bearer {{access_token}}
 
 ### Post notification setting
 POST {{BASE_URL}}/notification-setting

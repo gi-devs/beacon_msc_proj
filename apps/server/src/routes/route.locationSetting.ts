@@ -8,4 +8,13 @@ router.get('/', verifyToken, locationSettingController.getByUserId);
 router.post('/', verifyToken, locationSettingController.create);
 router.patch('/', verifyToken, locationSettingController.update);
 
+// ! ---------------
+// ! For Testing
+// ! ---------------
+router.get(
+  '/users',
+  verifyToken,
+  locationSettingController.getIntersectingUsers,
+);
+
 export default router;
