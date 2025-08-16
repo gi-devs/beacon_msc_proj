@@ -14,13 +14,16 @@
     "migrate:deploy": "dotenv -e ../../.env.development -- npx prisma migrate deploy",
     "generate": "dotenv -e ../../.env.development -- npx prisma generate",
     "push": "dotenv -e ../../.env.development -- npx prisma db push",
-    "prisma:studio": "dotenv -e ../../.env.development -- npx prisma studio"
+    "prisma:studio": "dotenv -e ../../.env.development -- npx prisma studio",
+    "seed": "ts-node src/scripts/seed.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@beacon/utils": "*",
+    "@beacon/validation": "*",
     "@prisma/client": "^6.12.0",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
@@ -29,8 +32,7 @@
     "jest-mock-extended": "^4.0.0",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.1",
-    "@beacon/validation": "*",
-    "@beacon/utils": "*"
+    "node-cron": "^4.2.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",

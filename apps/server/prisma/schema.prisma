@@ -33,13 +33,14 @@ model User {
   NotificationSetting NotificationSetting? @relation("UserNotificationSetting")
   LocationSetting     LocationSetting?     @relation("UserLocationSetting")
   beacons             Beacon[]
+  beaconNotification  BeaconNotification[]
 }
 
 model NotificationSetting {
   userId                String   @id @unique
   push                  Boolean  @default(true)
   maxBeaconPushes       Int      @default(3)
-  beaconMinPushInterval Int      @default(7200) // in seconds (1 hour)
+  minBeaconPushInterval Int      @default(7200) // in seconds (1 hour)
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 
@@ -146,8 +147,23 @@ model Beacon {
   active           Boolean  @default(true)
 
   // Relationships
-  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  dailyCheckIn DailyCheckIn @relation(fields: [userId, dailyCheckInDate], references: [userId, date], onDelete: Cascade)
+  user               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dailyCheckIn       DailyCheckIn         @relation(fields: [userId, dailyCheckInDate], references: [userId, date], onDelete: Cascade)
+  beaconNotification BeaconNotification[]
 
   @@unique([userId, dailyCheckInDate])
+}
+
+model BeaconNotification {
+  id         Int       @id @default(autoincrement())
+  userId     String
+  beaconId   Int
+  createdAt  DateTime  @default(now())
+  notifiedAt DateTime?
+
+  // Relationships
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  beacon Beacon @relation(fields: [beaconId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, beaconId])
 }

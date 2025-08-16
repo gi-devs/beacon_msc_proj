@@ -20,5 +20,5 @@ Authorization: Bearer {{access_token}}
 {
   "push": true,
   "maxBeaconPushes": 3,
-  "beaconMinPushInterval": 7200
+  "minBeaconPushInterval": 7200
 }

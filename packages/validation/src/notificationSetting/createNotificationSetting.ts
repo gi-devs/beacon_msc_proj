@@ -8,7 +8,7 @@ export const createNotificationSettingSchema = z.object({
     .min(1, { message: 'Max beacon pushes must be at least 1' })
     .max(10, { message: 'Max beacon pushes cannot be more than 10' })
     .default(3),
-  beaconMinPushInterval: z
+  minBeaconPushInterval: z
     .number()
     .int()
     .min(600, {

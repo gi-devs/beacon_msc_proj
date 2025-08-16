@@ -121,7 +121,7 @@ async function main() {
           userId: u.id,
           push: true,
           maxBeaconPushes: 3,
-          beaconMinPushInterval: 7200, // 2 hours
+          minBeaconPushInterval: 7200, // 2 hours
         },
       }),
     ),
