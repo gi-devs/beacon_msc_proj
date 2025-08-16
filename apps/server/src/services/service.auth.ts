@@ -189,7 +189,7 @@ async function getProfile(userId: string) {
   return {
     id: userFound.id,
     email: userFound.email,
-    displayName: userFound.username,
+    username: userFound.username,
   };
 }
 

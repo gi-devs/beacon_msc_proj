@@ -11,12 +11,12 @@ import { getLocation, requestLocationPermissions } from '@/lib/location';
 import { useLocation } from '@/context/locationContext';
 
 const Profile = () => {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const { hasNotificationsEnabled } = useNotification();
   const { isLocationEnabled } = useLocation();
   return (
     <View className="mt-safe">
-      <Text>AUTHED IN</Text>
+      <Text>You are: {user?.username || "can't get username"}</Text>
       {/*Should clear a storage items for this user if they log out LIKE IN DEV MODE*/}
       <TouchableOpacity onPress={logout}>
         <Text>Sign Out</Text>
