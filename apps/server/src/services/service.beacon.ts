@@ -5,11 +5,25 @@ import { getBeaconNotificationById } from '@/models/model.beaconNotification';
 async function fetchBeaconDetailsForAffirmations(
   id: number,
   beaconNotifId: number,
+  receiverId: string,
 ): Promise<BeaconReplyDetailsDTO> {
   const beacon = await getBeaconById(id);
 
   if (!beacon) {
     throw new CustomError(`Beacon with ID ${id} not found`, 404);
+  }
+
+  const {
+    dailyCheckIn, // always exists if beacon exists
+    user: beaconOwner, // always exists if beacon exists
+    beaconNotification: beaconNotifs,
+  } = beacon;
+
+  if (!beaconNotifs.map((bn) => bn.userId).includes(receiverId)) {
+    throw new CustomError(
+      `You do not have permission to access this beacon notification`,
+      403,
+    );
   }
 
   const beaconNotif = await getBeaconNotificationById(beaconNotifId);
@@ -19,23 +33,6 @@ async function fetchBeaconDetailsForAffirmations(
       `Beacon notification with ID ${beaconNotifId} not found`,
       404,
     );
-  }
-
-  const {
-    dailyCheckIn,
-    user: beaconOwner,
-    beaconNotification: beaconNotifs,
-  } = beacon;
-
-  if (!dailyCheckIn) {
-    throw new CustomError(
-      `No daily check-in found for beacon with ID ${id}`,
-      404,
-    );
-  }
-
-  if (!beaconOwner) {
-    throw new CustomError(`Beacon owner not found for beacon ID ${id}`, 404);
   }
 
   // check if the beacon notification exists in the beacon's notifications

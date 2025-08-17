@@ -15,6 +15,7 @@ export async function getBeaconById(id: number, tx: DbClient = prisma) {
         beaconNotification: {
           select: {
             id: true,
+            userId: true,
           },
         },
         dailyCheckIn: {

@@ -21,6 +21,7 @@ type SafeBeaconNotification = Prisma.BeaconNotificationGetPayload<{
       select: {
         id: true;
         active: true;
+        expiresAt: true;
       };
     };
   };
@@ -62,8 +63,13 @@ export async function scheduleNotificationsForBeacons() {
               createdAt: {
                 gte: new Date(now.getFullYear(), now.getMonth(), now.getDate()),
               },
-              status: {
-                not: BeaconNotificationStatus.CANCELED,
+              NOT: {
+                status: {
+                  in: [
+                    BeaconNotificationStatus.CANCELLED,
+                    BeaconNotificationStatus.DECLINED,
+                  ],
+                },
               },
             },
           },
@@ -164,7 +170,9 @@ export async function scheduleNotificationsForBeacons() {
     const countWithoutCanceled =
       user._count.beaconNotification -
       user.beaconNotification.filter(
-        (n) => n.status === BeaconNotificationStatus.CANCELED,
+        (n) =>
+          n.status === BeaconNotificationStatus.CANCELLED ||
+          n.status === BeaconNotificationStatus.DECLINED,
       ).length;
 
     if (countWithoutCanceled >= userMaxBeaconPushes) {
@@ -558,8 +566,13 @@ export async function sendNotificationsForBeacons() {
         notifiedAt: {
           equals: null, // only get notifications that have not been notified yet
         },
-        status: {
-          not: BeaconNotificationStatus.CANCELED, // only get notifications that are not canceled
+        NOT: {
+          status: {
+            in: [
+              BeaconNotificationStatus.CANCELLED,
+              BeaconNotificationStatus.DECLINED,
+            ],
+          }, // only get notifications that are not canceled or declined}
         },
       },
       include: {
@@ -573,6 +586,7 @@ export async function sendNotificationsForBeacons() {
           select: {
             id: true,
             active: true,
+            expiresAt: true, // include expiresAt to use in notification data
           },
         },
       },
@@ -632,7 +646,7 @@ export async function sendNotificationsForBeacons() {
       },
     },
     data: {
-      status: BeaconNotificationStatus.CANCELED,
+      status: BeaconNotificationStatus.CANCELLED,
     },
   });
 
@@ -656,11 +670,13 @@ export async function sendNotificationsForBeacons() {
       sound: 'default',
       body: `Someone just put up a beacon near you, why don't you send them something nice!`,
       data: {
-        withSome: 'data',
+        dataType: 'BEACON_NOTIFICATION',
         beaconId: beacon.id,
         notificationId: notification.id,
-        route: '/(beacon)/' + beacon.id, // TODO: make this page in mobile app
-      },
+        receiverUserId: user.id,
+        beaconExpiresAt: beacon.expiresAt.toISOString(),
+        route: '/(beacon)/reply/' + beacon.id, // TODO: make this page in mobile app
+      } as BeaconPushNotificationData,
     });
   }
 
@@ -675,15 +691,16 @@ export async function sendNotificationsForBeacons() {
           const message = chunk[i];
           if (
             message.data &&
-            'userId' in message.data &&
-            'beaconId' in message.data
+            'beaconId' in message.data &&
+            'receiverUserId' in message.data
           ) {
-            const userId = message.data.userId as string;
+            const receiverUserId = message.data.receiverUserId as string;
             const beaconId = message.data.beaconId as number;
 
             const notification = unNotifiedToSend.find(
-              (n) => n.user.id === userId && n.beacon.id === beaconId,
+              (n) => n.user.id === receiverUserId && n.beacon.id === beaconId,
             );
+
             if (notification) {
               successfulIds.push(notification.id);
             }

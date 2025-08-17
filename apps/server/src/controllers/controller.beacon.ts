@@ -9,7 +9,11 @@ async function receive(
 ): Promise<void> {
   try {
     // get /beacon/[id]/notification/[beaconNotifId]
+    const decoded = req.user as UserPayload;
+    const currUserId = decoded.userId;
     const { id, beaconNotifId } = req.params;
+
+    // parse id and beaconNotifId to integers
     const beaconId = parseInt(id);
     const beaconNotificationId = parseInt(beaconNotifId);
 
@@ -17,6 +21,7 @@ async function receive(
       await beaconService.fetchBeaconDetailsForAffirmations(
         beaconId,
         beaconNotificationId,
+        currUserId,
       );
 
     res.status(201).json(beaconReplyDetails);

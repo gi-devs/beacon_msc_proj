@@ -172,6 +172,7 @@ model BeaconNotification {
 enum BeaconNotificationStatus {
   PENDING
   SENT
-  CLICKED
-  CANCELED
+  REPLIED
+  DECLINED
+  CANCELLED
 }

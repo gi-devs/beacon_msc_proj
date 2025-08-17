@@ -25,6 +25,7 @@ type NotificationData = {
 type NotificationContextType = {
   notification: Notifs.Notification | null;
   hasNotificationsEnabled: boolean;
+  notificationData?: any | null;
 };
 
 type NotificationProviderProps = {
@@ -48,6 +49,10 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   children,
 }) => {
   const [notification, setNotification] = useState<Notifs.Notification | null>(
+    null,
+  );
+  const [notificationData, setNotificationData] = useState<any | null>(null);
+  const [pendingRoute, setPendingRoute] = useState<LinkProps['href'] | null>(
     null,
   );
   const [hasNotificationsEnabled, setHasNotificationsEnabled] = useState(false);
@@ -76,6 +81,20 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
     return { granted, wasGranted };
   };
 
+  const setLastNotification = async () => {
+    const lastResponse = await Notifs.getLastNotificationResponseAsync();
+    if (lastResponse) {
+      const data = lastResponse.notification.request.content
+        .data as NotificationData;
+      setNotificationData(data);
+
+      if (data.route) {
+        setPendingRoute(data.route);
+      }
+    }
+  };
+
+  // ---------- auth side effects ----------
   useEffect(() => {
     if (isAuthenticated) {
       void fetchAndSavePushToken();
@@ -101,19 +120,40 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
       }
     });
 
+    return () => {
+      subscription.remove();
+    };
+  }, [isAuthenticated]);
+
+  // ---------- notification (on first mount) ----------
+
+  // redirect to last notification has a route
+  useEffect(() => {
+    if (isAuthenticated && pendingRoute) {
+      router.push(pendingRoute);
+      setPendingRoute(null);
+    }
+  }, [isAuthenticated, pendingRoute]);
+
+  useEffect(() => {
+    void setLastNotification(); // * Check for last notification in closed state
+
     // * what happens when the app is opened in foreground
     notificationListener.current = Notifs.addNotificationReceivedListener(
       (notification) => {
+        console.info('Notification received:', notification);
         setNotification(notification);
       },
     );
 
-    // * what happens when the user taps on a notification
+    // * what happens when the user taps on a notification from background
     responseListener.current = Notifs.addNotificationResponseReceivedListener(
       (response) => {
+        console.log('I am here in response listener');
         const data = response.notification.request.content
           .data as NotificationData;
 
+        setNotificationData(data);
         if (data.route) {
           router.push(data.route);
         }
@@ -123,13 +163,12 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
     return () => {
       notificationListener.current?.remove();
       responseListener.current?.remove();
-      subscription.remove();
     };
-  }, [isAuthenticated]);
+  }, []);
 
   return (
     <NotificationContext.Provider
-      value={{ notification, hasNotificationsEnabled }}
+      value={{ notification, hasNotificationsEnabled, notificationData }}
     >
       {children}
     </NotificationContext.Provider>
