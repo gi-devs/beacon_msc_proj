@@ -105,6 +105,10 @@ async function create(data: CreateDailyLogData, userId: string) {
     if (dailyLog.broadcasted) {
       const expiresAt = new Date();
       expiresAt.setHours(expiresAt.getHours() + 4);
+      // -------- Rule beacons are per day --------
+      if (expiresAt.getHours() === 0) {
+        expiresAt.setHours(23, 59, 59, 999);
+      }
 
       await createBeacon(
         {
