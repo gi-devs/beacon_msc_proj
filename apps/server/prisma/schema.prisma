@@ -155,15 +155,23 @@ model Beacon {
 }
 
 model BeaconNotification {
-  id         Int       @id @default(autoincrement())
+  id         Int                      @id @default(autoincrement())
   userId     String
   beaconId   Int
-  createdAt  DateTime  @default(now())
+  createdAt  DateTime                 @default(now())
   notifiedAt DateTime?
+  status     BeaconNotificationStatus @default(PENDING) // pending, sent, failed
 
   // Relationships
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   beacon Beacon @relation(fields: [beaconId], references: [id], onDelete: Cascade)
 
   @@unique([userId, beaconId])
+}
+
+enum BeaconNotificationStatus {
+  PENDING
+  SENT
+  CLICKED
+  CANCELED
 }

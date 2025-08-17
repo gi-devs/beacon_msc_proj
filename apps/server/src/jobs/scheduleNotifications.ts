@@ -5,6 +5,31 @@ import {
   getDistanceFromGeohashes,
   getGeohashesOfBoundingBox,
 } from '@beacon/utils';
+import * as console from 'node:console';
+import Expo from 'expo-server-sdk';
+import { BeaconNotificationStatus, Prisma } from '@/generated/prisma';
+
+type SafeBeaconNotification = Prisma.BeaconNotificationGetPayload<{
+  include: {
+    user: {
+      include: {
+        NotificationSetting: true;
+        pushToken: true;
+      };
+    };
+    beacon: {
+      select: {
+        id: true;
+        active: true;
+      };
+    };
+  };
+}> & {
+  user: {
+    NotificationSetting: NonNullable<unknown>;
+    pushToken: NonNullable<unknown>;
+  };
+};
 
 export async function scheduleNotificationsForBeacons() {
   // This function is intended to be run periodically to check for beacons
@@ -14,16 +39,6 @@ export async function scheduleNotificationsForBeacons() {
   // * Fetch all active beacons with their user and location settings
   const beacons = await prisma.beacon.findMany({
     where: {
-      OR: [
-        {
-          expiresAt: {
-            gt: now,
-          },
-        },
-        {
-          active: true,
-        },
-      ],
       active: true,
       expiresAt: {
         gt: now,
@@ -38,6 +53,20 @@ export async function scheduleNotificationsForBeacons() {
       user: {
         include: {
           LocationSetting: { select: { geohash: true, beaconRadius: true } },
+        },
+      },
+      _count: {
+        select: {
+          beaconNotification: {
+            where: {
+              createdAt: {
+                gte: new Date(now.getFullYear(), now.getMonth(), now.getDate()),
+              },
+              status: {
+                not: BeaconNotificationStatus.CANCELED,
+              },
+            },
+          },
         },
       },
     },
@@ -114,16 +143,69 @@ export async function scheduleNotificationsForBeacons() {
     now,
   );
 
-  // * filter only users who have not reached their max beacon notifications
-  const validUsersInGeohashes = activeUsersInSetOfGeohashes.filter((user) => {
-    return (
-      user.beaconNotification.length < user.NotificationSetting!.maxBeaconPushes
+  if (activeUsersInSetOfGeohashes.length === 0) {
+    console.log(
+      '[scheduleNotificationsForBeacons] No active users found in the geohashes of active beacons.',
     );
+    return;
+  }
+
+  /*
+   This validates users from the geohashes by filtering with the required rules.
+
+   ------------- RULES -------------
+   1. user must not have reached their max beacon notifications for the day
+   2. Must not have be notified for any beacon within their minBeaconPushInterval
+  */
+  const validUsers = activeUsersInSetOfGeohashes.filter((user) => {
+    // ----- SATISFIES RULE 1 -----
+
+    const userMaxBeaconPushes = user.NotificationSetting!.maxBeaconPushes;
+    const countWithoutCanceled =
+      user._count.beaconNotification -
+      user.beaconNotification.filter(
+        (n) => n.status === BeaconNotificationStatus.CANCELED,
+      ).length;
+
+    if (countWithoutCanceled >= userMaxBeaconPushes) {
+      return false;
+    }
+
+    if (user._count.beaconNotification === 0) {
+      return true; // no notifications yet, so they can receive a new one
+    }
+
+    // ----- SATISFIES RULE 2 -----
+
+    const latestNotification = user.beaconNotification.reduce(
+      (latest, current) => {
+        // If latest has no notifiedAt, take current
+        if (!latest.notifiedAt) return current;
+        // If current has no notifiedAt, keep latest
+        if (!current.notifiedAt) return latest;
+
+        // Both have notifiedAt pick the later one
+        return current.notifiedAt > latest.notifiedAt ? current : latest;
+      },
+    );
+
+    // If latest notification has no notifiedAt, they can receive a new one
+    if (!latestNotification.notifiedAt) {
+      return true;
+    }
+
+    const timeSinceLastNotification =
+      now.getTime() - latestNotification.notifiedAt.getTime();
+    const userPushIntervalInMs =
+      user.NotificationSetting!.minBeaconPushInterval * 60 * 1000;
+
+    // If the latest notification is within the user's minBeaconPushInterval, skip this user
+    return timeSinceLastNotification >= userPushIntervalInMs;
   });
 
   // * create a map to track which users have been notified for each beacon already today
   const usersHaveBeenNotifiedByBeacon = new Map<string, Set<number>>();
-  for (const u of validUsersInGeohashes) {
+  for (const u of validUsers) {
     usersHaveBeenNotifiedByBeacon.set(
       u.id,
       new Set(u.beaconNotification.map((n) => n.beaconId)),
@@ -131,8 +213,20 @@ export async function scheduleNotificationsForBeacons() {
   }
 
   // * Map to hold beacons and their corresponding users in range
-  const mapOfBeaconsAndUsers = new Map<number, typeof validUsersInGeohashes>();
+  const mapOfBeaconsAndUsers = new Map<number, typeof validUsers>();
 
+  /*
+   Validates users against the beacons.
+
+   ------------- RULES -------------
+   1. user must NOT have been notified for this beacon
+   2. user must NOT be the beacon's owner
+   3. user must be in the beacon's geohash set
+   4. user must be within the beacon's radius and their own radius
+
+   This populates the mapOfBeaconsAndUsers with all users [values]
+   that are valid choices for the beacon [key].
+  */
   for (const beacon of validBeacons) {
     const beaconGeohashSet = mapOfBeaconsToGeohashes.get(beacon.id);
     if (!beaconGeohashSet) {
@@ -145,8 +239,8 @@ export async function scheduleNotificationsForBeacons() {
     const { geohash: beaconGeohash, beaconRadius } =
       beacon.user.LocationSetting!;
 
-    const usersInRange: typeof validUsersInGeohashes = [];
-    for (const user of validUsersInGeohashes) {
+    const usersInRange: typeof validUsers = [];
+    for (const user of validUsers) {
       // * skip users who have already been notified for this beacon today
       if (usersHaveBeenNotifiedByBeacon.get(user.id)?.has(beacon.id)) continue;
       // * skip the beacon's owner user
@@ -155,7 +249,7 @@ export async function scheduleNotificationsForBeacons() {
       const { geohash: userGeohash, beaconRadius: userRadius } =
         user.LocationSetting!;
 
-      // * skip users whos geohash is not in the beacon's geohash set
+      // * skip users who's geohash is not in the beacon's geohash set
       if (!beaconGeohashSet.has(userGeohash!)) continue;
 
       // * get the distance between the beacon and user geohashes
@@ -172,21 +266,35 @@ export async function scheduleNotificationsForBeacons() {
     mapOfBeaconsAndUsers.set(beacon.id, usersInRange);
   }
 
-  console.log(mapOfBeaconsAndUsers); // ! Debugging output
+  // log map but only show id and username of users
+  console.log(
+    JSON.stringify(
+      Array.from(mapOfBeaconsAndUsers.entries()).map(([beaconId, users]) => ({
+        beaconId,
+        users: users.map((u) => ({ id: u.id, username: u.username })),
+      })),
+      null,
+      2, // pretty-print with 2 spaces
+    ),
+  ); // ! Debugging output
 
-  // -------- LOGIC TO ASSIGN USERS TO BEACONS ----------
+  /*
+    -------- LOGIC TO ASSIGN USERS TO BEACONS ----------
+    Beacons will only be assigned one user at a time, this is to ensure
+    that users are not overwhelmed with notifications and any notifications are
+    received and responded to staggered throughout the beacon duration.
 
-  const userNotifCount = new Map<string, number>();
-  validUsersInGeohashes.forEach((u) => {
-    userNotifCount.set(u.id, u._count.beaconNotification);
-  });
-
-  // ! Final assignment: beaconId -> [usernames]
-  const mapOfUsersToNotifyOfBeacons = new Map<number, string[]>();
+    ------------- RULES -------------
+    1. if a beacon only has one user assigned to it, assign that user to the beacon.
+      a. If user is in multiple beacons, check which beacon has had the most notifications sent today.
+    2. If user is only in one beacon, assign them to that beacon.
+      a. if multiple users are only in one beacon, sort them by distance to the beacon and assign the closest user.
+    3. For remaining beacons, assign the user who is closest to the beacon
+   */
 
   function sortClosestUsers(
-    a: (typeof validUsersInGeohashes)[number],
-    b: (typeof validUsersInGeohashes)[number],
+    a: (typeof validUsers)[number],
+    b: (typeof validUsers)[number],
     beaconId: number,
   ): number {
     const distA = getDistanceFromGeohashes(
@@ -204,102 +312,217 @@ export async function scheduleNotificationsForBeacons() {
     return distA - distB;
   }
 
-  // ! Step 1: Assign users who are only in one beacon
+  // ! might not be needed ------------
+  const userNotifCount = new Map<string, number>();
+  validUsers.forEach((u) => {
+    userNotifCount.set(u.id, u._count.beaconNotification);
+  });
+  // ! --------------------------------
+
+  // Final Assignment
+  const mapOfUsersToNotifyOfBeacons = new Map<number, string>();
+  // Track users assigned on this run
+  const setOfAssignedOnRunUsers = new Set<string>();
+  // Map of users in multiple beacons
+  const mapOfUsersInMultipleBeacons = new Map<string, Set<number>>();
   for (const [beaconId, users] of mapOfBeaconsAndUsers.entries()) {
-    const uniqueUsers = users.filter((user) => {
+    for (const user of users) {
+      if (!mapOfUsersInMultipleBeacons.has(user.id)) {
+        mapOfUsersInMultipleBeacons.set(user.id, new Set());
+      }
+      mapOfUsersInMultipleBeacons.get(user.id)!.add(beaconId);
+    }
+  }
+
+  // ------ Rule 1: Assign user to Beacon's with only 1 user count ------
+  const beaconsWithSingleUser = Array.from(
+    mapOfBeaconsAndUsers.entries(),
+  ).filter(([, users]) => users.length === 1);
+
+  for (const [beaconId, users] of beaconsWithSingleUser) {
+    if (users.length === 0) continue; // only for safety, should not happen
+
+    const user = users[0]; // only one user in this beacon
+
+    // check if this user has already been assigned to a beacon
+    if (setOfAssignedOnRunUsers.has(user.id)) continue;
+    // check if this beacon already has a user assigned
+    if (mapOfUsersToNotifyOfBeacons.has(beaconId)) continue;
+
+    const beaconsWithThisUser = mapOfUsersInMultipleBeacons.get(user.id);
+    if (beaconsWithThisUser && beaconsWithThisUser.size > 1) {
+      // check if other beacon only has a count of 1 with this user
+      const otherBeaconsWithThisUser = Array.from(beaconsWithThisUser).filter(
+        (bId) => {
+          if (bId === beaconId) return false;
+          return mapOfBeaconsAndUsers.get(bId)?.length === 1;
+        },
+      );
+
+      if (otherBeaconsWithThisUser.length === 0) {
+        // if no other beacons have this user, assign them to the current beacon
+        mapOfUsersToNotifyOfBeacons.set(beaconId, user.id);
+        setOfAssignedOnRunUsers.add(user.id);
+        // remove the beacon from the map of beacons and users
+        mapOfBeaconsAndUsers.delete(beaconId);
+        console.log(
+          'User ' +
+            user.username +
+            ' assigned to beacon ' +
+            beaconId +
+            ' - for being the only user in this beacon.',
+        );
+        continue;
+      }
+
+      // check which beacon has had the least notifications sent today
+      const beaconWithLeastNotifications = Array.from(
+        otherBeaconsWithThisUser,
+      ).reduce((prev, curr) => {
+        const prevBeacon = validBeacons.find((b) => b.id === prev);
+        const currBeacon = validBeacons.find((b) => b.id === curr);
+        if (!prevBeacon || !currBeacon) return prev; // safety check
+
+        const prevCount = prevBeacon._count.beaconNotification;
+        const currCount = currBeacon._count.beaconNotification;
+
+        return prevCount < currCount ? prev : curr; // 👈 now picks least
+      }, beaconId); // default to current beacon
+
+      // if the beacon with the least notifications is the current beacon, assign the user
+      if (beaconWithLeastNotifications === beaconId) {
+        mapOfUsersToNotifyOfBeacons.set(beaconId, user.id);
+        setOfAssignedOnRunUsers.add(user.id);
+        // remove the beacon from the map of beacons and users
+        mapOfBeaconsAndUsers.delete(beaconId);
+        console.log(
+          'User ' +
+            user.username +
+            ' assigned to beacon ' +
+            beaconId +
+            ' - for having the least notifications sent today.',
+        );
+      }
+    } else {
+      // If the user is only in one beacon, assign them to that beacon
+      mapOfUsersToNotifyOfBeacons.set(beaconId, user.id);
+      setOfAssignedOnRunUsers.add(user.id);
+      // remove the beacon from the map of beacons and users
+      mapOfBeaconsAndUsers.delete(beaconId);
+      console.log(
+        'User ' +
+          user.username +
+          ' assigned to beacon ' +
+          beaconId +
+          ' - for being the only user in this beacon.',
+      );
+    }
+  }
+
+  // ------ Rule 2: Assign users who are only in one beacon ------
+
+  // copy array to avoid modifying the original map during iteration (deleting key)
+  for (const [beaconId, users] of Array.from(mapOfBeaconsAndUsers.entries())) {
+    const assignedOnlyToCurrBeaconUsers = users.filter((user) => {
       const appearances = Array.from(mapOfBeaconsAndUsers.values()).filter(
         (arr) => arr.some((u) => u.id === user.id),
       ).length;
 
-      return appearances === 1; // only in one beacon
+      return appearances === 1;
     });
 
-    if (uniqueUsers.length > 0) {
-      // * pick the closest user in unique ones
-      uniqueUsers.sort((a, b) => sortClosestUsers(a, b, beaconId));
+    if (assignedOnlyToCurrBeaconUsers.length > 0) {
+      assignedOnlyToCurrBeaconUsers.sort((a, b) =>
+        sortClosestUsers(a, b, beaconId),
+      );
 
-      const chosen = uniqueUsers[0];
-      if (
-        userNotifCount.get(chosen.id)! <
-        chosen.NotificationSetting!.maxBeaconPushes
-      ) {
-        mapOfUsersToNotifyOfBeacons.set(beaconId, [chosen.id]);
-        userNotifCount.set(chosen.id, userNotifCount.get(chosen.id)! + 1);
+      const chosen = assignedOnlyToCurrBeaconUsers[0];
+
+      mapOfUsersToNotifyOfBeacons.set(beaconId, chosen.id);
+      setOfAssignedOnRunUsers.add(chosen.id);
+      mapOfBeaconsAndUsers.delete(beaconId); // remove the beacon from the map
+      console.log(
+        'User ' +
+          chosen.username +
+          ' assigned to beacon ' +
+          beaconId +
+          ' - for being the only in this beacon and not others.',
+      );
+    }
+  }
+
+  // ------ Rule 3: Assign remaining users to beacons based on distance ------
+  for (const [beaconId, users] of mapOfBeaconsAndUsers.entries()) {
+    if (users.length === 0) continue;
+    if (mapOfUsersToNotifyOfBeacons.has(beaconId)) continue;
+    // Filter out users who have already been assigned on this run
+    // Sort users by distance to the beacon
+    const candidates = users
+      .filter((user) => {
+        return !setOfAssignedOnRunUsers.has(user.id);
+      })
+      .sort((a, b) => sortClosestUsers(a, b, beaconId));
+
+    if (candidates.length > 0) {
+      let closestUser;
+      for (const user of candidates) {
+        if (setOfAssignedOnRunUsers.has(user.id)) continue;
+        closestUser = user;
+        break; // take the first user who is not assigned yet
       }
+
+      if (!closestUser) {
+        console.log(
+          `[scheduleNotificationsForBeacons] No valid users found for beacon ${beaconId}.`,
+        );
+        continue;
+      }
+
+      mapOfUsersToNotifyOfBeacons.set(beaconId, closestUser.id);
+      setOfAssignedOnRunUsers.add(closestUser.id);
+      console.log(
+        'User ' +
+          closestUser.username +
+          ' assigned to beacon ' +
+          beaconId +
+          ' - for being the closest user.',
+      );
     }
-  }
-
-  // ! Step 2: Assign users who are in multiple beacons (one user per beacon)
-  for (const [beaconId, users] of mapOfBeaconsAndUsers.entries()) {
-    if (mapOfUsersToNotifyOfBeacons.has(beaconId)) continue; // already has a user
-
-    // * users who are still under their daily max
-    const availableUsers = users.filter(
-      (user) =>
-        (userNotifCount.get(user.id) ?? 0) <
-        user.NotificationSetting!.maxBeaconPushes,
-    );
-
-    if (availableUsers.length === 0) continue;
-
-    // * sort by distance to beacon
-    availableUsers.sort((a, b) => sortClosestUsers(a, b, beaconId));
-
-    const chosen = availableUsers[0];
-    mapOfUsersToNotifyOfBeacons.set(beaconId, [chosen.id]);
-    userNotifCount.set(chosen.id, userNotifCount.get(chosen.id)! + 1);
-  }
-
-  // ! Step 3: Assign remaining available users to beacons (multi-assign allowed)
-  for (const [beaconId, users] of mapOfBeaconsAndUsers.entries()) {
-    const assigned = mapOfUsersToNotifyOfBeacons.get(beaconId) ?? []; // already assigned users
-
-    // * users who are still under their daily max
-    const availableExtraUsers = users.filter(
-      (user) =>
-        (userNotifCount.get(user.id) ?? 0) <
-          user.NotificationSetting!.maxBeaconPushes &&
-        !assigned.includes(user.id), // avoid duplicates
-    );
-
-    availableExtraUsers.sort((a, b) => sortClosestUsers(a, b, beaconId));
-
-    for (const user of availableExtraUsers) {
-      assigned.push(user.id);
-      userNotifCount.set(user.id, userNotifCount.get(user.id)! + 1);
-    }
-
-    mapOfUsersToNotifyOfBeacons.set(beaconId, assigned);
   }
 
   console.log('Final assignments:', mapOfUsersToNotifyOfBeacons);
+  // * At this point, mapOfUsersToNotifyOfBeacons should contain all beacons and their assigned users
+  if (mapOfUsersToNotifyOfBeacons.size === 0) {
+    console.log(
+      '[scheduleNotificationsForBeacons] No users to notify for any beacons.',
+    );
+    return;
+  }
 
-  await Promise.all(
-    Array.from(mapOfUsersToNotifyOfBeacons.entries()).map(
-      async ([beaconId, userIds]) => {
-        // * Create notifications for each user assigned to the beacon
-        const notifications = userIds.map((userId) => ({
-          userId,
-          beaconId,
-          createdAt: now,
-        }));
+  // * Create notifications for each user assigned to the beacon
+  const notifications = Array.from(mapOfUsersToNotifyOfBeacons.entries()).map(
+    ([beaconId, userId]) => ({
+      userId,
+      beaconId,
+      createdAt: now,
+    }),
+  );
 
-        // * Save notifications in the database
-        if (notifications.length === 0) {
-          console.log(
-            `[scheduleNotificationsForBeacons] No notifications to create for beacon ${beaconId}.`,
-          );
-          return;
-        }
-        await prisma.beaconNotification.createMany({
-          data: notifications,
-        });
+  // * Save notifications in the database
+  if (notifications.length === 0) {
+    console.log(
+      '[scheduleNotificationsForBeacons] No notifications to create.',
+    );
+    return;
+  }
 
-        console.log(
-          `[scheduleNotificationsForBeacons] Created notifications for beacon ${beaconId} for users: ${userIds.join(', ')}`,
-        );
-      },
-    ),
+  await prisma.beaconNotification.createMany({
+    data: notifications,
+  });
+  console.log(
+    `[scheduleNotificationsForBeacons] Created notifications for beacons: ${Array.from(
+      mapOfUsersToNotifyOfBeacons.keys(),
+    ).join(', ')}`,
   );
 
   // * any beacon which is going to expire in the next 5 minutes should be updated to active = false
@@ -322,22 +545,9 @@ export async function scheduleNotificationsForBeacons() {
 }
 
 export async function sendNotificationsForBeacons() {
-  // ---------- RULES -----------
-  // 1. If a beacon is active, it can send notifications to users.
-  // 2. Users can only receive a beacon notification if they have not reached their maxBeaconPushes for the day.
-  // 3. Any notification created for a user should be sent within their push interval.
-  // ---------- LOGIC -----------
-  // 1. Want to send notifications for beacons with the least amount of notifications sent first.
-  // 2. Get the notification for beacons using the BeaconNotification model.
-
   // * get all unNotified beaconNotifications for today
   const now = new Date();
   const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const endOfDay = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate() + 1,
-  ); // ? might need
 
   const unNotifiedBeaconNotifications =
     await prisma.beaconNotification.findMany({
@@ -348,11 +558,21 @@ export async function sendNotificationsForBeacons() {
         notifiedAt: {
           equals: null, // only get notifications that have not been notified yet
         },
+        status: {
+          not: BeaconNotificationStatus.CANCELED, // only get notifications that are not canceled
+        },
       },
       include: {
         user: {
           include: {
             NotificationSetting: true,
+            pushToken: true,
+          },
+        },
+        beacon: {
+          select: {
+            id: true,
+            active: true,
           },
         },
       },
@@ -365,20 +585,133 @@ export async function sendNotificationsForBeacons() {
     return;
   }
 
-  const beaconsToUsersMap = new Map<
-    number,
-    Set<(typeof unNotifiedBeaconNotifications)[number]['user']>
-  >();
+  /*
+   ---------- ADDITIONAL USER CHECKS FOR SAFETY ----------
+   These check are to ensure that the application keeps to the users preferences
+   and does not send notifications to users who have opted out or are not active.
 
-  for (const notification of unNotifiedBeaconNotifications) {
-    const beaconId = notification.beaconId;
-    if (!beaconsToUsersMap.has(beaconId)) {
-      beaconsToUsersMap.set(beaconId, new Set());
-    }
-    beaconsToUsersMap.get(beaconId)!.add(notification.user);
+   All other check are done in the scheduleNotificationsForBeacons function.
+   - maxBeaconPushes is not checked here and a notification will never be able to
+   be scheduled if the user has reached their maxBeaconPushes for the day.
+   - minBeaconPushInterval is not checked here and a notification will never be able to
+   be scheduled if the user has received a notification for any beacon within their
+   minBeaconPushInterval.
+  */
+  const unNotifiedToSend = unNotifiedBeaconNotifications.filter((n) => {
+    return (
+      n.beacon.active &&
+      n.user &&
+      n.user.NotificationSetting &&
+      n.user.pushToken &&
+      n.user.NotificationSetting.push === true
+    );
+  }) as SafeBeaconNotification[];
+
+  const unNotifiedToCancel = unNotifiedBeaconNotifications
+    .filter((n) => {
+      return (
+        !n.beacon.active ||
+        !n.user ||
+        !n.user.NotificationSetting ||
+        !n.user.pushToken ||
+        n.user.NotificationSetting.push === false
+      );
+    })
+    .map((n) => n.id);
+
+  if (unNotifiedToCancel.length > 0)
+    console.log(
+      '[sendNotificationsForBeacons] Canceling notifications for beacons:',
+      unNotifiedToCancel,
+    );
+
+  await prisma.beaconNotification.updateMany({
+    where: {
+      id: {
+        in: unNotifiedToCancel,
+      },
+    },
+    data: {
+      status: BeaconNotificationStatus.CANCELED,
+    },
+  });
+
+  if (unNotifiedToSend.length === 0) {
+    console.log(
+      '[sendNotificationsForBeacons] No notifications to send after filtering.',
+    );
+    return;
   }
 
-  console.log(beaconsToUsersMap);
+  const expo = new Expo();
+
+  const messages = [];
+  for (const notification of unNotifiedToSend) {
+    const { user, beacon } = notification;
+    const { pushToken } = user;
+
+    // TODO: change the data so that it directs user to the beacon for message sending
+    messages.push({
+      to: pushToken.token,
+      sound: 'default',
+      body: `Someone just put up a beacon near you, why don't you send them something nice!`,
+      data: {
+        withSome: 'data',
+        beaconId: beacon.id,
+        userId: user.id,
+        route: '/(beacon)/' + beacon.id, // TODO: make this page in mobile app
+      },
+    });
+  }
+
+  const chunks = expo.chunkPushNotifications(messages);
+  for (const chunk of chunks) {
+    try {
+      const receipts = await expo.sendPushNotificationsAsync(chunk);
+      const successfulIds: number[] = [];
+
+      receipts.forEach((receipt, i) => {
+        if (receipt.status === 'ok') {
+          const message = chunk[i];
+          if (
+            message.data &&
+            'userId' in message.data &&
+            'beaconId' in message.data
+          ) {
+            const userId = message.data.userId as string;
+            const beaconId = message.data.beaconId as number;
+
+            const notification = unNotifiedToSend.find(
+              (n) => n.user.id === userId && n.beacon.id === beaconId,
+            );
+            if (notification) {
+              successfulIds.push(notification.id);
+            }
+          }
+        } else {
+          console.error(
+            `Notification failed: ${receipt.message}`,
+            receipt.details,
+          );
+        }
+      });
+
+      if (successfulIds.length > 0) {
+        await prisma.beaconNotification.updateMany({
+          where: { id: { in: successfulIds } },
+          data: {
+            notifiedAt: new Date(),
+            status: BeaconNotificationStatus.SENT,
+          },
+        });
+      }
+      console.log(
+        `[sendNotificationsForBeacons] Sent ${successfulIds.length} notifications successfully. Here are the receipts: ${JSON.stringify(receipts, null, 2)}`,
+      );
+    } catch (error) {
+      console.error('Error sending push notifications', error);
+    }
+  }
 }
 
 async function getAllActiveUsersInGeohashes(
@@ -414,12 +747,15 @@ async function getAllActiveUsersInGeohashes(
         },
         select: {
           beaconId: true,
+          notifiedAt: true,
+          status: true,
         },
       },
       NotificationSetting: {
         select: {
           maxBeaconPushes: true,
           push: true,
+          minBeaconPushInterval: true,
         },
       },
       _count: {
