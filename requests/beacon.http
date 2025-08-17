@@ -1,0 +1,2 @@
+GET {{ BASE_URL }}/beacon/6/notification/83
+Authorization: Bearer {{access_token}}

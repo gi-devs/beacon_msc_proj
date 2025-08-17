@@ -128,9 +128,9 @@ model DailyCheckIn {
   createdAt   DateTime @default(now())
 
   // Relationships
-  moodLogId Int?     @unique
-  MoodLog   MoodLog? @relation("DailyCheckInMoodLog", fields: [moodLogId], references: [id], onDelete: Cascade)
-  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  moodLogId Int     @unique
+  MoodLog   MoodLog @relation("DailyCheckInMoodLog", fields: [moodLogId], references: [id], onDelete: Cascade)
+  User      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   Beacon Beacon?
 

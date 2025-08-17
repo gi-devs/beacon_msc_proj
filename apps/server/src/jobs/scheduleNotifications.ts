@@ -658,7 +658,7 @@ export async function sendNotificationsForBeacons() {
       data: {
         withSome: 'data',
         beaconId: beacon.id,
-        userId: user.id,
+        notificationId: notification.id,
         route: '/(beacon)/' + beacon.id, // TODO: make this page in mobile app
       },
     });

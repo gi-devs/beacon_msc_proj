@@ -11,6 +11,7 @@ import {
   dailyLogRoutes,
   locationSettingRoutes,
   notificationSettingRoutes,
+  beaconRoutes,
 } from '@/routes';
 import { scheduleNotificationsForBeacons } from '@/jobs/scheduleNotifications';
 
@@ -36,6 +37,7 @@ app.use('/journal-entry', journalEntryRoutes);
 app.use('/daily-log', dailyLogRoutes);
 app.use('/location-setting', locationSettingRoutes);
 app.use('/notification-setting', notificationSettingRoutes);
+app.use('/beacon', beaconRoutes);
 
 // ! for testing purposes only - remove in production and use cron job instead
 app.get('/manual-call/notification', async (req, res) => {

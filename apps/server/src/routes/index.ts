@@ -5,3 +5,4 @@ export { default as journalEntryRoutes } from './route.journalEntry';
 export { default as dailyLogRoutes } from './route.dailyLog';
 export { default as locationSettingRoutes } from './route.locationSetting';
 export { default as notificationSettingRoutes } from './route.notificationSetting';
+export { default as beaconRoutes } from './route.beacon';
