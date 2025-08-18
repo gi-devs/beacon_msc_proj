@@ -2,6 +2,7 @@ import { Linking, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '@/context/authContext';
 import UIButton from '@/components/ui/UIButton';
 import {
+  pushLocalBeaconNotification,
   requestNotificationPermissions,
   toggleDailyCheckInNotification,
 } from '@/lib/notification';
@@ -94,6 +95,13 @@ const Profile = () => {
         buttonClassName="mt-4"
       >
         App settings
+      </UIButton>
+      <UIButton
+        variant="ghost"
+        buttonClassName="mt-4"
+        onPress={async () => await pushLocalBeaconNotification()}
+      >
+        Beacon Notification Local
       </UIButton>
     </View>
   );

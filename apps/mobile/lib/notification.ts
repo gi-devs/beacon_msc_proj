@@ -263,3 +263,25 @@ export async function updateServerPushNotificationSetting(
     console.error('Failed to update notification setting:', error);
   }
 }
+
+export async function pushLocalBeaconNotification(): Promise<void> {
+  try {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: 'New Notification',
+        body: "Someone just put up a beacon near you, why don't you send them something nice!",
+        data: {
+          dataType: 'BEACON_NOTIFICATION',
+          beaconId: 9,
+          notificationId: 139,
+          receiverUserId: 'cmdmdvby00000fd65z35q7fm5',
+          beaconExpiresAt: '2025-08-18T03:57:18.674Z',
+          route: '/(beacon)/reply',
+        },
+      },
+      trigger: null, // immediate notification
+    });
+  } catch (error) {
+    console.error('Failed to push local notification:', error);
+  }
+}

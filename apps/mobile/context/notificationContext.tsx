@@ -16,7 +16,7 @@ import { AppState } from 'react-native';
 import { useAuth } from '@/context/authContext';
 import { LinkProps, useRouter } from 'expo-router';
 import { useIdleTime } from '@/hooks/useIdleTime';
-import { AsyncItemKey } from '@/lib/aysncStorage';
+import { AsyncItemKey, getAsyncItem, saveAsyncItem } from '@/lib/aysncStorage';
 
 type NotificationData = {
   route?: LinkProps['href'];
@@ -83,7 +83,23 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
 
   const setLastNotification = async () => {
     const lastResponse = await Notifs.getLastNotificationResponseAsync();
+    const savedLastNotification = await getAsyncItem(
+      AsyncItemKey.LastNotification,
+    );
+
+    if (
+      lastResponse &&
+      savedLastNotification === lastResponse.notification.request.identifier
+    ) {
+      return;
+    }
+
     if (lastResponse) {
+      // Save the last notification identifier to AsyncStorage
+      await saveAsyncItem(
+        AsyncItemKey.LastNotification,
+        lastResponse.notification.request.identifier,
+      );
       const data = lastResponse.notification.request.content
         .data as NotificationData;
       setNotificationData(data);

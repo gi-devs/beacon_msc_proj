@@ -1,8 +1,4 @@
-import { Stack, useRouter, useSegments } from 'expo-router';
-import { MoodLogProvider } from '@/context/logCreatorContext';
-import { StyleSheet, View } from 'react-native';
-import { ScrollProvider, useScroll } from '@/context/scrollContext';
-import UIButton from '@/components/ui/UIButton';
+import { Stack } from 'expo-router';
 
 export default function BeaconLayout() {
   return <BeaconNavigator />;
@@ -15,7 +11,6 @@ function BeaconNavigator() {
         headerShown: false,
       }}
     >
-      <Stack.Screen name="index" />
       <Stack.Screen name="reply" />
     </Stack>
   );

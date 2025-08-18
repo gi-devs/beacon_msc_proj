@@ -78,6 +78,8 @@ export async function scheduleNotificationsForBeacons() {
     },
   });
 
+  console.log(beacons);
+
   // * If no beacons are found, log and return early
   if (beacons.length === 0) {
     console.log('[scheduleNotificationsForBeacons] No active beacons found.');
@@ -675,7 +677,7 @@ export async function sendNotificationsForBeacons() {
         notificationId: notification.id,
         receiverUserId: user.id,
         beaconExpiresAt: beacon.expiresAt.toISOString(),
-        route: '/(beacon)/reply/' + beacon.id, // TODO: make this page in mobile app
+        route: '/(beacon)/reply', // TODO: make this page in mobile app
       } as BeaconPushNotificationData,
     });
   }

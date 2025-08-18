@@ -34,6 +34,7 @@ model User {
   LocationSetting     LocationSetting?     @relation("UserLocationSetting")
   beacons             Beacon[]
   beaconNotification  BeaconNotification[]
+  BeaconReplies       BeaconReply[]
 }
 
 model NotificationSetting {
@@ -150,6 +151,7 @@ model Beacon {
   user               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   dailyCheckIn       DailyCheckIn         @relation(fields: [userId, dailyCheckInDate], references: [userId, date], onDelete: Cascade)
   beaconNotification BeaconNotification[]
+  BeaconReplies      BeaconReply[]
 
   @@unique([userId, dailyCheckInDate])
 }
@@ -165,6 +167,19 @@ model BeaconNotification {
   // Relationships
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   beacon Beacon @relation(fields: [beaconId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, beaconId])
+}
+
+model BeaconReply {
+  beaconId     Int
+  userId       String
+  createdAt    DateTime @default(now())
+  replyTextKey String // matches the key of the text in the application JSON file
+  replyTextId  Int // matches the id of list of texts in the application JSON file
+
+  beacon Beacon @relation(fields: [beaconId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, beaconId])
 }
