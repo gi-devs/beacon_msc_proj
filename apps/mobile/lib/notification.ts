@@ -275,7 +275,7 @@ export async function pushLocalBeaconNotification(): Promise<void> {
           beaconId: 9,
           notificationId: 139,
           receiverUserId: 'cmdmdvby00000fd65z35q7fm5',
-          beaconExpiresAt: '2025-08-18T03:57:18.674Z',
+          beaconExpiresAt: '2025-08-19T03:57:18.674Z',
           route: '/(beacon)/reply',
         },
       },

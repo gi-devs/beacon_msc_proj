@@ -161,27 +161,31 @@ model BeaconNotification {
   userId     String
   beaconId   Int
   createdAt  DateTime                 @default(now())
+  updatedAt  DateTime                 @default(now()) @updatedAt
   notifiedAt DateTime?
   status     BeaconNotificationStatus @default(PENDING) // pending, sent, failed
 
   // Relationships
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  beacon Beacon @relation(fields: [beaconId], references: [id], onDelete: Cascade)
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  beacon      Beacon       @relation(fields: [beaconId], references: [id], onDelete: Cascade)
+  beaconReply BeaconReply?
 
   @@unique([userId, beaconId])
 }
 
 model BeaconReply {
+  id           Int      @id @default(autoincrement())
   beaconId     Int
-  userId       String
+  replierId    String
   createdAt    DateTime @default(now())
   replyTextKey String // matches the key of the text in the application JSON file
   replyTextId  Int // matches the id of list of texts in the application JSON file
 
-  beacon Beacon @relation(fields: [beaconId], references: [id], onDelete: Cascade)
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  beacon             Beacon             @relation(fields: [beaconId], references: [id], onDelete: Cascade)
+  replier            User               @relation(fields: [replierId], references: [id], onDelete: Cascade)
+  beaconNotification BeaconNotification @relation(fields: [replierId, beaconId], references: [userId, beaconId], onDelete: Cascade)
 
-  @@unique([userId, beaconId])
+  @@unique([replierId, beaconId])
 }
 
 enum BeaconNotificationStatus {

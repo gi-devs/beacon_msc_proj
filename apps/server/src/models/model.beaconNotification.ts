@@ -15,16 +15,17 @@ export async function getBeaconNotificationById(
   }
 }
 
-export async function createBeacon(
-  data: Prisma.BeaconNotificationCreateInput,
+export async function updateBeaconNotificationById(
+  id: number,
+  data: Prisma.BeaconNotificationUpdateInput,
   tx: DbClient = prisma,
 ) {
   try {
-    return await tx.beaconNotification.create({
+    return await tx.beaconNotification.update({
+      where: { id },
       data,
     });
   } catch (error) {
-    console.log('Error creating beaconNotification:', error);
-    throw new CustomError('Error creating beacon notification', 500);
+    throw new CustomError('Error updating beacon notification', 500);
   }
 }

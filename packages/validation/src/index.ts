@@ -19,3 +19,6 @@ export * from './locationSetting/createLocationSetting';
 
 // notification setting schemas
 export * from './notificationSetting/createNotificationSetting';
+
+// beacon schemas
+export * from './beacon/createBeaconReplySchema';

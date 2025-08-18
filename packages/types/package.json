@@ -1,4 +1,8 @@
 {
   "name": "@beacon/types",
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "types": "src/global.d.ts",
+  "exports": {
+    ".": "./src/global.d.ts"
+  }
 }

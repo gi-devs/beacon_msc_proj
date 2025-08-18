@@ -25,7 +25,8 @@ type NotificationData = {
 type NotificationContextType = {
   notification: Notifs.Notification | null;
   hasNotificationsEnabled: boolean;
-  notificationData?: any | null;
+  notificationData: any | null;
+  setNotificationData: (data: any) => void;
 };
 
 type NotificationProviderProps = {
@@ -157,15 +158,15 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
     // * what happens when the app is opened in foreground
     notificationListener.current = Notifs.addNotificationReceivedListener(
       (notification) => {
-        console.info('Notification received:', notification);
         setNotification(notification);
+        const data = notification.request.content.data as NotificationData;
+        setNotificationData(data);
       },
     );
 
     // * what happens when the user taps on a notification from background
     responseListener.current = Notifs.addNotificationResponseReceivedListener(
       (response) => {
-        console.log('I am here in response listener');
         const data = response.notification.request.content
           .data as NotificationData;
 
@@ -184,7 +185,12 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
 
   return (
     <NotificationContext.Provider
-      value={{ notification, hasNotificationsEnabled, notificationData }}
+      value={{
+        notification,
+        hasNotificationsEnabled,
+        notificationData,
+        setNotificationData,
+      }}
     >
       {children}
     </NotificationContext.Provider>

@@ -1,33 +1,38 @@
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { useNotification } from '@/context/notificationContext';
 import { Toast } from 'toastify-react-native';
 import { format } from 'date-fns';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { getBeaconReplyDetails } from '@/api/beaconApi';
+import { getBeaconReplyDetails, requestBeaconReply } from '@/api/beaconApi';
 import { parseToSeverError } from '@/utils/parseToSeverError';
 import { getMoodColor } from '@/utils/computeColour';
 import MoodFace from '@/components/MoodFace';
-import { NoteSpeechBubble } from '@/components/NoteSpeechBubble';
-import Colors from '@/constants/Colors';
 import replyMessages from '@/constants/beaconReplyMessages';
 import { pickRandomItemFromArray } from '@beacon/utils';
 import UIButton from '@/components/ui/UIButton';
+import BeaconReplyForm from '@/components/form/Forms/BeaconReplyForm';
+import { CreateBeaconFormData } from '@beacon/validation';
+import useConfirmModal from '@/hooks/useConfirmation';
 
 const BeaconReplyId = () => {
   const [loading, setLoading] = useState(true);
-  const { notificationData } = useNotification() as {
+  const { notificationData, setNotificationData } = useNotification() as {
     notificationData: BeaconPushNotificationData | null;
+    setNotificationData: (data: BeaconPushNotificationData | null) => void;
   };
   const router = useRouter();
   const [beaconReplyDetails, setBeaconReplyDetails] =
     useState<BeaconReplyDetailsDTO | null>(null);
-
-  const [replyTexts, setReplyTexts] = useState<{ id: number; text: string }[]>(
-    [],
-  );
+  const [replyTexts, setReplyTexts] = useState<
+    { id: number; text: string; key: BeaconReplyTextKey }[]
+  >([]);
   const [bannerText, setBannerText] = useState<string>('');
+  const [submitFn, setSubmitFn] = useState<(() => void) | null>(null);
+  const [hasSelection, setHasSelection] = useState<() => boolean>(
+    () => () => false,
+  );
 
   useEffect(() => {
     const fetchBeaconReplyDetails = async () => {
@@ -82,10 +87,20 @@ const BeaconReplyId = () => {
 
         // --- pick mood + generic messages ---
         const moodMessages = Object.entries(replyMessages[moodKey]).map(
-          ([id, text]) => ({ id: Number(id), text }),
+          ([id, text]) =>
+            ({ id: Number(id), text, key: moodKey }) as {
+              id: number;
+              text: string;
+              key: BeaconReplyTextKey;
+            },
         );
         const genericMessages = Object.entries(replyMessages.generic).map(
-          ([id, text]) => ({ id: Number(id), text }),
+          ([id, text]) =>
+            ({ id: Number(id), text, key: 'generic' }) as {
+              id: number;
+              text: string;
+              key: BeaconReplyTextKey;
+            },
         );
 
         // combine and pick 6 random
@@ -118,7 +133,25 @@ const BeaconReplyId = () => {
     };
 
     fetchBeaconReplyDetails();
-  }, []);
+  }, [notificationData]);
+
+  const handleSubmitReply = async (data: CreateBeaconFormData) => {
+    try {
+      if (!submitFn) {
+        return;
+      }
+      await requestBeaconReply(data);
+      Toast.success('Reply sent successfully!');
+      router.replace('/(home)');
+    } catch (error) {
+      const err = parseToSeverError(error);
+      Toast.error(err.message);
+
+      if (err.statusCode === 403 || err.statusCode === 404) {
+        router.replace('/(home)');
+      }
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1 p-4">
@@ -156,19 +189,16 @@ const BeaconReplyId = () => {
             </View>
 
             <View className="flex-1 flex-col gap-4 mt-8">
-              {replyTexts.map((reply, index) => {
-                const colourIndex = (6 - index) as 1 | 2 | 3 | 4 | 5 | 6;
-
-                return (
-                  <ReplyButton
-                    key={index}
-                    onPress={() => console.log('Selected:', reply.text)}
-                    colourIndex={colourIndex}
-                  >
-                    {reply.text}
-                  </ReplyButton>
-                );
-              })}
+              <BeaconReplyForm
+                beaconId={beaconReplyDetails.id}
+                beaconNotificationId={beaconReplyDetails.beaconNotificationId}
+                replyOptions={replyTexts}
+                onSubmit={(data) => handleSubmitReply(data)}
+                onSelectedReply={(submit, hasSelection) => {
+                  setSubmitFn(() => submit);
+                  setHasSelection(() => hasSelection);
+                }}
+              />
             </View>
           </>
         ) : (
@@ -178,40 +208,20 @@ const BeaconReplyId = () => {
         )}
       </ScrollView>
       <View className="mt-6">
-        <UIButton variant="destructive">Decline</UIButton>
+        {hasSelection() ? (
+          <UIButton variant="primary" onPress={() => submitFn && submitFn()}>
+            Send
+          </UIButton>
+        ) : (
+          <UIButton
+            variant="destructive"
+            onPress={() => router.replace('/(home)')}
+          >
+            Decline
+          </UIButton>
+        )}
       </View>
     </SafeAreaView>
-  );
-};
-
-const ReplyButton = ({
-  onPress,
-  children,
-  colourIndex,
-}: {
-  onPress: () => void;
-  children: React.ReactNode;
-  colourIndex: 1 | 2 | 3 | 4 | 5 | 6;
-}) => {
-  return (
-    <TouchableOpacity
-      className="rounded-md px-6 py-4 justify-center"
-      onPress={onPress}
-      style={{
-        backgroundColor: Colors.app.ripple[`${colourIndex || 1}00`],
-        height: 70,
-      }}
-    >
-      <View className="justify-center items-start">
-        <Text
-          className="text-white font-semibold leading-normal"
-          style={{ flexWrap: 'wrap', flexShrink: 1 }}
-          numberOfLines={0}
-        >
-          {children}
-        </Text>
-      </View>
-    </TouchableOpacity>
   );
 };
 

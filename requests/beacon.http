@@ -1,2 +1,13 @@
 GET {{ BASE_URL }}/beacon/6/notification/83
 Authorization: Bearer {{access_token}}
+
+### Post reply
+POST {{ BASE_URL }}/beacon/9/notification/142
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+
+{
+  "replyTextKey": "sad",
+  "replyTextId": 1
+}
