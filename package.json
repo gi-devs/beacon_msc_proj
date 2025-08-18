@@ -12,6 +12,7 @@
     "test": "pnpm --filter server test && pnpm --filter mobile test",
     "test:mobile": "pnpm --filter mobile test",
     "test:server": "pnpm --filter server test",
+    "test:server:coverage": "pnpm --filter server test:coverage",
     "prisma:studio": "pnpm --filter server prisma:studio",
     "prisma:migrate": "pnpm --filter server migrate",
     "prisma:migrate_deploy": "pnpm --filter server migrate:deploy",

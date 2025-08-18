@@ -139,13 +139,14 @@ model DailyCheckIn {
 }
 
 model Beacon {
-  id               Int      @id @default(autoincrement())
-  userId           String
-  dailyCheckInDate DateTime
-  expiresAt        DateTime
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  active           Boolean  @default(true)
+  id                Int      @id @default(autoincrement())
+  userId            String
+  dailyCheckInDate  DateTime
+  expiresAt         DateTime
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  active            Boolean  @default(true)
+  userNotifiedStage Int      @default(0) // stage of user notification (0: not notified, 1: notified, 2: half-way, 3: last notif)
 
   // Relationships
   user               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -192,6 +193,7 @@ enum BeaconNotificationStatus {
   PENDING
   SENT
   REPLIED
+  OWNER_NOTIFIED
   DECLINED
   CANCELLED
 }
