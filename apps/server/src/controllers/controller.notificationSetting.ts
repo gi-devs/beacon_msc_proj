@@ -1,5 +1,6 @@
 import { NextFunction, Response, Request } from 'express';
 import { notificationSettingService } from '@/services/service.notificationSetting';
+import { UserPayload } from '@beacon/types';
 
 async function getByUserId(
   req: Request,

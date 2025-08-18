@@ -1,8 +1,11 @@
 {
   "name": "@beacon/types",
   "version": "1.0.0",
-  "types": "src/global.d.ts",
-  "exports": {
-    ".": "./src/global.d.ts"
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "-p tsconfig.json",
+    "dev": "tsc -w"
   }
 }

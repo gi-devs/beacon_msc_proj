@@ -1,4 +1,4 @@
-type CreateDailyCheckInData = {
+export type CreateDailyCheckInData = {
   userId: string;
   moodLogId: number;
   broadcasted: boolean;

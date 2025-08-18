@@ -8,6 +8,7 @@ import {
 import * as console from 'node:console';
 import Expo from 'expo-server-sdk';
 import { BeaconNotificationStatus, Prisma } from '@/generated/prisma';
+import { BeaconPushNotificationData } from '@beacon/types';
 
 type SafeBeaconNotification = Prisma.BeaconNotificationGetPayload<{
   include: {

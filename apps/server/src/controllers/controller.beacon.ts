@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { beaconService } from '@/services/service.beacon';
 import { CustomError } from '@/utils/custom-error';
+import { UserPayload } from '@beacon/types';
 
 async function receive(
   req: Request,

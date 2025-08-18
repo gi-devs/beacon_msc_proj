@@ -1,19 +1,19 @@
+/** @type {import('ts-jest').JestConfigWithTsJest} */
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  rootDir: '.',
-  testMatch: ['<rootDir>/tests/**/*.test.ts'],
+  roots: ['<rootDir>/tests'],
   moduleNameMapper: {
-    '^test-utils(.*)$': '<rootDir>/../../packages/test-utils$1',
-    '^@/(.*)$': '<rootDir>/src/$1', // ✅ maps @/ to src/
+    '^@/(.*)$': '<rootDir>/src/$1',
+    '^@beacon/types$': '<rootDir>/../../packages/types/src',
+    '^@beacon/utils$': '<rootDir>/../../packages/utils/src',
+    '^@beacon/validation$': '<rootDir>/../../packages/validation/src',
   },
-  setupFiles: ['<rootDir>/tests/jest.setup.ts'],
-  coverageDirectory: '<rootDir>/coverage',
-  collectCoverageFrom: ['<rootDir>/src/**/*.{ts,tsx}'],
-  testPathIgnorePatterns: [
-    '/node_modules/',
-    '/dist/',
-    '/coverage/',
-    '/src/generate/',
-  ],
+  transform: {
+    '^.+\\.(ts|tsx)$': [
+      'ts-jest',
+      { tsconfig: '<rootDir>/tsconfig.test.json' },
+    ],
+  },
+  setupFilesAfterEnv: ['<rootDir>/tests/jest.setup.ts'],
 };

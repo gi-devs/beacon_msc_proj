@@ -1,11 +1,11 @@
-enum BeaconReplyTextKey {
+export enum BeaconReplyTextKey {
   Generic = 'generic',
   Anxious = 'anxious',
   Stress = 'stress',
   Sad = 'sad',
 }
 
-type BeaconReplyDetailsDTO = {
+export type BeaconReplyDetailsDTO = {
   id: number;
   ownerUsername: string;
   beaconNotificationId: number;

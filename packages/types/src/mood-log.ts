@@ -1,4 +1,4 @@
-type MoodLogDTO = {
+export type MoodLogDTO = {
   id: number;
   stressScale: number;
   anxietyScale: number;

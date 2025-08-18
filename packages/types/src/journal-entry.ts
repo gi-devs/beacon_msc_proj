@@ -1,4 +1,4 @@
-type JournalEntryDTO = {
+export type JournalEntryDTO = {
   id: number;
   title: string;
   content: string;
@@ -7,7 +7,7 @@ type JournalEntryDTO = {
   createdAt: Date;
 };
 
-type JournalEntryTags = {
+export type JournalEntryTags = {
   category: string;
   keywords: string[];
 };

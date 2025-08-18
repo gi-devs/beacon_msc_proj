@@ -1,5 +1,6 @@
 import { NextFunction, Response, Request } from 'express';
 import { journalEntryService } from '@/services/service.journalEntry';
+import { UserPayload } from '@beacon/types';
 
 async function create(
   req: Request,

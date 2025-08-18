@@ -11,6 +11,7 @@ import {
 import { createBeaconReply } from '@/models/model.beaconReply';
 import prisma from '@/lib/prisma';
 import { handleZodError } from '@/utils/handle-zod-error';
+import { BeaconReplyDetailsDTO } from '@beacon/types';
 
 async function fetchBeaconDetailsForAffirmations(
   id: number,

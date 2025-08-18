@@ -7,6 +7,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import Colors from '@/constants/Colors';
 import { useEffect } from 'react';
+import { BeaconReplyTextKey } from '@beacon/types';
 
 type ReplyOption = {
   id: number;

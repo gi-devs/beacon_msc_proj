@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { dailyLogService } from '@/services/service.dailyLog';
+import { UserPayload } from '@beacon/types';
 
 async function log(
   req: Request,

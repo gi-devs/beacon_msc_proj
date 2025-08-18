@@ -10,6 +10,7 @@ import { normaliseDate } from '@/utils/dates';
 import { CustomError } from '@/utils/custom-error';
 import { handleZodError } from '@/utils/handle-zod-error';
 import { createBeacon } from '@/models/model.beacon';
+import { JournalEntryTags } from '@beacon/types';
 
 async function create(data: CreateDailyLogData, userId: string) {
   let parsedData;

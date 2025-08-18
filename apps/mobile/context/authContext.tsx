@@ -20,6 +20,7 @@ import { Toast } from 'toastify-react-native';
 import { deleteSecureItem, SecureItemKey } from '@/lib/secureStore';
 import { useIdleTime } from '@/hooks/useIdleTime';
 import { AsyncItemKey } from '@/lib/aysncStorage';
+import { UserPayload } from '@beacon/types';
 
 type AuthContextType = {
   user: UserPayload | null;

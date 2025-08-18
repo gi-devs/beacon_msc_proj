@@ -1,5 +1,6 @@
 import { NextFunction, Response, Request } from 'express';
 import { moodLogService } from '@/services/service.moodLog';
+import { UserPayload } from '@beacon/types';
 
 async function create(
   req: Request,

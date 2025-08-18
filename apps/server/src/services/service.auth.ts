@@ -12,6 +12,7 @@ import {
 } from '@/models/models.session';
 import prisma from '@/lib/prisma';
 import { deleteManyPushTokenByUserId } from '@/models/model.pushToken';
+import { LoginResponse, RefreshTokenResponse } from '@beacon/types';
 
 async function registerUser(
   data: Omit<SignUpData, 'confirmPassword'>,

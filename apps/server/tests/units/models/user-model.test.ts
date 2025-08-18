@@ -1,11 +1,11 @@
+import prisma from '../../../src/lib/prisma';
 import {
   createUser,
   getUserByEmail,
   getUserById,
   getUserByUsername,
-} from '@/models/model.user';
-import prisma from '@/lib/prisma';
-import { CustomError } from '@/utils/custom-error';
+} from '../../../src/models/model.user';
+import { CustomError } from '../../../src/utils/custom-error';
 
 describe('User Model', () => {
   const mockUser = {

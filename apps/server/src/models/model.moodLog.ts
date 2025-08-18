@@ -1,6 +1,7 @@
 import prisma, { DbClient } from '@/lib/prisma';
 import { MoodLog, Prisma } from '@/generated/prisma';
 import { CustomError } from '@/utils/custom-error';
+import { DataRequestOptions } from '@beacon/types';
 
 type RequiredMoodLogCreateFields = {
   userId: string;

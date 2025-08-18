@@ -1,6 +1,7 @@
 import prisma, { DbClient } from '@/lib/prisma';
 import { CustomError } from '@/utils/custom-error';
 import { normaliseDate } from '@/utils/dates';
+import { CreateDailyCheckInData } from '@beacon/types';
 
 export async function getDailyCheckInByUserIdAndDate(
   userId: string,

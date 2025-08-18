@@ -1,30 +1,16 @@
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "commonjs",
     "outDir": "./dist",
-    "rootDir": "../../",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "allowImportingTsExtensions": false,
+    "rootDir": "./src",
     "baseUrl": "./src",
     "paths": {
       "@/*": ["*"],
+      "@beacon/*": ["../../packages/*/src"]
     },
-    "typeRoots": ["./node_modules/@types", "./src/types", "../../node_modules/@types", "../../packages/types"],
-    "types": ["jest", "node"]
+    "typeRoots": ["./node_modules/@types", "./src/types"],
+    "types": ["node", "express", "jest"]
   },
-  "include": ["src/**/*",
-    "tests/**/*",
-    "src/types/**/*",
-    "../../packages/**/*",
-  ],
-  "exclude": ["node_modules", "dist"],
-  "ts-node": {
-    "require": ["tsconfig-paths/register"],
-    "files": true
-  }
+  "include": ["src", "src/types"],
+  "exclude": ["node_modules", "dist", "tests"]
 }
-

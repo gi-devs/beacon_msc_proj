@@ -1,4 +1,4 @@
-type BeaconPushNotificationData = {
+export type BeaconPushNotificationData = {
   dataType: 'BEACON_NOTIFICATION';
   beaconId: number;
   notificationId: number;

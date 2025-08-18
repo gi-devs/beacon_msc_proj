@@ -1,5 +1,5 @@
-import request from 'supertest';
-import app from '@/app';
+import request = require('supertest');
+import app from '../src/app';
 
 describe('GET /', () => {
   it('should return Hello World!', async () => {

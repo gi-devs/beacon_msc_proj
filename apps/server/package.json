@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "build": "tsc && tsc-alias",
-    "start": "node dist/server.js",
-    "dev": "nodemon",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/apps/server/src/server.js",
+    "dev": "TS_NODE_FILES=true nodemon",
     "lint": "eslint 'src/**/*.ts'",
     "test": "jest --config=jest.config.js",
     "test:watch": "echo \"No tests specified\" && exit 0",
@@ -22,8 +22,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@beacon/utils": "*",
-    "@beacon/validation": "*",
+    "@beacon/validation": "workspace:*",
+    "@beacon/utils": "workspace:*",
     "@prisma/client": "^6.12.0",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
@@ -38,7 +38,7 @@
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
-    "@types/jest": "^30.0.0",
+    "@types/jest": "^29.5.12",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",
     "@types/node": "^24.0.15",

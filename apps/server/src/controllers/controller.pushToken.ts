@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { pushTokenService } from '@/services/service.pushToken';
+import { UserPayload } from '@beacon/types';
 
 async function sync(
   req: Request,

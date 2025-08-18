@@ -1,9 +1,4 @@
 import axiosInstance from '@/lib/axios';
-import {
-  deleteSecureItem,
-  getSecureItem,
-  saveSecureItem,
-} from '@/lib/secureStore';
 
 export async function syncPushToken(pushToken: string) {
   try {

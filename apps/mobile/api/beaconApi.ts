@@ -1,6 +1,7 @@
 import axiosInstance from '@/lib/axios';
 import { parseToSeverError } from '@/utils/parseToSeverError';
 import { CreateBeaconFormData } from '@beacon/validation';
+import { BeaconReplyDetailsDTO } from '@beacon/types';
 
 export async function getBeaconReplyDetails(
   id: string,

@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
 import { CustomError, ErrorCodes } from '@/utils/custom-error';
 import prisma from '@/lib/prisma';
+import { UserPayload } from '@beacon/types';
 
 export const verifyToken = async (
   req: Request,
@@ -34,6 +35,7 @@ export const verifyToken = async (
     }
 
     req.user = payload;
+
     next();
   } catch (error) {
     if (error instanceof CustomError) {

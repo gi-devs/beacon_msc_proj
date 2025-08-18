@@ -5,7 +5,8 @@
     "paths": {
       "@/*": [
         "./*"
-      ]
+      ],
+      "@beacon/*": ["../../packages/*/src"]
     },
     "typeRoots": [
       "./node_modules/@types",

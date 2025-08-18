@@ -1,5 +1,6 @@
 import { NextFunction, Response, Request } from 'express';
 import { locationSettingService } from '@/services/service.locationSetting';
+import { UserPayload } from '@beacon/types';
 
 async function getByUserId(
   req: Request,

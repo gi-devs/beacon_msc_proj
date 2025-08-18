@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { ServerErrorResponse } from '@beacon/types';
 
 export function parseToSeverError(error: unknown) {
   if (axios.isAxiosError(error) && error.response?.data) {

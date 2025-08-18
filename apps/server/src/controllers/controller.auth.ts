@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { authService } from '@/services/service.auth';
-import { CustomError, ErrorCodes } from '@/utils/custom-error';
+import { UserPayload } from '@beacon/types';
 
 async function register(
   req: Request,

@@ -4,6 +4,7 @@ import {
   createJournalEntrySchema,
 } from '@beacon/validation';
 import { handleZodError } from '@/utils/handle-zod-error';
+import { JournalEntryDTO, JournalEntryTags } from '@beacon/types';
 
 async function create(
   data: CreateJournalEntryData,

@@ -15,6 +15,11 @@ import UIButton from '@/components/ui/UIButton';
 import BeaconReplyForm from '@/components/form/Forms/BeaconReplyForm';
 import { CreateBeaconFormData } from '@beacon/validation';
 import useConfirmModal from '@/hooks/useConfirmation';
+import {
+  BeaconPushNotificationData,
+  BeaconReplyDetailsDTO,
+  BeaconReplyTextKey,
+} from '@beacon/types';
 
 const BeaconReplyId = () => {
   const [loading, setLoading] = useState(true);

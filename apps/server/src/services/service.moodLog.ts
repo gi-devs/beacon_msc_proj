@@ -1,6 +1,7 @@
 import { createMoodLog } from '@/models/model.moodLog';
 import { CustomError } from '@/utils/custom-error';
 import { CreateMoodLogData } from '@beacon/validation';
+import { MoodLogDTO } from '@beacon/types';
 
 async function create(
   data: CreateMoodLogData,
