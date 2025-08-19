@@ -18,7 +18,8 @@
     "prisma:migrate_deploy": "pnpm --filter server migrate:deploy",
     "prisma:generate": "pnpm --filter server generate",
     "prisma:push": "pnpm --filter server push",
-    "prisma:seed": "pnpm --filter server seed"
+    "prisma:seed": "pnpm --filter server seed",
+    "build": "pnpm -r build"
   },
   "keywords": [],
   "author": "",
@@ -42,13 +43,15 @@
     "zod": "^4.0.10"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.12",
+    "@types/jest": "^29.5.14",
     "@types/ngeohash": "^0.6.8",
+    "@types/node": "^24.0.15",
     "concurrently": "^9.2.0",
     "eslint": "^9.31.0",
     "jest": "^30.0.4",
     "prettier": "^3.6.2",
     "ts-jest": "^29.4.0",
+    "tsup": "^8.5.0",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   }

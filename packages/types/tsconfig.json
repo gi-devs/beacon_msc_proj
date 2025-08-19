@@ -4,8 +4,8 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "declaration": true,
-    "emitDeclarationOnly": false,
-    "composite": true
+    "emitDeclarationOnly": true, // only emit .d.ts since no runtime needed
+    "composite": true            // so project references work
   },
   "include": ["src"]
 }

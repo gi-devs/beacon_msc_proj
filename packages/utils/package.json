@@ -1,13 +1,16 @@
 {
   "name": "@beacon/utils",
   "version": "1.0.0",
-  "main": "src/index.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts"
+    "import": "./dist/index.mjs",
+    "require": "./dist/index.js"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsup",
     "clean": "rm -rf dist",
-    "dev": "tsc -w"
+    "dev": "tsup --watch"
   }
 }

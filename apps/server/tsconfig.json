@@ -6,11 +6,16 @@
     "baseUrl": "./src",
     "paths": {
       "@/*": ["*"],
-      "@beacon/*": ["../../packages/*/src"]
+      "@beacon/utils": ["../../packages/utils/src"],
+      "@beacon/validation": ["../../packages/validation/src"]
     },
     "typeRoots": ["./node_modules/@types", "./src/types"],
     "types": ["node", "express", "jest"]
   },
+  "references": [
+    { "path": "../../packages/utils" },
+    { "path": "../../packages/validation" }
+  ],
   "include": ["src", "src/types"],
   "exclude": ["node_modules", "dist", "tests"]
 }
