@@ -24,3 +24,22 @@ export function analyseMoodScales(data: CreateMoodLogData): {
     shouldPromptBroadcast,
   };
 }
+
+export const getHighestMoodScale = (data: {
+  stressScale: number;
+  anxietyScale: number;
+  sadnessScale: number;
+}): {
+  scale: 'stressed' | 'anxious' | 'sad';
+  value: number;
+} => {
+  const { stressScale, anxietyScale, sadnessScale } = data;
+
+  if (stressScale >= anxietyScale && stressScale >= sadnessScale) {
+    return { scale: 'stressed', value: stressScale };
+  } else if (anxietyScale >= stressScale && anxietyScale >= sadnessScale) {
+    return { scale: 'anxious', value: anxietyScale };
+  } else {
+    return { scale: 'sad', value: sadnessScale };
+  }
+};

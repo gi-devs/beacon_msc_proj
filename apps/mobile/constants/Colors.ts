@@ -28,5 +28,12 @@ export default {
       500: '#036666',
       600: '#014444',
     },
+
+    moodColours: {
+      stressed: '#FF6B6B',
+      anxious: '#d09027',
+      sad: '#6a34e0',
+      neutral: '#a4ecc7',
+    },
   },
 };

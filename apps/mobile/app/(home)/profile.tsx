@@ -10,6 +10,7 @@ import { useNotification } from '@/context/notificationContext';
 import { resetApp } from '@/utils/devMode';
 import { getLocation, requestLocationPermissions } from '@/lib/location';
 import { useLocation } from '@/context/locationContext';
+import { Link } from 'expo-router';
 
 const Profile = () => {
   const { logout, user } = useAuth();
@@ -103,6 +104,9 @@ const Profile = () => {
       >
         Beacon Notification Local
       </UIButton>
+      <Link href="/(mood-logging)?mode=daily-log">
+        <Text className="text-blue-500">Go to Daily Mood Logging</Text>
+      </Link>
     </View>
   );
 };
