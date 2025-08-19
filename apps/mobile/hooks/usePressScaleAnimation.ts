@@ -18,7 +18,6 @@ export function usePressScaleAnimation({
       useNativeDriver: true,
       speed: 20,
     }).start();
-    if (vibrate) Vibration.vibrate(10);
   };
 
   const handlePressOut = () => {
@@ -29,10 +28,17 @@ export function usePressScaleAnimation({
     }).start();
   };
 
+  const handleVibration = () => {
+    if (vibrate) {
+      Vibration.vibrate(10);
+    }
+  };
+
   return {
     scale,
     animatedStyle: { transform: [{ scale }] },
     handlePressIn,
     handlePressOut,
+    handleVibration,
   };
 }

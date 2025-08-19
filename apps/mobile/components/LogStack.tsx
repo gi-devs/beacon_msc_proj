@@ -1,11 +1,7 @@
-import { StyleProp, Text, View, ViewStyle, Pressable } from 'react-native';
+import { StyleProp, Text, View, ViewStyle, Vibration } from 'react-native';
 import { AppStyles } from '@/constants/AppStyles';
 import MoodFace from '@/components/MoodFace';
-import {
-  AntDesign,
-  Ionicons,
-  MaterialCommunityIcons,
-} from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -46,6 +42,9 @@ const LogStack = ({ isOpen, moodStack }: LogStackProps) => {
   const splitMoodStack = moodStack.slice(0, 3);
   useEffect(() => {
     marginTop.value = withTiming(isOpen ? 10 : -30, { duration: 200 });
+    if (isOpen) {
+      Vibration.vibrate(10);
+    }
   }, [isOpen]);
 
   return (

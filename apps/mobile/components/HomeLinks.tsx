@@ -32,7 +32,7 @@ const HomeLinks = ({
   linkTo?: Href;
 }) => {
   const router = useRouter();
-  const { animatedStyle, handlePressIn, handlePressOut } =
+  const { animatedStyle, handlePressIn, handlePressOut, handleVibration } =
     usePressScaleAnimation();
 
   return (
@@ -46,6 +46,7 @@ const HomeLinks = ({
           backgroundColor: color || '#f0f0f0',
         }}
         onPress={() => {
+          handleVibration();
           if (!disablePress && linkTo) {
             router.push(linkTo);
           }

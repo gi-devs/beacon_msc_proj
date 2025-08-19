@@ -14,7 +14,7 @@ export default function CustomTabBar({
 }: BottomTabBarProps) {
   const { buildHref } = useLinkBuilder();
   const router = useRouter();
-  const { animatedStyle, handlePressIn, handlePressOut } =
+  const { animatedStyle, handlePressIn, handlePressOut, handleVibration } =
     usePressScaleAnimation();
 
   const middleIndex = Math.floor(state.routes.length / 2);
@@ -77,7 +77,10 @@ export default function CustomTabBar({
               <PlatformPressable
                 className="bg-ripple-400 w-16 h-16 rounded-full items-center justify-center shadow-lg"
                 android_ripple={{ color: 'transparent' }}
-                onPress={() => router.push('/(mood-logging)')}
+                onPress={() => {
+                  handleVibration();
+                  router.push('/(mood-logging)');
+                }}
                 onPressIn={handlePressIn}
                 onPressOut={handlePressOut}
               >
