@@ -12,7 +12,13 @@ import {
 } from '@/models/models.session';
 import prisma from '@/lib/prisma';
 import { deleteManyPushTokenByUserId } from '@/models/model.pushToken';
-import { LoginResponse, RefreshTokenResponse } from '@beacon/types';
+import {
+  LoginResponse,
+  RefreshTokenResponse,
+  UserPayload,
+} from '@beacon/types';
+import { getDailyCheckInByUserIdAndDate } from '@/models/model.dailyCheckIn';
+import { normaliseDate } from '@/utils/dates';
 
 async function registerUser(
   data: Omit<SignUpData, 'confirmPassword'>,
@@ -71,6 +77,9 @@ async function registerUser(
     user: {
       userId: newUser.id,
       username: newUser.username,
+      appConfig: {
+        hasCompletedDailyCheckIn: false, // New users haven't completed a daily check-in yet
+      },
     },
   };
 }
@@ -123,6 +132,11 @@ async function loginUser(data: LogInData): Promise<LoginResponse> {
 
   console.log({ accessToken, refreshToken });
 
+  const dailyCheckIn = await getDailyCheckInByUserIdAndDate(
+    userFound.id,
+    normaliseDate(new Date()),
+  );
+
   // Respond with tokens and user info
   return {
     accessToken,
@@ -130,6 +144,9 @@ async function loginUser(data: LogInData): Promise<LoginResponse> {
     user: {
       userId: userFound.id,
       username: userFound.username,
+      appConfig: {
+        hasCompletedDailyCheckIn: !!dailyCheckIn,
+      },
     },
   };
 }
@@ -180,17 +197,27 @@ async function refreshAccessToken(
   };
 }
 
-async function getProfile(userId: string) {
+async function getProfile(userId: string): Promise<UserPayload> {
   const userFound = await getUserById(userId);
 
   if (!userFound) {
     throw new CustomError('User not found', 404);
   }
 
+  const existingLogToday = await getDailyCheckInByUserIdAndDate(
+    userId,
+    normaliseDate(new Date()),
+  );
+
+  console.log("Normalised date for today's log:", normaliseDate(new Date()));
+  console.log(existingLogToday);
+
   return {
-    id: userFound.id,
-    email: userFound.email,
+    userId: userFound.id,
     username: userFound.username,
+    appConfig: {
+      hasCompletedDailyCheckIn: !!existingLogToday,
+    },
   };
 }
 

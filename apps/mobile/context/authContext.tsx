@@ -24,6 +24,7 @@ import { UserPayload } from '@beacon/types';
 
 type AuthContextType = {
   user: UserPayload | null;
+  setUser: (user: UserPayload | null) => void;
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<boolean>;
@@ -38,7 +39,7 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<AuthContextType['user']>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { runIfIdleTimeExceeded } = useIdleTime(15, AsyncItemKey.AuthIdleCheck); // 15 minutes idle time
   const router = useRouter();
@@ -155,7 +156,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, isLoading, login, logout, register, isAuthenticated }}
+      value={{
+        user,
+        isLoading,
+        login,
+        logout,
+        register,
+        isAuthenticated,
+        setUser,
+      }}
     >
       {children}
     </AuthContext.Provider>

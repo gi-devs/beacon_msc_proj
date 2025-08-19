@@ -8,6 +8,9 @@ export type UserPayload = {
   userId: string;
   username: string;
   sessionId?: string;
+  appConfig?: {
+    hasCompletedDailyCheckIn: boolean;
+  };
 };
 
 export type DataRequestOptions = {

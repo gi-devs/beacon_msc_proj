@@ -121,6 +121,8 @@ const HomeIndex = () => {
           color={Colors.app.ripple['200']}
           title="Complete Daily Check In"
           imgSrc={require('../../assets/items/beacon_circle.png')}
+          linkTo="/(mood-logging)?mode=daily-log"
+          disablePress={user?.appConfig?.hasCompletedDailyCheckIn}
         />
         <HomeLinks
           color="#F5AD4A"

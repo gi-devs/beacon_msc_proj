@@ -8,6 +8,7 @@ import { Linking, Modal, Platform, Text, View } from 'react-native';
 import UIButton from '@/components/ui/UIButton';
 import { useLocation } from '@/context/locationContext';
 import { useState } from 'react';
+import { useAuth } from '@/context/authContext';
 
 const Broadcast = () => {
   const {
@@ -19,7 +20,7 @@ const Broadcast = () => {
   const router = useRouter();
   const { isLocationEnabled } = useLocation();
   const [loading, setLoading] = useState(false);
-
+  const { user, setUser } = useAuth();
   const sendDataWithBroadcast = async () => {
     setLoading(true);
     try {
@@ -33,6 +34,18 @@ const Broadcast = () => {
       await new Promise((resolve) => setTimeout(resolve, 5000));
 
       await createDailyLogRequest(data);
+
+      // user should always be defined here, but just in case
+      if (user) {
+        setUser({
+          ...user,
+          appConfig: {
+            ...user.appConfig,
+            hasCompletedDailyCheckIn: true,
+          },
+        });
+      }
+
       Toast.success('Mood logged and beacon sent successfully!');
     } catch (error) {
       console.error('Error sending broadcast:', error);
