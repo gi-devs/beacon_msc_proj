@@ -1,14 +1,18 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export enum AsyncItemKey {
+  // Settings
+  // Should never clear
   OnboardingComplete = 'onboarding-complete',
-  DailyCheckInNotificationId = 'daily-check-in-notification-id',
-  HasPushNotificationsEnabled = 'has-push-notifications-enabled',
+  DailyCheckInNotificationId = 'daily-check-in-notification-id', // for seeing if notification for daily check-in is enabled
+
+  // Should clear on logout/if user is in login page
   AuthIdleCheck = 'auth-idle-check',
   NotificationIdleCheck = 'notification-idle-check',
   LocationIdleCheck = 'location-idle-check',
   LastLocation = 'last-location',
   LastNotification = 'last-notification',
+  HasPushNotificationsEnabled = 'has-push-notifications-enabled',
 }
 
 const prefix = 'beacon-';
