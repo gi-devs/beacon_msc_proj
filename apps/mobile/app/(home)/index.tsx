@@ -1,24 +1,15 @@
-import {
-  Pressable,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import { useAuth } from '@/context/authContext';
-import { useNotification } from '@/context/notificationContext';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import UIButton from '@/components/ui/UIButton';
-import { requestNotificationPermissions } from '@/lib/notification';
-import { useEffect, useState } from 'react';
-import { Link } from 'expo-router';
-import * as Notifications from 'expo-notifications';
+import { useEffect } from 'react';
 import LogStack, { useLogStack } from '@/components/LogStack';
 import { getHighestMoodScale } from '@/utils/analyseMoodScore';
 import { capitaliseFirstLetter } from '@/utils/capitalise';
+import HomeLinks from '@/components/HomeLinks';
+import Colors from '@/constants/Colors';
+import { useAuth } from '@/context/authContext';
 
 const HomeIndex = () => {
-  const { logout, user } = useAuth();
-  const { hasNotificationsEnabled } = useNotification();
+  const { user } = useAuth();
   const { isLogStackOpen, openLogStack, closeLogStack } = useLogStack();
 
   const greetingTimeText = () => {
@@ -92,8 +83,9 @@ const HomeIndex = () => {
           closeLogStack();
         }
       }}
+      style={{ marginBottom: 100 }}
     >
-      <View className="">
+      <View>
         <Text className="mt-4 mb-2 text-xl">Recent logs</Text>
         <Pressable
           onTouchEnd={(e) => {
@@ -121,9 +113,30 @@ const HomeIndex = () => {
           ', ' +
           capitaliseFirstLetter(user?.username || 'user')}
       </Text>
-      <Text className="text-4xl font-medium mb-4 leading-tight max-sm:max-w-64 tracking-widest">
+      <Text className="text-5xl font-medium mb-4 leading-tight tracking-widest">
         How Are You Feeling
       </Text>
+      <View className="gap-6 pb-8">
+        <HomeLinks
+          color={Colors.app.ripple['200']}
+          title="Complete Daily Check In"
+          imgSrc={require('../../assets/items/beacon_circle.png')}
+        />
+        <HomeLinks
+          color="#F5AD4A"
+          title="Journal Entry"
+          imgSrc={require('../../assets/items/cut_journal_pen.png')}
+          imageOffsetX={50}
+          imageSize={230}
+          linkTo="/(mood-logging)/journal"
+        />
+        <HomeLinks
+          color="#CE0060"
+          title="Send Out Affirmations"
+          imgSrc={require('../../assets/items/connected_globe.png')}
+          imageOffsetX={10}
+        />
+      </View>
     </ScrollView>
   );
 };

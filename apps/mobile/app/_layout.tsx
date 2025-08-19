@@ -1,5 +1,5 @@
 import { SplashScreen, Stack } from 'expo-router';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import '../global.css';
 import { StatusBar } from 'react-native';
 import { AuthProvider, useAuth } from '@/context/authContext';

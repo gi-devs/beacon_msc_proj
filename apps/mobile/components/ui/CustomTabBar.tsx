@@ -1,10 +1,11 @@
-import { Platform, View } from 'react-native';
+import { Platform, View, Animated } from 'react-native';
 import { useLinkBuilder, useTheme } from '@react-navigation/native';
 import { PlatformPressable } from '@react-navigation/elements';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
 import { useRouter } from 'expo-router';
+import { usePressScaleAnimation } from '@/hooks/usePressScaleAnimation';
 
 export default function CustomTabBar({
   state,
@@ -13,6 +14,8 @@ export default function CustomTabBar({
 }: BottomTabBarProps) {
   const { buildHref } = useLinkBuilder();
   const router = useRouter();
+  const { animatedStyle, handlePressIn, handlePressOut } =
+    usePressScaleAnimation();
 
   const middleIndex = Math.floor(state.routes.length / 2);
 
@@ -66,7 +69,8 @@ export default function CustomTabBar({
 
         if (index === middleIndex) {
           return [
-            <View
+            <Animated.View
+              style={animatedStyle}
               key="middle-button"
               className="flex-1 items-center justify-center"
             >
@@ -74,10 +78,12 @@ export default function CustomTabBar({
                 className="bg-ripple-400 w-16 h-16 rounded-full items-center justify-center shadow-lg"
                 android_ripple={{ color: 'transparent' }}
                 onPress={() => router.push('/(mood-logging)')}
+                onPressIn={handlePressIn}
+                onPressOut={handlePressOut}
               >
                 <Ionicons name="add" size={28} color="white" />
               </PlatformPressable>
-            </View>,
+            </Animated.View>,
             tab,
           ];
         }
