@@ -5,5 +5,6 @@ import { verifyToken } from '@/middleware/verify-token';
 const router = Router();
 
 router.post('/', verifyToken, moodLogController.create);
+router.get('/', verifyToken, moodLogController.getMoodLogs);
 
 export default router;

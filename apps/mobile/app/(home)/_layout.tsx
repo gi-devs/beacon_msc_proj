@@ -4,6 +4,7 @@ import OnboardingScreen from '@/components/utils/OnboardingScreen';
 import { useEffect, useState } from 'react';
 import CustomTabBar from '@/components/ui/CustomTabBar';
 import { AsyncItemKey, getAsyncItem, saveAsyncItem } from '@/lib/aysncStorage';
+import { MoodLogProvider } from '@/context/moodLogContext';
 
 export default function HomeTabsLayout() {
   const [isLoading, setIsLoading] = useState(true);
@@ -26,11 +27,15 @@ export default function HomeTabsLayout() {
 
   if (isLoading) return null; // or splash screen
 
-  if (showOnboarding) {
-    return <OnboardingScreen onFinish={turnOffOnboarding} />;
-  }
-
-  return <HomeNavigator />;
+  return (
+    <MoodLogProvider>
+      {showOnboarding ? (
+        <OnboardingScreen onFinish={turnOffOnboarding} />
+      ) : (
+        <HomeNavigator />
+      )}
+    </MoodLogProvider>
+  );
 }
 
 function HomeNavigator() {

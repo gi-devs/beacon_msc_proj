@@ -1,7 +1,7 @@
 import prisma, { DbClient } from '@/lib/prisma';
 import { CustomError } from '@/utils/custom-error';
 import { normaliseDate } from '@/utils/dates';
-import { CreateDailyCheckInData } from '@beacon/types';
+import { CreateDailyCheckInData, DataRequestOptions } from '@beacon/types';
 
 export async function getDailyCheckInByUserIdAndDate(
   userId: string,
@@ -19,6 +19,45 @@ export async function getDailyCheckInByUserIdAndDate(
     });
   } catch (error) {
     throw new CustomError('Error fetching daily check-in by ID', 500);
+  }
+}
+
+export async function getDailyCheckInsByUserId(
+  userId: string,
+  tx: DbClient = prisma,
+  options: DataRequestOptions = {},
+) {
+  const { skip = 0, take = 10, order = { createdAt: 'desc' } } = options;
+  try {
+    return await tx.dailyCheckIn.findMany({
+      where: { userId },
+      orderBy: { createdAt: order.createdAt },
+      skip,
+      take,
+    });
+  } catch (error) {
+    throw new CustomError('Error fetching daily check-ins', 500);
+  }
+}
+
+export async function getDailyCheckInByMoodLogId(
+  moodLogIds: number[],
+  tx: DbClient = prisma,
+) {
+  try {
+    return await tx.dailyCheckIn.findMany({
+      where: {
+        moodLogId: {
+          in: moodLogIds,
+        },
+      },
+      select: {
+        moodLogId: true,
+        broadcasted: true,
+      },
+    });
+  } catch (error) {
+    throw new CustomError('Error fetching daily check-ins', 500);
   }
 }
 

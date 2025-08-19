@@ -1,8 +1,9 @@
 import { CreateMoodLogData } from '@beacon/validation';
+import { MoodLogDTO } from '@beacon/types';
 
 export type MoodSeverity = 'high' | 'medium' | 'low';
 
-export function analyseMoodScales(data: CreateMoodLogData): {
+export function analyseMoodScales(data: MoodLogDTO | CreateMoodLogData): {
   score: number;
   severity: MoodSeverity;
   shouldPromptBroadcast: boolean;

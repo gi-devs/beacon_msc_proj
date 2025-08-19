@@ -5,6 +5,7 @@ import {
 } from '@beacon/validation';
 import axiosInstance from '@/lib/axios';
 import { parseToSeverError } from '@/utils/parseToSeverError';
+import { MoodLogWithBeaconCheck, PaginatedResponse } from '@beacon/types';
 
 // ----------------------
 //        Mood log
@@ -19,9 +20,12 @@ export async function createMoodLogRequest(data: CreateMoodLogData) {
   }
 }
 
-export async function getMoodLogsRequest() {
+export async function getMoodLogsRequest(
+  take: number,
+  skip: number,
+): Promise<PaginatedResponse<MoodLogWithBeaconCheck>> {
   try {
-    const res = await axiosInstance.get('/mood-log');
+    const res = await axiosInstance.get(`/mood-log?take=${take}&skip=${skip}`);
     return res.data;
   } catch (error) {
     console.log(parseToSeverError(error).message);

@@ -3,16 +3,6 @@ import { MoodLog, Prisma } from '@/generated/prisma';
 import { CustomError } from '@/utils/custom-error';
 import { DataRequestOptions } from '@beacon/types';
 
-type RequiredMoodLogCreateFields = {
-  userId: string;
-  stressScale: number;
-  anxietyScale: number;
-  sadnessScale: number;
-  stressNote?: string | null;
-  anxietyNote?: string | null;
-  sadnessNote?: string | null;
-};
-
 export async function getUserMoodLogs(
   userId: string,
   tx: DbClient = prisma,
@@ -32,6 +22,19 @@ export async function getUserMoodLogs(
   } catch (error) {
     console.error('Error fetching user mood logs:', error);
     throw new CustomError('Failed to fetch mood logs from database', 500);
+  }
+}
+
+export async function getUserMoodLogCount(userId: string): Promise<number> {
+  try {
+    return prisma.moodLog.count({
+      where: {
+        userId,
+      },
+    });
+  } catch (error) {
+    console.error('Error counting user mood logs:', error);
+    throw new CustomError('Failed to count mood logs in database', 500);
   }
 }
 

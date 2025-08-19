@@ -19,6 +19,31 @@ async function create(
   }
 }
 
+async function getMoodLogs(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  const decoded = req.user as UserPayload;
+  const userId = decoded.userId;
+  const take = parseInt(req.query.take as string) || 10;
+  const skip = parseInt(req.query.skip as string) || 0;
+
+  try {
+    const paginatedMoodLogRes = await moodLogService.getMoodLogsByUserId(
+      userId,
+      take,
+      skip,
+    );
+
+    console.log(`Fetched mood logs for user ${userId}:`, paginatedMoodLogRes);
+    res.status(200).json(paginatedMoodLogRes);
+  } catch (e) {
+    next(e);
+  }
+}
+
 export const moodLogController = {
   create,
+  getMoodLogs,
 };

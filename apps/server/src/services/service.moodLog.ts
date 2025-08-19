@@ -1,7 +1,16 @@
-import { createMoodLog } from '@/models/model.moodLog';
+import {
+  createMoodLog,
+  getUserMoodLogCount,
+  getUserMoodLogs,
+} from '@/models/model.moodLog';
 import { CustomError } from '@/utils/custom-error';
 import { CreateMoodLogData } from '@beacon/validation';
-import { MoodLogDTO } from '@beacon/types';
+import {
+  MoodLogDTO,
+  MoodLogWithBeaconCheck,
+  PaginatedResponse,
+} from '@beacon/types';
+import { getDailyCheckInByMoodLogId } from '@/models/model.dailyCheckIn';
 
 async function create(
   data: CreateMoodLogData,
@@ -49,6 +58,46 @@ async function create(
   return sanitisedMoodLog;
 }
 
+async function getMoodLogsByUserId(
+  userId: string,
+  take: number,
+  skip: number,
+): Promise<PaginatedResponse<MoodLogWithBeaconCheck>> {
+  const moodLogs = await getUserMoodLogs(userId, undefined, {
+    take: take,
+    skip: skip,
+  });
+
+  const totalCount = await getUserMoodLogCount(userId);
+  const dailyCheckIns = await getDailyCheckInByMoodLogId(
+    moodLogs.map((log) => log.id),
+  );
+
+  // for every moodLog, check if it has a daily check-in
+  const moodLogsWithBeaconCheck = moodLogs.map((log) => {
+    const dailyCheckIn = dailyCheckIns.find(
+      (checkIn) => checkIn.moodLogId === log.id,
+    );
+
+    const beaconBroadcasted = dailyCheckIn ? dailyCheckIn.broadcasted : false;
+
+    return {
+      ...log,
+      beaconBroadcasted,
+      isDailyCheckIn: !!dailyCheckIn,
+    };
+  });
+
+  return {
+    items: moodLogsWithBeaconCheck,
+    totalCount: totalCount,
+    page: Math.floor(skip / take) + 1,
+    totalPages: Math.ceil(totalCount / take),
+    hasMore: totalCount > skip + take,
+  };
+}
+
 export const moodLogService = {
   create,
+  getMoodLogsByUserId,
 };

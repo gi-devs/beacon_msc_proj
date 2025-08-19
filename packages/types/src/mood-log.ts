@@ -9,3 +9,8 @@ export type MoodLogDTO = {
   createdAt: Date;
   updatedAt: Date;
 };
+
+export type MoodLogWithBeaconCheck = MoodLogDTO & {
+  beaconBroadcasted: boolean;
+  isDailyCheckIn: boolean;
+};

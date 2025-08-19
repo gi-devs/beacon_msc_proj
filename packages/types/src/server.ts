@@ -20,3 +20,11 @@ export type DataRequestOptions = {
     createdAt: 'asc' | 'desc';
   };
 };
+
+export type PaginatedResponse<T> = {
+  items: T[];
+  totalCount: number;
+  page: number;
+  totalPages: number;
+  hasMore: boolean;
+};

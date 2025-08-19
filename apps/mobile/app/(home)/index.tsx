@@ -104,6 +104,7 @@ const HomeIndex = () => {
           variant="ghost"
           buttonClassName="self-end mt-2"
           textClassName="font-normal"
+          href="/(home)/moodReview"
         >
           View all
         </UIButton>
