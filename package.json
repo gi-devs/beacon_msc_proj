@@ -19,7 +19,8 @@
     "prisma:generate": "pnpm --filter server generate",
     "prisma:push": "pnpm --filter server push",
     "prisma:seed": "pnpm --filter server seed",
-    "build": "pnpm -r build"
+    "build": "pnpm -r build",
+    "build:packages": "pnpm -r --filter \"!mobile\" build"
   },
   "keywords": [],
   "author": "",
