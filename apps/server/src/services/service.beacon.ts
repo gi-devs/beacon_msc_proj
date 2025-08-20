@@ -8,10 +8,20 @@ import {
   CreateBeaconReplyData,
   createBeaconReplySchema,
 } from '@beacon/validation';
-import { createBeaconReply } from '@/models/model.beaconReply';
+import {
+  createBeaconReply,
+  getBeaconRepliesByBeaconId,
+  getBeaconRepliesByBeaconIdCount,
+} from '@/models/model.beaconReply';
 import prisma from '@/lib/prisma';
 import { handleZodError } from '@/utils/handle-zod-error';
-import { BeaconReplyDetailsDTO } from '@beacon/types';
+import {
+  BeaconRepliesDTOWithUser,
+  BeaconReplyDetailsDTO,
+  BeaconReplyTextKey,
+  PaginatedResponse,
+} from '@beacon/types';
+import { getDailyCheckInByMoodLogId } from '@/models/model.dailyCheckIn';
 
 async function fetchBeaconDetailsForAffirmations(
   id: number,
@@ -159,7 +169,57 @@ async function createReplyForBeacon(
   return reply;
 }
 
+async function fetchBeaconRepliesFromMoodLogId(
+  moodLogId: number,
+  take: number,
+  skip: number,
+): Promise<PaginatedResponse<BeaconRepliesDTOWithUser>> {
+  const dailyCheckIn = await getDailyCheckInByMoodLogId(moodLogId);
+
+  if (!dailyCheckIn) {
+    throw new CustomError(
+      `Daily check-in with mood log ID ${moodLogId} not found`,
+      404,
+    );
+  }
+
+  if (!dailyCheckIn.Beacon) {
+    throw new CustomError(
+      `No beacon associated with daily check-in for mood log ID ${moodLogId}`,
+      404,
+    );
+  }
+
+  const replies = await getBeaconRepliesByBeaconId(
+    dailyCheckIn.Beacon.id,
+    undefined,
+    {
+      take,
+      skip,
+    },
+  );
+
+  const count = await getBeaconRepliesByBeaconIdCount(dailyCheckIn.Beacon.id);
+
+  return {
+    items: replies.map((reply) => ({
+      id: reply.id,
+      beaconId: reply.beaconId,
+      createdAt: reply.createdAt,
+      replyTextKey: reply.replyTextKey as BeaconReplyTextKey,
+      replyTextId: reply.replyTextId,
+      replierId: reply.replierId,
+      replierUsername: reply.replier.username,
+    })),
+    totalCount: count,
+    page: Math.floor(skip / take) + 1,
+    totalPages: Math.ceil(count / take),
+    hasMore: count > skip + take,
+  };
+}
+
 export const beaconService = {
   fetchBeaconDetailsForAffirmations,
   createReplyForBeacon,
+  fetchBeaconRepliesFromMoodLogId,
 };

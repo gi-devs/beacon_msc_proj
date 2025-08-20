@@ -10,4 +10,9 @@ router.get('/:id/notification/:beaconNotifId', beaconController.receive);
 
 router.post('/:id/notification/:beaconNotifId', beaconController.reply);
 
+router.post(
+  '/mood-log/:moodLogId/replies',
+  beaconController.beaconRepliesWithMoodLogId,
+);
+
 export default router;

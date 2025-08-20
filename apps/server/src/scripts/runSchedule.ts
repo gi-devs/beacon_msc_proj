@@ -13,9 +13,9 @@ import { notifyBeaconOwners } from '@/jobs/notifyBeaconOwners';
 
 (async () => {
   try {
-    // await scheduleNotificationsForBeacons();
+    await scheduleNotificationsForBeacons();
     // await sendNotificationsForBeacons();
-    await notifyBeaconOwners();
+    // await notifyBeaconOwners();
     console.log('Job completed successfully');
     process.exit(0);
   } catch (err) {

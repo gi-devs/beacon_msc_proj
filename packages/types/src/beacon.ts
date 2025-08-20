@@ -17,3 +17,16 @@ export type BeaconReplyDetailsDTO = {
     sadnessScale: number;
   };
 };
+
+export type BeaconRepliesDTO = {
+  id: number;
+  beaconId: number;
+  createdAt: Date;
+  replyTextKey: BeaconReplyTextKey; // matches the key of the text in the application JSON file
+  replyTextId: number; // matches the id of list of texts in
+};
+
+export type BeaconRepliesDTOWithUser = BeaconRepliesDTO & {
+  replierId: string;
+  replierUsername: string;
+};

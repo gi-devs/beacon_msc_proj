@@ -11,7 +11,7 @@ import {
   MoodLogWithBeaconCheck,
   PaginatedResponse,
 } from '@beacon/types';
-import { getDailyCheckInByMoodLogId } from '@/models/model.dailyCheckIn';
+import { getDailyCheckInsByMoodLogId } from '@/models/model.dailyCheckIn';
 
 async function create(
   data: CreateMoodLogData,
@@ -70,7 +70,7 @@ async function getMoodLogsByUserId(
   });
 
   const totalCount = await getUserMoodLogCount(userId);
-  const dailyCheckIns = await getDailyCheckInByMoodLogId(
+  const dailyCheckIns = await getDailyCheckInsByMoodLogId(
     moodLogs.map((log) => log.id),
   );
 
@@ -107,7 +107,7 @@ async function fetchMoodLogDetail(
     throw new CustomError('Mood log not found', 404);
   }
 
-  const dailyCheckIn = await getDailyCheckInByMoodLogId([moodLogId]);
+  const dailyCheckIn = await getDailyCheckInsByMoodLogId([moodLogId]);
   const beaconBroadcasted =
     dailyCheckIn.length > 0 ? dailyCheckIn[0].broadcasted : false;
 

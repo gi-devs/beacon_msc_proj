@@ -40,7 +40,7 @@ export async function getDailyCheckInsByUserId(
   }
 }
 
-export async function getDailyCheckInByMoodLogId(
+export async function getDailyCheckInsByMoodLogId(
   moodLogIds: number[],
   tx: DbClient = prisma,
 ) {
@@ -58,6 +58,22 @@ export async function getDailyCheckInByMoodLogId(
     });
   } catch (error) {
     throw new CustomError('Error fetching daily check-ins', 500);
+  }
+}
+
+export async function getDailyCheckInByMoodLogId(
+  moodLogId: number,
+  tx: DbClient = prisma,
+) {
+  try {
+    return await tx.dailyCheckIn.findUnique({
+      where: { moodLogId },
+      include: {
+        Beacon: true,
+      },
+    });
+  } catch (error) {
+    throw new CustomError('Error fetching daily check-in by mood log ID', 500);
   }
 }
 

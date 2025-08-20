@@ -10,11 +10,13 @@ import { Toast } from 'toastify-react-native';
 import MoodLogDetail from '@/components/MoodLogDetail';
 import DateTimeDisplay from '@/components/DateTimeDisplay';
 import { useJournalEntries } from '@/context/journalEntryContext';
-import { JournalEntryDTO } from '@beacon/types';
+import { BeaconRepliesDTOWithUser, JournalEntryDTO } from '@beacon/types';
 import { getJournalEntryByMoodLogIdRequest } from '@/api/moodLoggerApi';
 import JournalEntryDisplayCard from '@/components/JournalEntryDisplayCard';
 import Colors from '@/constants/Colors';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { getBeaconRepliesWithMoodLogIdRequest } from '@/api/beaconApi';
+import { getBeaconReplyMessage } from '@/utils/getBeaconReplyMessage';
 
 const MoodLogReview = () => {
   const { id } = useLocalSearchParams();
@@ -24,6 +26,9 @@ const MoodLogReview = () => {
   const [selected, setSelected] =
     useState<MoodLogWithBeaconCheckExtended | null>(null);
   const [journalEntry, setJournalEntry] = useState<JournalEntryDTO | null>(
+    null,
+  );
+  const [replies, setReplies] = useState<BeaconRepliesDTOWithUser[] | null>(
     null,
   );
 
@@ -57,6 +62,7 @@ const MoodLogReview = () => {
       }
     };
     setJournalEntry(null);
+    setReplies(null);
     setSelected(null);
 
     void getDetail();
@@ -90,6 +96,26 @@ const MoodLogReview = () => {
     void getJournalEntry();
   }, [selected]);
 
+  useEffect(() => {
+    const getBeaconReplies = async () => {
+      if (!selected) return;
+
+      if (!selected.beaconBroadcasted) return;
+
+      try {
+        const fetched = await getBeaconRepliesWithMoodLogIdRequest(selected.id);
+        if (fetched) {
+          const fetchedReplies = fetched.items;
+          setReplies(fetchedReplies);
+        }
+      } catch (error) {
+        console.error('Failed to fetch journal entry:', error);
+      }
+    };
+
+    void getBeaconReplies();
+  }, [selected]);
+
   if (!selected) {
     return (
       <SafeWrapper>
@@ -117,6 +143,38 @@ const MoodLogReview = () => {
             <Text>No journal entry.</Text>
           )}
         </View>
+        {selected.beaconBroadcasted ? (
+          replies && replies.length > 0 ? (
+            <View className="mb-4">
+              <Text className="text-xl text-gray-600 my-4">
+                Beacon Replies:
+              </Text>
+              {replies.map((reply) => (
+                <View
+                  key={reply.id}
+                  className="bg-white p-4 mb-2 rounded-lg shadow-sm"
+                >
+                  <Text className="text-gray-800 mb-1">
+                    {reply.replierUsername}
+                  </Text>
+                  <Text className="text-gray-500 text-sm">
+                    {getBeaconReplyMessage(
+                      reply.replyTextKey,
+                      reply.replyTextId,
+                    )}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          ) : (
+            <View className="mb-4">
+              <Text className="text-xl text-gray-600 my-4">
+                Beacon Replies:
+              </Text>
+              <Text>No beacon.</Text>
+            </View>
+          )
+        ) : null}
       </ScrollView>
     </SafeWrapper>
   );

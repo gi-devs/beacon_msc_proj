@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { verifyToken } from '@/middleware/verify-token';
-import { dailyLogController } from '@/controllers/controller.dailyLog';
+import { dailyLogController } from '@/controllers/controller.dailyCheckIn';
 
 const router = Router();
 

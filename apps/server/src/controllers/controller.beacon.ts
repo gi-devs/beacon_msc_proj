@@ -70,7 +70,34 @@ async function reply(
   }
 }
 
+async function beaconRepliesWithMoodLogId(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    const { moodLogId } = req.params;
+    const take = parseInt(req.query.take as string) || 10;
+    const skip = parseInt(req.query.skip as string) || 0;
+
+    if (isNaN(take) || isNaN(skip) || isNaN(parseInt(moodLogId))) {
+      throw new CustomError('Invalid pagination parameters', 400);
+    }
+
+    const replies = await beaconService.fetchBeaconRepliesFromMoodLogId(
+      parseInt(moodLogId),
+      take,
+      skip,
+    );
+
+    res.status(200).json(replies);
+  } catch (e) {
+    next(e);
+  }
+}
+
 export const beaconController = {
   receive,
   reply,
+  beaconRepliesWithMoodLogId,
 };
