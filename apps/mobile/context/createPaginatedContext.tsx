@@ -81,10 +81,15 @@ export function createPaginatedContext<T>(
     };
 
     const updateSingleItem = (item: T) => {
+      console.log('Updating single item');
       setItems((prev) => {
-        const map = new Map(prev.map((i: any) => [i.id, i]));
+        const map = new Map(prev.map((item: any) => [item.id, item]));
         map.set((item as any).id, item);
-        return Array.from(map.values());
+
+        return Array.from(map.values()).sort(
+          (a: any, b: any) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        );
       });
     };
 

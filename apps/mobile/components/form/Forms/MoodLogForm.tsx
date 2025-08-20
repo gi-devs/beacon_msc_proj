@@ -10,8 +10,12 @@ import UIButton from '@/components/ui/UIButton';
 import { useLogCreator } from '@/context/logCreatorContext';
 import { Toast } from 'toastify-react-native';
 import { parseToSeverError } from '@/utils/parseToSeverError';
-import { createMoodLogRequest } from '@/api/moodLoggerApi';
+import {
+  createMoodLogRequest,
+  getMoodLogDetailRequest,
+} from '@/api/moodLoggerApi';
 import { AppStyles } from '@/constants/AppStyles';
+import { useMoodLogs } from '@/context/moodLogContext';
 
 const MoodLogForm = ({
   shouldPost,
@@ -48,11 +52,17 @@ const MoodLogForm = ({
   });
   const [stress, anxiety, sadness] = moodValues;
   const moodAverage = (stress + anxiety + sadness) / 3;
+  const { updateSingleItem } = useMoodLogs();
 
   const onSubmit = async (data: CreateMoodLogData) => {
     try {
       if (shouldPost) {
-        await createMoodLogRequest(data);
+        const newMoodLog = await createMoodLogRequest(data);
+        if (newMoodLog) {
+          const detail = await getMoodLogDetailRequest(newMoodLog.id);
+          console.log('New mood log created: updating context');
+          updateSingleItem(detail);
+        }
         reset();
         resetCreateMoodLogData();
         Toast.success('Mood log created successfully!');

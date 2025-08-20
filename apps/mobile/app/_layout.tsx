@@ -8,6 +8,8 @@ import { UIProvider } from '@/context/uiContext';
 import { NotificationProvider } from '@/context/notificationContext';
 import { useEffect } from 'react';
 import { LocationProvider } from '@/context/locationContext';
+import { MoodLogProvider } from '@/context/moodLogContext';
+import { JournalEntryProvider } from '@/context/journalEntryContext';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -17,11 +19,15 @@ export default function RootLayout() {
       <AuthProvider>
         <NotificationProvider>
           <LocationProvider>
-            <UIProvider>
-              <StatusBar backgroundColor="transparent" translucent={true} />
-              <ToastManager />
-              <RootNavigator />
-            </UIProvider>
+            <MoodLogProvider>
+              <JournalEntryProvider>
+                <UIProvider>
+                  <StatusBar backgroundColor="transparent" translucent={true} />
+                  <ToastManager />
+                  <RootNavigator />
+                </UIProvider>
+              </JournalEntryProvider>
+            </MoodLogProvider>
           </LocationProvider>
         </NotificationProvider>
       </AuthProvider>

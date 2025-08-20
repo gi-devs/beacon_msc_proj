@@ -31,16 +31,10 @@ export default function HomeTabsLayout() {
 
   if (isLoading) return null; // or splash screen
 
-  return (
-    <MoodLogProvider>
-      <JournalEntryProvider>
-        {showOnboarding ? (
-          <OnboardingScreen onFinish={turnOffOnboarding} />
-        ) : (
-          <HomeNavigator />
-        )}
-      </JournalEntryProvider>
-    </MoodLogProvider>
+  return showOnboarding ? (
+    <OnboardingScreen onFinish={turnOffOnboarding} />
+  ) : (
+    <HomeNavigator />
   );
 }
 

@@ -31,7 +31,8 @@ const HomeIndex = () => {
   };
 
   useEffect(() => {
-    // Convert mood logs to the format expected by LogStack
+    console.log('moodLogs changed');
+    console.log(JSON.stringify(moodLogs, null, 2));
     const formattedMoodStack = moodLogs.map((log) => ({
       moodLogId: log.id,
       mood: analyseMoodScales(log).score,

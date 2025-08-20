@@ -54,8 +54,8 @@ async function getDetail(
   }
 
   try {
-    const paginatedMoodLogRes = await moodLogService.fetchMoodLogDetail(id);
-    res.status(200).json(paginatedMoodLogRes);
+    const detail = await moodLogService.fetchMoodLogDetail(id);
+    res.status(200).json(detail);
   } catch (e) {
     next(e);
   }
