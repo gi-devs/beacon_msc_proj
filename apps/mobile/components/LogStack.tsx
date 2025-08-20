@@ -10,7 +10,7 @@ import Animated, {
 import { useEffect, useState } from 'react';
 import Colors from '@/constants/Colors';
 
-type MoodItem = {
+export type MoodStackItem = {
   mood: number;
   date: string;
   broadcasted: boolean;
@@ -22,7 +22,7 @@ type MoodItem = {
 
 type LogStackProps = {
   isOpen: boolean;
-  moodStack: MoodItem[];
+  moodStack: MoodStackItem[];
 };
 
 export const useLogStack = () => {
@@ -73,7 +73,7 @@ const LogCard = ({
 }: {
   style?: StyleProp<ViewStyle>;
   isOpen: boolean;
-  moodItem: MoodItem;
+  moodItem: MoodStackItem;
 }) => {
   const clicked = () => {
     console.log('Card clicked');

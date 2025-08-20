@@ -36,7 +36,6 @@ async function getMoodLogs(
       skip,
     );
 
-    console.log(`Fetched mood logs for user ${userId}:`, paginatedMoodLogRes);
     res.status(200).json(paginatedMoodLogRes);
   } catch (e) {
     next(e);

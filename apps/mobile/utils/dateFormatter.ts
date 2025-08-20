@@ -1,6 +1,9 @@
 import { format } from 'date-fns';
 import { enGB } from 'date-fns/locale';
-export const formatShortDate = (date: Date): string => {
+export const formatShortDate = (date: Date, slash?: boolean): string => {
+  if (slash) {
+    return format(date, 'dd/MM/yyyy', { locale: enGB });
+  }
   return format(date, 'dd-MM-yyyy', { locale: enGB });
 };
 

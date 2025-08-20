@@ -1,16 +1,23 @@
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import UIButton from '@/components/ui/UIButton';
-import { useEffect } from 'react';
-import LogStack, { useLogStack } from '@/components/LogStack';
-import { getHighestMoodScale } from '@/utils/analyseMoodScore';
+import { useEffect, useState } from 'react';
+import LogStack, { MoodStackItem, useLogStack } from '@/components/LogStack';
+import {
+  analyseMoodScales,
+  getHighestMoodScale,
+} from '@/utils/analyseMoodScore';
 import { capitaliseFirstLetter } from '@/utils/capitalise';
 import HomeLinks from '@/components/HomeLinks';
 import Colors from '@/constants/Colors';
 import { useAuth } from '@/context/authContext';
+import { useMoodLogs } from '@/context/moodLogContext';
+import { formatShortDate } from '@/utils/dateFormatter';
 
 const HomeIndex = () => {
   const { user } = useAuth();
   const { isLogStackOpen, openLogStack, closeLogStack } = useLogStack();
+  const { items: moodLogs } = useMoodLogs();
+  const [moodStack, setMoodStack] = useState<MoodStackItem[]>([]);
 
   const greetingTimeText = () => {
     const currentHour = new Date().getHours();
@@ -23,38 +30,20 @@ const HomeIndex = () => {
     }
   };
 
-  const tempMoodStack = [
-    {
-      mood: 90,
-      date: '2023-10-01',
-      broadcasted: false,
+  useEffect(() => {
+    // Convert mood logs to the format expected by LogStack
+    const formattedMoodStack = moodLogs.map((log) => ({
+      mood: analyseMoodScales(log).score,
+      date: formatShortDate(log.createdAt),
+      broadcasted: log.beaconBroadcasted,
       highestScale: getHighestMoodScale({
-        sadnessScale: 80,
-        stressScale: 97,
-        anxietyScale: 99,
+        sadnessScale: log.sadnessScale,
+        stressScale: log.stressScale,
+        anxietyScale: log.anxietyScale,
       }),
-    },
-    {
-      mood: 67,
-      date: '2023-10-02',
-      broadcasted: true,
-      highestScale: getHighestMoodScale({
-        sadnessScale: 60,
-        stressScale: 70,
-        anxietyScale: 75,
-      }),
-    },
-    {
-      mood: 46,
-      date: '2023-10-03',
-      broadcasted: false,
-      highestScale: getHighestMoodScale({
-        sadnessScale: 40,
-        stressScale: 50,
-        anxietyScale: 45,
-      }),
-    },
-  ];
+    }));
+    setMoodStack(formattedMoodStack);
+  }, [moodLogs]);
 
   useEffect(() => {
     // const sendTestNotification = async () => {
@@ -98,7 +87,7 @@ const HomeIndex = () => {
             }
           }}
         >
-          <LogStack isOpen={isLogStackOpen} moodStack={tempMoodStack} />
+          <LogStack isOpen={isLogStackOpen} moodStack={moodStack} />
         </Pressable>
         <UIButton
           variant="ghost"

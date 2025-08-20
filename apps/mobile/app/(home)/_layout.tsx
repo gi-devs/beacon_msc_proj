@@ -4,15 +4,19 @@ import OnboardingScreen from '@/components/utils/OnboardingScreen';
 import { useEffect, useState } from 'react';
 import CustomTabBar from '@/components/ui/CustomTabBar';
 import { AsyncItemKey, getAsyncItem, saveAsyncItem } from '@/lib/aysncStorage';
-import { MoodLogProvider } from '@/context/moodLogContext';
+import { MoodLogProvider, useMoodLogs } from '@/context/moodLogContext';
+import {
+  JournalEntryProvider,
+  useJournalEntries,
+} from '@/context/journalEntryContext';
 
 export default function HomeTabsLayout() {
   const [isLoading, setIsLoading] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   const turnOffOnboarding = async () => {
-    await saveAsyncItem(AsyncItemKey.OnboardingComplete, 'true');
     setShowOnboarding(false);
+    await saveAsyncItem(AsyncItemKey.OnboardingComplete, 'true');
   };
 
   useEffect(() => {
@@ -29,16 +33,27 @@ export default function HomeTabsLayout() {
 
   return (
     <MoodLogProvider>
-      {showOnboarding ? (
-        <OnboardingScreen onFinish={turnOffOnboarding} />
-      ) : (
-        <HomeNavigator />
-      )}
+      <JournalEntryProvider>
+        {showOnboarding ? (
+          <OnboardingScreen onFinish={turnOffOnboarding} />
+        ) : (
+          <HomeNavigator />
+        )}
+      </JournalEntryProvider>
     </MoodLogProvider>
   );
 }
 
 function HomeNavigator() {
+  // init data
+  const { refresh: refreshJournalEntries } = useJournalEntries();
+  const { refresh: refreshMoodLogs } = useMoodLogs();
+
+  useEffect(() => {
+    refreshMoodLogs();
+    refreshJournalEntries();
+  }, []);
+
   return (
     <Tabs
       screenOptions={{

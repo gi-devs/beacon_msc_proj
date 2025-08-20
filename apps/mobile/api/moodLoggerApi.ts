@@ -5,7 +5,11 @@ import {
 } from '@beacon/validation';
 import axiosInstance from '@/lib/axios';
 import { parseToSeverError } from '@/utils/parseToSeverError';
-import { MoodLogWithBeaconCheck, PaginatedResponse } from '@beacon/types';
+import {
+  JournalEntryDTO,
+  MoodLogWithBeaconCheck,
+  PaginatedResponse,
+} from '@beacon/types';
 
 // ----------------------
 //        Mood log
@@ -39,6 +43,21 @@ export async function getMoodLogsRequest(
 export async function createJournalEntryRequest(data: CreateJournalEntryData) {
   try {
     const res = await axiosInstance.post('/journal-entry', data);
+    return res.data;
+  } catch (error) {
+    console.log(parseToSeverError(error).message);
+    throw error;
+  }
+}
+
+export async function getJournalEntriesRequest(
+  take: number,
+  skip: number,
+): Promise<PaginatedResponse<JournalEntryDTO>> {
+  try {
+    const res = await axiosInstance.get(
+      `/journal-entry?take=${take}&skip=${skip}`,
+    );
     return res.data;
   } catch (error) {
     console.log(parseToSeverError(error).message);

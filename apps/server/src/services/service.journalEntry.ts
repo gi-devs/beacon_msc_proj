@@ -1,10 +1,18 @@
-import { createJournalEntry } from '@/models/model.journalEntry';
+import {
+  createJournalEntry,
+  getJournalEntriesByUserId,
+  getJournalEntriesByUserIdCount,
+} from '@/models/model.journalEntry';
 import {
   CreateJournalEntryData,
   createJournalEntrySchema,
 } from '@beacon/validation';
 import { handleZodError } from '@/utils/handle-zod-error';
-import { JournalEntryDTO, JournalEntryTags } from '@beacon/types';
+import {
+  JournalEntryDTO,
+  JournalEntryTags,
+  PaginatedResponse,
+} from '@beacon/types';
 
 async function create(
   data: CreateJournalEntryData,
@@ -48,6 +56,37 @@ async function create(
   };
 }
 
+export async function fetchJournalEntriesByUserId(
+  userId: string,
+  take: number,
+  skip: number,
+): Promise<PaginatedResponse<JournalEntryDTO>> {
+  const entries = await getJournalEntriesByUserId(userId, undefined, {
+    skip,
+    take,
+    order: { createdAt: 'desc' },
+  });
+  const entriesCount = await getJournalEntriesByUserIdCount(userId);
+
+  const sanitisedEntries = entries.map((entry) => ({
+    id: entry.id,
+    title: entry.title,
+    content: entry.content,
+    moodFace: entry.moodFace,
+    tags: entry.tags as JournalEntryTags[] | undefined,
+    createdAt: entry.createdAt,
+  }));
+
+  return {
+    items: sanitisedEntries,
+    totalCount: entriesCount,
+    page: Math.floor(skip / take) + 1,
+    totalPages: Math.ceil(entriesCount / take),
+    hasMore: entriesCount > skip + take,
+  };
+}
+
 export const journalEntryService = {
   create,
+  fetchJournalEntriesByUserId,
 };
