@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedProps,
@@ -9,6 +9,8 @@ import Animated, {
   interpolateColor,
 } from 'react-native-reanimated';
 import { Svg, Circle as SVGCircle } from 'react-native-svg';
+import Colors from '@/constants/Colors';
+import { white } from 'nativewind/dist/metro/picocolors';
 
 const AnimatedCircle = Animated.createAnimatedComponent(SVGCircle);
 
@@ -155,12 +157,14 @@ const RippleCircles = ({
             stopRippleLoop();
           }
         }}
-        className="absolute bottom-20 h-[330px] w-[330px] rounded-full items-center justify-center disabled:opacity-50"
+        className="translate-x-1 absolute bottom-20 h-[330px] w-[330px] rounded-full items-center justify-center disabled:opacity-50"
         disabled={disabled}
       >
-        <Text className="text-white font-semibold text-4xl uppercase w-full text-center">
-          Send a Beacon
-        </Text>
+        <Image
+          source={require('@/assets/items/send_beacon.png')}
+          className="w-80"
+          resizeMode="contain"
+        />
       </TouchableOpacity>
     </View>
   );

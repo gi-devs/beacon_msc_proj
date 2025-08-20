@@ -57,7 +57,7 @@ function MoodLoggingHeader({
     <View
       style={[
         headerTransparent ? styles.headerTransparent : styles.headerContainer,
-        hasScrolled && styles.headerShadow,
+        !headerTransparent && hasScrolled && styles.headerShadow,
       ]}
     >
       <View className="pt-safe flex-row px-4 py-4">
