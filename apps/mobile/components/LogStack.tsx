@@ -9,8 +9,10 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useEffect, useState } from 'react';
 import Colors from '@/constants/Colors';
+import { useRouter } from 'expo-router';
 
 export type MoodStackItem = {
+  moodLogId: number;
   mood: number;
   date: string;
   broadcasted: boolean;
@@ -75,18 +77,21 @@ const LogCard = ({
   isOpen: boolean;
   moodItem: MoodStackItem;
 }) => {
+  const router = useRouter();
   const clicked = () => {
-    console.log('Card clicked');
+    if (isOpen) {
+      router.push({
+        pathname: '/(home)/entry-details/mood-log/[id]',
+        params: { id: moodItem.moodLogId },
+      });
+    }
   };
+
   return (
     <Animated.View
       style={[AppStyles.cardShadow, style]}
       className="rounded-xl w-full"
-      onTouchEnd={() => {
-        if (isOpen) {
-          clicked();
-        }
-      }}
+      onTouchEnd={clicked}
     >
       <View className="bg-white px-6 py-4 flex-row justify-between items-center rounded-xl">
         <View className="flex-row gap-4 items-center">

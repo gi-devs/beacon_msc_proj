@@ -8,7 +8,7 @@ type PaginatedContextType<T> = {
   page: number;
   fetchMore: () => Promise<void>;
   refresh: () => Promise<void>;
-  fetchSingle: (id: number) => Promise<void | T>;
+  fetchSingle: (id: number) => Promise<null | T>;
 };
 
 export function createPaginatedContext<T>(
@@ -70,6 +70,7 @@ export function createPaginatedContext<T>(
           map.set((data as any).id, data);
           return Array.from(map.values());
         });
+        return data;
       } catch (e) {
         console.error('Error fetching single item:', e);
         throw e; // Re-throw to handle it in the component if needed

@@ -17,11 +17,16 @@ export default function CustomTabBar({
   const { animatedStyle, handlePressIn, handlePressOut, handleVibration } =
     usePressScaleAnimation();
 
-  const middleIndex = Math.floor(state.routes.length / 2);
+  const routesWithIcons = state.routes.filter((route) => {
+    const options = descriptors[route.key].options;
+    return options.tabBarIcon;
+  });
+
+  const middleIndex = Math.floor(routesWithIcons.length / 2);
 
   return (
     <View className="flex-row items-center justify-around bg-white absolute left-0 bottom-0 right-0 rounded-t-3xl h-[100px]">
-      {state.routes.map((route, index) => {
+      {routesWithIcons.map((route, index) => {
         const { options } = descriptors[route.key];
 
         const isFocused = state.index === index;

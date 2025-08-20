@@ -33,6 +33,7 @@ const HomeIndex = () => {
   useEffect(() => {
     // Convert mood logs to the format expected by LogStack
     const formattedMoodStack = moodLogs.map((log) => ({
+      moodLogId: log.id,
       mood: analyseMoodScales(log).score,
       date: formatShortDate(log.createdAt),
       broadcasted: log.beaconBroadcasted,
@@ -44,25 +45,6 @@ const HomeIndex = () => {
     }));
     setMoodStack(formattedMoodStack);
   }, [moodLogs]);
-
-  useEffect(() => {
-    // const sendTestNotification = async () => {
-    //   await Notifications.scheduleNotificationAsync({
-    //     content: {
-    //       title: '🚨 Test Notification',
-    //       body: 'This is a test. It should take you to do a daily log.',
-    //       data: {
-    //         route: '/(mood-logging)?mode=daily-log',
-    //       },
-    //     },
-    //     trigger: {
-    //       type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-    //       seconds: 5,
-    //     }, // fire in 5 seconds
-    //   });
-    // };
-    // sendTestNotification();
-  }, []);
 
   return (
     <ScrollView

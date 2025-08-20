@@ -11,16 +11,21 @@ import { Circle as SVGCircle } from 'react-native-svg';
 type MoodFaceProps = {
   mood: number; // 1-100
   size?: number; // Optional size prop for future use
+  animated?: boolean; // Optional prop to control animation
 };
 
 const AnimatedCircle = Animated.createAnimatedComponent(SVGCircle);
 
-const MoodFace = ({ mood, size = 50 }: MoodFaceProps) => {
+const MoodFace = ({ mood, size = 50, animated = true }: MoodFaceProps) => {
   const mouthPath = generateMouthPath(mood);
   const moodValue = useSharedValue(mood);
 
   useEffect(() => {
-    moodValue.value = withTiming(mood, { duration: 500 });
+    if (animated) {
+      moodValue.value = withTiming(mood, { duration: 500 });
+    } else {
+      moodValue.value = mood;
+    }
   }, [mood]);
 
   const animatedProps = useAnimatedProps(() => {

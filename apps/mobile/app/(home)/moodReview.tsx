@@ -30,7 +30,7 @@ import UIButton from '@/components/ui/UIButton';
 import { useJournalEntries } from '@/context/journalEntryContext';
 import { truncateText } from '@/utils/truncatedText';
 import { usePressScaleAnimation } from '@/hooks/usePressScaleAnimation';
-import { useRouter } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { AppStyles } from '@/constants/AppStyles';
 
 const MoodReview = () => {
@@ -88,7 +88,20 @@ const JournalList = () => {
           data={journalEntries}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
-            <View className="p-4 mb-4 border-gray-200 bg-white">
+            <Pressable
+              className="p-4 mb-4 border-gray-200 bg-white"
+              style={{
+                borderColor: getMoodColor(item.moodFace),
+                borderWidth: 1,
+              }}
+              onPress={() => {
+                handleVibration();
+                router.push({
+                  pathname: '/(home)/entry-details/journal-entry/[id]',
+                  params: { id: item.id },
+                });
+              }}
+            >
               <View className="flex-row justify-between items-center mb-4">
                 <View className="flex-row">
                   <Text className="text-gray-600">
@@ -108,7 +121,7 @@ const JournalList = () => {
                   {truncateText(item.content, 120)}
                 </Text>
               </View>
-            </View>
+            </Pressable>
           )}
           refreshControl={
             <RefreshControl refreshing={loading} onRefresh={refresh} />
@@ -149,6 +162,8 @@ const MoodList = () => {
     loading,
     hasMore,
   } = useMoodLogs();
+  const { handleVibration } = usePressScaleAnimation();
+  const router = useRouter();
   return (
     <>
       <Text className="text-2xl my-8 mb-6">Mood Logs</Text>
@@ -159,7 +174,16 @@ const MoodList = () => {
           renderItem={({ item }) => {
             const { score } = analyseMoodScales(item);
             return (
-              <View className="p-4 mb-2 border-gray-200 relative bg-white">
+              <Pressable
+                className="p-4 mb-2 border-gray-200 relative bg-white"
+                onPress={() => {
+                  handleVibration();
+                  router.push({
+                    pathname: '/(home)/entry-details/mood-log/[id]',
+                    params: { id: item.id },
+                  });
+                }}
+              >
                 <View
                   style={{
                     backgroundColor: getMoodColor(score),
@@ -197,7 +221,7 @@ const MoodList = () => {
                     </View>
                   </View>
                 </View>
-              </View>
+              </Pressable>
             );
           }}
           refreshControl={
