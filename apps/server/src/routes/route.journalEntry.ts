@@ -6,5 +6,6 @@ const router = Router();
 
 router.post('/', verifyToken, journalEntryController.create);
 router.get('/', verifyToken, journalEntryController.getManyByUserId);
+router.get('/:id', verifyToken, journalEntryController.getDetail);
 
 export default router;

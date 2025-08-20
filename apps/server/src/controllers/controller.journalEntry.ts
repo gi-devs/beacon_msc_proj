@@ -41,7 +41,27 @@ async function getManyByUserId(
   }
 }
 
+async function getDetail(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  const id = parseInt(req.params.id as string, 10);
+
+  if (isNaN(id)) {
+    return next(new Error('Invalid journal entry ID'));
+  }
+
+  try {
+    const entry = await journalEntryService.fetchJournalEntryDetail(id);
+    res.status(200).json(entry);
+  } catch (e) {
+    next(e);
+  }
+}
+
 export const journalEntryController = {
   create,
   getManyByUserId,
+  getDetail,
 };

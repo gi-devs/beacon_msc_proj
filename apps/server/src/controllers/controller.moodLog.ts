@@ -19,7 +19,7 @@ async function create(
   }
 }
 
-async function getMoodLogs(
+async function getManyByUserId(
   req: Request,
   res: Response,
   next: NextFunction,
@@ -42,7 +42,27 @@ async function getMoodLogs(
   }
 }
 
+async function getDetail(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  const id = parseInt(req.params.id as string, 10);
+
+  if (isNaN(id)) {
+    return next(new Error('Invalid mood log ID'));
+  }
+
+  try {
+    const paginatedMoodLogRes = await moodLogService.fetchMoodLogDetail(id);
+    res.status(200).json(paginatedMoodLogRes);
+  } catch (e) {
+    next(e);
+  }
+}
+
 export const moodLogController = {
   create,
-  getMoodLogs,
+  getManyByUserId,
+  getDetail,
 };

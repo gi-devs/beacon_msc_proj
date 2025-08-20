@@ -1,12 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
-
-export type PaginatedResponse<T> = {
-  items: T[];
-  totalCount: number;
-  page: number;
-  totalPages: number;
-  hasMore: boolean;
-};
+import { PaginatedResponse } from '@beacon/types';
 
 type PaginatedContextType<T> = {
   items: T[];
@@ -15,10 +8,12 @@ type PaginatedContextType<T> = {
   page: number;
   fetchMore: () => Promise<void>;
   refresh: () => Promise<void>;
+  fetchSingle: (id: number) => Promise<void | T>;
 };
 
 export function createPaginatedContext<T>(
   fetchFn: (take: number, skip: number) => Promise<PaginatedResponse<T>>,
+  fetchSingleFn: (id: number) => Promise<T>,
   limit = 10,
 ) {
   const Context = createContext<PaginatedContextType<T> | undefined>(undefined);
@@ -45,6 +40,8 @@ export function createPaginatedContext<T>(
           return Array.from(map.values());
         });
         setPage(pageToFetch);
+      } catch (e) {
+        console.error('Error fetching paginated data:', e);
       } finally {
         setLoading(false);
       }
@@ -60,9 +57,38 @@ export function createPaginatedContext<T>(
       await fetchPage(1, true);
     };
 
+    /**
+     * Gets a single item by ID and updates the context.
+     * @throws if the fetch fails
+     */
+    const fetchSingle = async (id: number) => {
+      try {
+        setLoading(true);
+        const data = await fetchSingleFn(id);
+        setItems((prev) => {
+          const map = new Map(prev.map((item: any) => [item.id, item]));
+          map.set((data as any).id, data);
+          return Array.from(map.values());
+        });
+      } catch (e) {
+        console.error('Error fetching single item:', e);
+        throw e; // Re-throw to handle it in the component if needed
+      } finally {
+        setLoading(false);
+      }
+    };
+
     return (
       <Context.Provider
-        value={{ items, loading, hasMore, page, fetchMore, refresh }}
+        value={{
+          items,
+          loading,
+          hasMore,
+          page,
+          fetchMore,
+          refresh,
+          fetchSingle,
+        }}
       >
         {children}
       </Context.Provider>

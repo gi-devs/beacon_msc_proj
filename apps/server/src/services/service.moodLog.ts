@@ -1,5 +1,6 @@
 import {
   createMoodLog,
+  getMoodLogById,
   getUserMoodLogCount,
   getUserMoodLogs,
 } from '@/models/model.moodLog';
@@ -97,7 +98,28 @@ async function getMoodLogsByUserId(
   };
 }
 
+async function fetchMoodLogDetail(
+  moodLogId: number,
+): Promise<MoodLogWithBeaconCheck> {
+  const moodLog = await getMoodLogById(moodLogId);
+
+  if (!moodLog) {
+    throw new CustomError('Mood log not found', 404);
+  }
+
+  const dailyCheckIn = await getDailyCheckInByMoodLogId([moodLogId]);
+  const beaconBroadcasted =
+    dailyCheckIn.length > 0 ? dailyCheckIn[0].broadcasted : false;
+
+  return {
+    ...moodLog,
+    beaconBroadcasted,
+    isDailyCheckIn: dailyCheckIn.length > 0,
+  };
+}
+
 export const moodLogService = {
   create,
   getMoodLogsByUserId,
+  fetchMoodLogDetail,
 };

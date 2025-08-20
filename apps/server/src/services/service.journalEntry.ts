@@ -2,6 +2,7 @@ import {
   createJournalEntry,
   getJournalEntriesByUserId,
   getJournalEntriesByUserIdCount,
+  getJournalEntryById,
 } from '@/models/model.journalEntry';
 import {
   CreateJournalEntryData,
@@ -86,7 +87,27 @@ export async function fetchJournalEntriesByUserId(
   };
 }
 
+export async function fetchJournalEntryDetail(
+  journalEntryId: number,
+): Promise<JournalEntryDTO> {
+  const entry = await getJournalEntryById(journalEntryId);
+
+  if (!entry) {
+    throw new Error('Journal entry not found');
+  }
+
+  return {
+    id: entry.id,
+    title: entry.title,
+    content: entry.content,
+    moodFace: entry.moodFace,
+    tags: entry.tags as JournalEntryTags[] | undefined,
+    createdAt: entry.createdAt,
+  };
+}
+
 export const journalEntryService = {
   create,
   fetchJournalEntriesByUserId,
+  fetchJournalEntryDetail,
 };

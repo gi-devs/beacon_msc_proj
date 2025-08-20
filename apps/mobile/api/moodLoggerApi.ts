@@ -37,6 +37,18 @@ export async function getMoodLogsRequest(
   }
 }
 
+export async function getMoodLogDetailRequest(
+  id: number,
+): Promise<MoodLogWithBeaconCheck> {
+  try {
+    const res = await axiosInstance.get(`/mood-log/${id}`);
+    return res.data;
+  } catch (error) {
+    console.log(parseToSeverError(error).message);
+    throw error;
+  }
+}
+
 // ------------------------
 //      Journal entry
 // ------------------------
@@ -58,6 +70,18 @@ export async function getJournalEntriesRequest(
     const res = await axiosInstance.get(
       `/journal-entry?take=${take}&skip=${skip}`,
     );
+    return res.data;
+  } catch (error) {
+    console.log(parseToSeverError(error).message);
+    throw error;
+  }
+}
+
+export async function getJournalEntryDetailRequest(
+  id: number,
+): Promise<JournalEntryDTO> {
+  try {
+    const res = await axiosInstance.get(`/journal-entry/${id}`);
     return res.data;
   } catch (error) {
     console.log(parseToSeverError(error).message);
