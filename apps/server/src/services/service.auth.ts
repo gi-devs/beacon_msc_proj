@@ -209,9 +209,6 @@ async function getProfile(userId: string): Promise<UserPayload> {
     normaliseDate(new Date()),
   );
 
-  console.log("Normalised date for today's log:", normaliseDate(new Date()));
-  console.log(existingLogToday);
-
   return {
     userId: userFound.id,
     username: userFound.username,
