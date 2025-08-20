@@ -13,6 +13,16 @@ export async function getJournalEntryById(id: number, tx: DbClient = prisma) {
   }
 }
 
+export async function getJournalEntryByMoodLogId(moodLogId: number) {
+  try {
+    return await prisma.journalEntry.findUnique({
+      where: { moodLogId },
+    });
+  } catch (error) {
+    throw new CustomError('Error fetching journal entry by mood log ID', 500);
+  }
+}
+
 export async function getJournalEntriesByUserId(
   userId: string,
   tx: DbClient = prisma,

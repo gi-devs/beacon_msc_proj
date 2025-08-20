@@ -60,8 +60,30 @@ async function getDetail(
   }
 }
 
+async function getByMoodLogId(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  const moodLogId = parseInt(req.params.id as string, 10);
+
+  if (isNaN(moodLogId)) {
+    return next(new Error('Invalid mood log ID'));
+  }
+
+  try {
+    const entry =
+      await journalEntryService.fetchJournalEntryByMoodLogId(moodLogId);
+
+    res.status(200).json(entry);
+  } catch (e) {
+    next(e);
+  }
+}
+
 export const journalEntryController = {
   create,
   getManyByUserId,
   getDetail,
+  getByMoodLogId,
 };

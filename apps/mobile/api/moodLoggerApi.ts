@@ -89,6 +89,18 @@ export async function getJournalEntryDetailRequest(
   }
 }
 
+export async function getJournalEntryByMoodLogIdRequest(
+  moodLogId: number,
+): Promise<JournalEntryDTO | null> {
+  try {
+    const res = await axiosInstance.get(`/journal-entry/mood-log/${moodLogId}`);
+    return res.data;
+  } catch (error) {
+    console.log(parseToSeverError(error).message);
+    throw error;
+  }
+}
+
 // -------------------------
 //        Daily log
 // -------------------------

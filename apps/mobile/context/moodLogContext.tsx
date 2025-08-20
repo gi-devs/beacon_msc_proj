@@ -5,8 +5,12 @@ import {
   getMoodLogsRequest,
 } from '@/api/moodLoggerApi';
 
+export type MoodLogWithBeaconCheckExtended = MoodLogWithBeaconCheck & {
+  journalEntryId?: number | null;
+};
+
 export const { Provider: MoodLogProvider, usePaginated: useMoodLogs } =
-  createPaginatedContext<MoodLogWithBeaconCheck>(
+  createPaginatedContext<MoodLogWithBeaconCheckExtended>(
     getMoodLogsRequest,
     getMoodLogDetailRequest,
     10,

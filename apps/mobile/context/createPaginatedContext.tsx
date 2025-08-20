@@ -3,6 +3,7 @@ import { PaginatedResponse } from '@beacon/types';
 
 type PaginatedContextType<T> = {
   items: T[];
+  updateSingleItem: (item: T) => void;
   loading: boolean;
   hasMore: boolean;
   page: number;
@@ -79,10 +80,19 @@ export function createPaginatedContext<T>(
       }
     };
 
+    const updateSingleItem = (item: T) => {
+      setItems((prev) => {
+        const map = new Map(prev.map((i: any) => [i.id, i]));
+        map.set((item as any).id, item);
+        return Array.from(map.values());
+      });
+    };
+
     return (
       <Context.Provider
         value={{
           items,
+          updateSingleItem,
           loading,
           hasMore,
           page,

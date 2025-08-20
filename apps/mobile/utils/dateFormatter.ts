@@ -14,3 +14,7 @@ export const formateTo24HourTime = (date: Date): string => {
 export const getDayOfWeek = (date: Date): string => {
   return format(date, 'EEEE', { locale: enGB });
 };
+
+export const getFullDateString = (date: Date): string => {
+  return format(date, 'do MMMM yyyy', { locale: enGB });
+};

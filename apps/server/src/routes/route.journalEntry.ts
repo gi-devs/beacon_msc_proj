@@ -7,5 +7,6 @@ const router = Router();
 router.post('/', verifyToken, journalEntryController.create);
 router.get('/', verifyToken, journalEntryController.getManyByUserId);
 router.get('/:id', verifyToken, journalEntryController.getDetail);
+router.get('/mood-log/:id', verifyToken, journalEntryController.getByMoodLogId);
 
 export default router;

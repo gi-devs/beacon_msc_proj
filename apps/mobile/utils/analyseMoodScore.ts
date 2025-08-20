@@ -44,3 +44,28 @@ export const getHighestMoodScale = (data: {
     return { scale: 'sad', value: sadnessScale };
   }
 };
+
+export function computeScaleToWords(scale: number): string {
+  if (scale === 0) {
+    return 'Not at All';
+  }
+
+  if (scale < 20) {
+    return 'Very Low';
+  }
+  if (scale < 40) {
+    return 'Low';
+  }
+  if (scale < 60) {
+    return 'Moderate';
+  }
+  if (scale < 80) {
+    return 'High';
+  }
+
+  if (scale === 100) {
+    return 'Extremely High';
+  }
+
+  return 'Very High';
+}

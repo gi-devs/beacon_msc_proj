@@ -3,6 +3,7 @@ import {
   getJournalEntriesByUserId,
   getJournalEntriesByUserIdCount,
   getJournalEntryById,
+  getJournalEntryByMoodLogId,
 } from '@/models/model.journalEntry';
 import {
   CreateJournalEntryData,
@@ -57,7 +58,7 @@ async function create(
   };
 }
 
-export async function fetchJournalEntriesByUserId(
+async function fetchJournalEntriesByUserId(
   userId: string,
   take: number,
   skip: number,
@@ -87,7 +88,7 @@ export async function fetchJournalEntriesByUserId(
   };
 }
 
-export async function fetchJournalEntryDetail(
+async function fetchJournalEntryDetail(
   journalEntryId: number,
 ): Promise<JournalEntryDTO> {
   const entry = await getJournalEntryById(journalEntryId);
@@ -106,8 +107,28 @@ export async function fetchJournalEntryDetail(
   };
 }
 
+async function fetchJournalEntryByMoodLogId(
+  moodLogId: number,
+): Promise<JournalEntryDTO | null> {
+  const entry = await getJournalEntryByMoodLogId(moodLogId);
+
+  if (!entry) {
+    return null;
+  }
+
+  return {
+    id: entry.id,
+    title: entry.title,
+    content: entry.content,
+    moodFace: entry.moodFace,
+    tags: entry.tags as JournalEntryTags[] | undefined,
+    createdAt: entry.createdAt,
+  };
+}
+
 export const journalEntryService = {
   create,
   fetchJournalEntriesByUserId,
   fetchJournalEntryDetail,
+  fetchJournalEntryByMoodLogId,
 };

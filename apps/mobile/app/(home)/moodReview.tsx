@@ -32,6 +32,8 @@ import { truncateText } from '@/utils/truncatedText';
 import { usePressScaleAnimation } from '@/hooks/usePressScaleAnimation';
 import { Link, useRouter } from 'expo-router';
 import { AppStyles } from '@/constants/AppStyles';
+import JournalEntryDisplayCard from '@/components/JournalEntryDisplayCard';
+import MoodLogDisplayCard from '@/components/MoodLogDisplayCard';
 
 const MoodReview = () => {
   const [isMoodList, setIsMoodList] = useState(true);
@@ -88,40 +90,7 @@ const JournalList = () => {
           data={journalEntries}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
-            <Pressable
-              className="p-4 mb-4 border-gray-200 bg-white"
-              style={{
-                borderColor: getMoodColor(item.moodFace),
-                borderWidth: 1,
-              }}
-              onPress={() => {
-                handleVibration();
-                router.push({
-                  pathname: '/(home)/entry-details/journal-entry/[id]',
-                  params: { id: item.id },
-                });
-              }}
-            >
-              <View className="flex-row justify-between items-center mb-4">
-                <View className="flex-row">
-                  <Text className="text-gray-600">
-                    {getDayOfWeek(item.createdAt)} -{' '}
-                  </Text>
-                  <Text className="text-gray-600">
-                    {formatShortDate(item.createdAt, true)}
-                  </Text>
-                </View>
-                <Text className="text-gray-600">
-                  {formateTo24HourTime(item.createdAt)}
-                </Text>
-              </View>
-              <View className="flex-col gap-1">
-                <Text className="text-xl font-semibold">{item.title}</Text>
-                <Text className="leading-normal font-light">
-                  {truncateText(item.content, 120)}
-                </Text>
-              </View>
-            </Pressable>
+            <JournalEntryDisplayCard journalEntry={item} />
           )}
           refreshControl={
             <RefreshControl refreshing={loading} onRefresh={refresh} />
@@ -172,57 +141,7 @@ const MoodList = () => {
           data={moodLogs}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => {
-            const { score } = analyseMoodScales(item);
-            return (
-              <Pressable
-                className="p-4 mb-2 border-gray-200 relative bg-white"
-                onPress={() => {
-                  handleVibration();
-                  router.push({
-                    pathname: '/(home)/entry-details/mood-log/[id]',
-                    params: { id: item.id },
-                  });
-                }}
-              >
-                <View
-                  style={{
-                    backgroundColor: getMoodColor(score),
-                  }}
-                  className="w-1 absolute left-0 top-2 bottom-2"
-                />
-                <View className="flex-row justify-between items-center">
-                  <View className="flex-col gap-2 items-start">
-                    <Text className="text-gray-600">
-                      {getDayOfWeek(item.createdAt)}{' '}
-                    </Text>
-                    <Text className="text-gray-600">
-                      {formatShortDate(item.createdAt)}
-                    </Text>
-                  </View>
-                  <View className="flex-col gap-2 items-end">
-                    <Text className="font-semibold">
-                      {formateTo24HourTime(item.createdAt)}
-                    </Text>
-                    <View className="flex-row gap-1">
-                      {item.beaconBroadcasted && (
-                        <MaterialCommunityIcons
-                          name="broadcast"
-                          size={20}
-                          color={Colors.app.ripple['100']}
-                        />
-                      )}
-                      {item.isDailyCheckIn && (
-                        <MaterialCommunityIcons
-                          name="calendar-today"
-                          size={20}
-                          color="black"
-                        />
-                      )}
-                    </View>
-                  </View>
-                </View>
-              </Pressable>
-            );
+            return <MoodLogDisplayCard moodLogEntry={item} />;
           }}
           refreshControl={
             <RefreshControl refreshing={loading} onRefresh={refresh} />
