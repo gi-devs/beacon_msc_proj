@@ -12,11 +12,12 @@ import Colors from '@/constants/Colors';
 import { useRouter } from 'expo-router';
 import {
   analyseMoodScales,
-  getHighestMoodScale,
+  computeMoodLabelFromScore,
 } from '@/utils/analyseMoodScore';
 import { formatShortDate } from '@/utils/dateFormatter';
 import { useMoodLogStore } from '@/store/useMoodLogStore';
 import UIButton from '@/components/ui/UIButton';
+import { getMoodColor } from '@/utils/computeColour';
 
 export type MoodStackItem = {
   moodLogId: number;
@@ -24,7 +25,14 @@ export type MoodStackItem = {
   date: string;
   broadcasted: boolean;
   highestScale: {
-    scale: 'stressed' | 'anxious' | 'sad';
+    scale:
+      | 'stressed'
+      | 'anxious'
+      | 'sad'
+      | 'calm'
+      | 'happy'
+      | 'relaxed'
+      | 'neutral';
     value: number;
   };
 };
@@ -57,12 +65,13 @@ const LogStack = ({ isOpen }: LogStackProps) => {
       mood: analyseMoodScales(log).score,
       date: formatShortDate(log.createdAt),
       broadcasted: log.beaconBroadcasted,
-      highestScale: getHighestMoodScale({
+      highestScale: computeMoodLabelFromScore({
         sadnessScale: log.sadnessScale,
         stressScale: log.stressScale,
         anxietyScale: log.anxietyScale,
       }),
     }));
+    console.log('Formatted Mood Stack:', formattedMoodStack);
     setMoodStack(formattedMoodStack);
   }, [moodLogs]);
 
@@ -162,7 +171,16 @@ const LogCard = ({
   );
 };
 
-const colourForScale = (scale: 'stressed' | 'anxious' | 'sad') => {
+const colourForScale = (
+  scale:
+    | 'stressed'
+    | 'anxious'
+    | 'sad'
+    | 'calm'
+    | 'happy'
+    | 'relaxed'
+    | 'neutral',
+) => {
   switch (scale) {
     case 'stressed':
       return Colors.app.moodColours['stressed'];
@@ -170,6 +188,12 @@ const colourForScale = (scale: 'stressed' | 'anxious' | 'sad') => {
       return Colors.app.moodColours['anxious'];
     case 'sad':
       return Colors.app.moodColours['sad'];
+    case 'calm':
+      return Colors.app.moodColours['calm'];
+    case 'happy':
+      return Colors.app.moodColours['happy'];
+    case 'relaxed':
+      return Colors.app.moodColours['relaxed'];
     default:
       return Colors.app.moodColours['neutral'];
   }

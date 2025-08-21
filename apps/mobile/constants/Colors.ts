@@ -34,6 +34,9 @@ export default {
       anxious: '#d09027',
       sad: '#6a34e0',
       neutral: '#a4ecc7',
+      calm: '#6892e3',
+      happy: '#fdd835',
+      relaxed: '#00ffe1',
     },
   },
 };

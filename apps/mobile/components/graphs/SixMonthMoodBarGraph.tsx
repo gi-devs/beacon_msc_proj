@@ -25,7 +25,7 @@ const SixMonthMoodBarGraph = () => {
       className="my-4"
     >
       <Text className="text-lg font-semibold mb-2">
-        Average Negative Moods (Last 6 Months)
+        Average Moods (Last 6 Months)
       </Text>
 
       <BarChart

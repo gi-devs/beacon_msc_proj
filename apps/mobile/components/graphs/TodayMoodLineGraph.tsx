@@ -22,9 +22,7 @@ const TodayMoodLineChart = () => {
         setChartWidth(width);
       }}
     >
-      <Text className="text-lg font-semibold mb-2">
-        Negative Mood Trends Today
-      </Text>
+      <Text className="text-lg font-semibold mb-2">Mood Trends Today</Text>
       {chartWidth > 0 && (
         <LineChart
           data={{
