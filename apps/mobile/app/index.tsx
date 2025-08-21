@@ -1,74 +1,19 @@
 import { ImageBackground, Text, View } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
-import { useEffect } from 'react';
+import Animated from 'react-native-reanimated';
 import { Link } from 'expo-router';
+
 import { useUI } from '@/context/uiContext';
 import UIButton from '@/components/ui/UIButton';
-import { useAuthStore } from '@/store/useAuthStore';
+import { useOpeningAnimation } from '@/hooks/ui/useOpeningAnimation';
 
 const Index = () => {
-  const { isAuthenticated } = useAuthStore();
-  const { openingScreen } = useUI();
-
-  // animated values
-  const top = useSharedValue(-1000);
-  const infoOpacity = useSharedValue(0);
-
-  useEffect(() => {
-    if (openingScreen.hasAnimated) {
-      top.value = 0;
-      infoOpacity.value = 1;
-      return;
-    }
-
-    const timer = setTimeout(() => {
-      handleAnimation();
-      openingScreen.setHasAnimated(true);
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  const animatedBeacon = useAnimatedStyle(() => {
-    return {
-      position: 'absolute',
-      zIndex: 1,
-      top: top.value,
-      left: '50%',
-      transform: [
-        {
-          translateX: '-50%',
-        },
-      ],
-    };
-  });
-
-  const animatedInfo = useAnimatedStyle(() => {
-    return {
-      opacity: infoOpacity.value,
-    };
-  });
-
-  const handleAnimation = () => {
-    top.value = withTiming(
-      0,
-      {
-        duration: 1000,
-      },
-      () => {
-        infoOpacity.value = withTiming(1, { duration: 500 });
-      },
-    );
-  };
-
-  if (isAuthenticated) {
-    // return <Redirect href="/home" />;
-    console.log('User is authenticated, redirecting to home');
-  }
+  const {
+    openingScreen: { hasAnimated, setHasAnimated },
+  } = useUI();
+  const { animatedBeacon, animatedInfo } = useOpeningAnimation(
+    hasAnimated,
+    setHasAnimated,
+  );
 
   return (
     <ImageBackground
