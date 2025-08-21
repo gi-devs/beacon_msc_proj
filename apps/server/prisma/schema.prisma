@@ -35,6 +35,9 @@ model User {
   beacons             Beacon[]
   beaconNotification  BeaconNotification[]
   BeaconReplies       BeaconReply[]
+
+  CommutityRooms    CommunityRoom[]
+  CommutityRoomPost CommunityRoomPost[]
 }
 
 model NotificationSetting {
@@ -187,6 +190,30 @@ model BeaconReply {
   beaconNotification BeaconNotification @relation(fields: [replierId, beaconId], references: [userId, beaconId], onDelete: Cascade)
 
   @@unique([replierId, beaconId])
+}
+
+model CommunityRoom {
+  id                 String              @id @default(cuid())
+  roomName           String
+  expiresAt          DateTime
+  createdAt          DateTime            @default(now())
+  members            User[]
+  CommitityRoomPosts CommunityRoomPost[]
+}
+
+model CommunityRoomPost {
+  id        String   @id @default(cuid())
+  roomId    String
+  userId    String
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  room CommunityRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([roomId, createdAt])
 }
 
 enum BeaconNotificationStatus {
