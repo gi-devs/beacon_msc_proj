@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { AppState } from 'react-native';
-import { useAuth } from '@/context/authContext';
 import { getLocationStatus, pushLocationIfPermitted } from '@/lib/location';
 import { useIdleTime } from '@/hooks/useIdleTime';
 import { AsyncItemKey } from '@/lib/aysncStorage';
+import { useAuthStore } from '@/store/useAuthStore';
 
 type LocationContextType = {
   location: {
@@ -29,7 +29,7 @@ const LocationContext = React.createContext<LocationContextType | undefined>(
 export const LocationProvider: React.FC<LocationProviderProps> = ({
   children,
 }) => {
-  const { isAuthenticated, isLoading: authIsLoading } = useAuth();
+  const { isAuthenticated, isLoading: authIsLoading } = useAuthStore();
   const [isLocationEnabled, setIsLocationEnabled] = useState(false);
   const { runIfIdleTimeExceeded } = useIdleTime(
     5,

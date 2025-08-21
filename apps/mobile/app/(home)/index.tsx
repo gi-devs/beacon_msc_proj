@@ -9,12 +9,12 @@ import {
 import { capitaliseFirstLetter } from '@/utils/capitalise';
 import HomeLinks from '@/components/HomeLinks';
 import Colors from '@/constants/Colors';
-import { useAuth } from '@/context/authContext';
 import { useMoodLogs } from '@/context/moodLogContext';
 import { formatShortDate } from '@/utils/dateFormatter';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const HomeIndex = () => {
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const { isLogStackOpen, openLogStack, closeLogStack } = useLogStack();
   const { items: moodLogs } = useMoodLogs();
   const [moodStack, setMoodStack] = useState<MoodStackItem[]>([]);
@@ -32,7 +32,6 @@ const HomeIndex = () => {
 
   useEffect(() => {
     console.log('moodLogs changed');
-    console.log(JSON.stringify(moodLogs, null, 2));
     const formattedMoodStack = moodLogs.map((log) => ({
       moodLogId: log.id,
       mood: analyseMoodScales(log).score,

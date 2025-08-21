@@ -1,5 +1,4 @@
-import { ImageBackground, Text, TouchableOpacity, View } from 'react-native';
-import { useAuth } from '@/context/authContext';
+import { ImageBackground, Text, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -9,9 +8,10 @@ import { useEffect } from 'react';
 import { Link } from 'expo-router';
 import { useUI } from '@/context/uiContext';
 import UIButton from '@/components/ui/UIButton';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const Index = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuthStore();
   const { openingScreen } = useUI();
 
   // animated values

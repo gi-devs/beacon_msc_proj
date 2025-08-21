@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useRouter } from 'expo-router';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -16,13 +15,13 @@ import {
 } from '@/components/form/FormTextInput';
 import { useIsMounted } from '@/hooks/useIsMounted';
 import { useEffect } from 'react';
-import { useAuth } from '@/context/authContext';
 import { SignUpData, signUpSchema } from '@beacon/validation';
 import { Toast } from 'toastify-react-native';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const SignUp = () => {
   const isMounted = useIsMounted();
-  const { register } = useAuth();
+  const { register } = useAuthStore();
   const { control, handleSubmit } = useForm<SignUpData>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {

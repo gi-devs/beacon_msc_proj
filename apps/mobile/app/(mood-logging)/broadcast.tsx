@@ -8,7 +8,7 @@ import { Linking, Modal, Platform, Text, View } from 'react-native';
 import UIButton from '@/components/ui/UIButton';
 import { useLocation } from '@/context/locationContext';
 import { useState } from 'react';
-import { useAuth } from '@/context/authContext';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const Broadcast = () => {
   const {
@@ -20,7 +20,7 @@ const Broadcast = () => {
   const router = useRouter();
   const { isLocationEnabled } = useLocation();
   const [loading, setLoading] = useState(false);
-  const { user, setUser } = useAuth();
+  const { user, setUser } = useAuthStore();
   const sendDataWithBroadcast = async () => {
     setLoading(true);
     try {

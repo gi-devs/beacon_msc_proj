@@ -15,12 +15,12 @@ import {
 } from '@/components/form/FormTextInput';
 import { useIsMounted } from '@/hooks/useIsMounted';
 import { useEffect } from 'react';
-import { useAuth } from '@/context/authContext';
 import { LogInData, logInSchema } from '@beacon/validation';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const LogIn = () => {
   const isMounted = useIsMounted();
-  const { login } = useAuth();
+  const { login } = useAuthStore();
   const { control, handleSubmit } = useForm<LogInData>({
     resolver: zodResolver(logInSchema),
     defaultValues: {

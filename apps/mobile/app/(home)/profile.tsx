@@ -1,5 +1,4 @@
 import { Linking, Platform, Text, TouchableOpacity, View } from 'react-native';
-import { useAuth } from '@/context/authContext';
 import UIButton from '@/components/ui/UIButton';
 import {
   pushLocalBeaconNotification,
@@ -11,9 +10,10 @@ import { resetApp } from '@/utils/devMode';
 import { getLocation, requestLocationPermissions } from '@/lib/location';
 import { useLocation } from '@/context/locationContext';
 import { Link } from 'expo-router';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const Profile = () => {
-  const { logout, user } = useAuth();
+  const { logout, user } = useAuthStore();
   const { hasNotificationsEnabled } = useNotification();
   const { isLocationEnabled } = useLocation();
   return (

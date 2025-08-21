@@ -13,10 +13,10 @@ import {
   getNotificationPermissions,
 } from '@/lib/notification';
 import { AppState } from 'react-native';
-import { useAuth } from '@/context/authContext';
 import { LinkProps, useRouter } from 'expo-router';
 import { useIdleTime } from '@/hooks/useIdleTime';
 import { AsyncItemKey, getAsyncItem, saveAsyncItem } from '@/lib/aysncStorage';
+import { useAuthStore } from '@/store/useAuthStore';
 
 type NotificationData = {
   route?: LinkProps['href'];
@@ -61,7 +61,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
     15,
     AsyncItemKey.NotificationIdleCheck,
   );
-  const { isAuthenticated, isLoading: authIsLoading } = useAuth();
+  const { isAuthenticated, isLoading: authIsLoading } = useAuthStore();
   const router = useRouter();
 
   const notificationListener = useRef<Notifs.EventSubscription | null>(null);

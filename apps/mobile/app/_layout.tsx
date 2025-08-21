@@ -1,8 +1,7 @@
 import { SplashScreen, Stack } from 'expo-router';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import '../global.css';
 import { StatusBar } from 'react-native';
-import { AuthProvider, useAuth } from '@/context/authContext';
 import ToastManager from 'toastify-react-native';
 import { UIProvider } from '@/context/uiContext';
 import { NotificationProvider } from '@/context/notificationContext';
@@ -10,33 +9,34 @@ import { useEffect } from 'react';
 import { LocationProvider } from '@/context/locationContext';
 import { MoodLogProvider } from '@/context/moodLogContext';
 import { JournalEntryProvider } from '@/context/journalEntryContext';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useAuthInit } from '@/hooks/effects/useAuthInit';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   return (
     <SafeAreaProvider>
-      <AuthProvider>
-        <NotificationProvider>
-          <LocationProvider>
-            <MoodLogProvider>
-              <JournalEntryProvider>
-                <UIProvider>
-                  <StatusBar backgroundColor="transparent" translucent={true} />
-                  <ToastManager />
-                  <RootNavigator />
-                </UIProvider>
-              </JournalEntryProvider>
-            </MoodLogProvider>
-          </LocationProvider>
-        </NotificationProvider>
-      </AuthProvider>
+      <NotificationProvider>
+        <LocationProvider>
+          <MoodLogProvider>
+            <JournalEntryProvider>
+              <UIProvider>
+                <StatusBar backgroundColor="transparent" translucent={true} />
+                <ToastManager />
+                <RootNavigator />
+              </UIProvider>
+            </JournalEntryProvider>
+          </MoodLogProvider>
+        </LocationProvider>
+      </NotificationProvider>
     </SafeAreaProvider>
   );
 }
 
 function RootNavigator() {
-  const { isAuthenticated, isLoading } = useAuth();
+  useAuthInit();
+  const { isAuthenticated, isLoading } = useAuthStore();
 
   useEffect(() => {
     if (isLoading) {
