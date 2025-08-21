@@ -5,8 +5,13 @@ import {
   getJournalEntryDetailRequest,
 } from '@/api/moodLoggerApi';
 
-export const useJournalEntryStore = createPaginatedStore<JournalEntryDTO>(
-  getJournalEntriesRequest,
-  getJournalEntryDetailRequest,
-  10,
-);
+export type JournalEntryDTOExtended = JournalEntryDTO & {
+  moodLogId?: number;
+};
+
+export const useJournalEntryStore =
+  createPaginatedStore<JournalEntryDTOExtended>(
+    getJournalEntriesRequest,
+    getJournalEntryDetailRequest,
+    10,
+  );

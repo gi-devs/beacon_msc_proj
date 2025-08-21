@@ -1,7 +1,6 @@
 import { ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeWrapper } from '@/components/utils/SafeWrapper';
-import { MoodLogWithBeaconCheckExtended } from '@/context/moodLogContext';
 import { useEffect, useState } from 'react';
 import { Toast } from 'toastify-react-native';
 import MoodLogDetail from '@/components/MoodLogDetail';
@@ -13,7 +12,10 @@ import Colors from '@/constants/Colors';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { getBeaconRepliesWithMoodLogIdRequest } from '@/api/beaconApi';
 import { getBeaconReplyMessage } from '@/utils/getBeaconReplyMessage';
-import { useMoodLogStore } from '@/store/useMoodLogStore';
+import {
+  MoodLogWithBeaconCheckExtended,
+  useMoodLogStore,
+} from '@/store/useMoodLogStore';
 import { useJournalEntryStore } from '@/store/useJournalEntryStore';
 
 const MoodLogReview = () => {

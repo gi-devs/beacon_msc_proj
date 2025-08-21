@@ -16,5 +16,5 @@ export const getDayOfWeek = (date: Date): string => {
 };
 
 export const getFullDateString = (date: Date): string => {
-  return format(date, 'do MMMM yyyy', { locale: enGB });
+  return format(date, 'MMMM do, yyyy', { locale: enGB });
 };

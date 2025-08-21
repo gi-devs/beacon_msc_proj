@@ -1,6 +1,7 @@
 import {
   createMoodLog,
   getMoodLogById,
+  getMoodLogByJournalEntryId,
   getUserMoodLogCount,
   getUserMoodLogs,
 } from '@/models/model.moodLog';
@@ -118,8 +119,21 @@ async function fetchMoodLogDetail(
   };
 }
 
+async function fetchMoodLogByJournalEntryId(
+  journalEntryId: number,
+): Promise<MoodLogDTO | null> {
+  const moodLog = await getMoodLogByJournalEntryId(journalEntryId);
+
+  if (!moodLog) {
+    return null;
+  }
+
+  const { userId: strippedUserId, ...sanitisedMoodLog } = moodLog;
+  return sanitisedMoodLog;
+}
 export const moodLogService = {
   create,
   getMoodLogsByUserId,
   fetchMoodLogDetail,
+  fetchMoodLogByJournalEntryId,
 };

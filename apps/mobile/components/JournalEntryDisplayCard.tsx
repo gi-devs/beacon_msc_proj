@@ -19,7 +19,7 @@ const JournalEntryDisplayCard = ({
   const { handleVibration } = usePressScaleAnimation();
   return (
     <Pressable
-      className="p-4 mb-4 border-gray-200 bg-white"
+      className="p-4 mb-4 border-gray-200 bg-white rounded-md"
       style={{
         borderColor: getMoodColor(journalEntry.moodFace),
         borderWidth: 1,

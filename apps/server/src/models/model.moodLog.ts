@@ -52,6 +52,20 @@ export async function getMoodLogById(
   }
 }
 
+export async function getMoodLogByJournalEntryId(
+  journalEntryId: number,
+  tx: DbClient = prisma,
+): Promise<MoodLog | null> {
+  try {
+    return tx.moodLog.findFirst({
+      where: { journalEntryId },
+    });
+  } catch (error) {
+    console.error('Error fetching mood log by journal entry ID:', error);
+    throw new CustomError('Failed to fetch mood log from database', 500);
+  }
+}
+
 export async function createMoodLog(
   data: Prisma.MoodLogCreateInput,
   tx: DbClient = prisma,

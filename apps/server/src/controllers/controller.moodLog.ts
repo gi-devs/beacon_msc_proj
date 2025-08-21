@@ -61,8 +61,30 @@ async function getDetail(
   }
 }
 
+async function getByJournalEntryId(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  const journalEntryId = parseInt(req.params.journalEntryId as string, 10);
+
+  if (isNaN(journalEntryId)) {
+    return next(new Error('Invalid journal entry ID'));
+  }
+
+  console.log(`Fetching mood log for journal entry ID: ${journalEntryId}`);
+  try {
+    const moodLog =
+      await moodLogService.fetchMoodLogByJournalEntryId(journalEntryId);
+    res.status(200).json(moodLog);
+  } catch (e) {
+    next(e);
+  }
+}
+
 export const moodLogController = {
   create,
   getManyByUserId,
   getDetail,
+  getByJournalEntryId,
 };

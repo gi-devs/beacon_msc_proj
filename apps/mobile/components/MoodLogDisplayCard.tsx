@@ -9,17 +9,23 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
 import { useRouter } from 'expo-router';
 import { usePressScaleAnimation } from '@/hooks/ui/usePressScaleAnimation';
-import { MoodLogWithBeaconCheck } from '@beacon/types';
+import { MoodLogDTO, MoodLogWithBeaconCheck } from '@beacon/types';
 import { analyseMoodScales } from '@/utils/analyseMoodScore';
 
 const MoodLogDisplayCard = ({
   moodLogEntry,
 }: {
-  moodLogEntry: MoodLogWithBeaconCheck;
+  moodLogEntry: MoodLogWithBeaconCheck | MoodLogDTO;
 }) => {
   const router = useRouter();
   const { handleVibration } = usePressScaleAnimation();
   const { score } = analyseMoodScales(moodLogEntry);
+
+  const isMoodLogWithBeaconCheck = (
+    entry: MoodLogDTO | MoodLogWithBeaconCheck,
+  ): entry is MoodLogWithBeaconCheck => {
+    return 'beaconBroadcasted' in entry || 'isDailyCheckIn' in entry;
+  };
 
   return (
     <Pressable
@@ -51,22 +57,24 @@ const MoodLogDisplayCard = ({
           <Text className="font-semibold">
             {formateTo24HourTime(moodLogEntry.createdAt)}
           </Text>
-          <View className="flex-row gap-1">
-            {moodLogEntry.beaconBroadcasted && (
-              <MaterialCommunityIcons
-                name="broadcast"
-                size={20}
-                color={Colors.app.ripple['100']}
-              />
-            )}
-            {moodLogEntry.isDailyCheckIn && (
-              <MaterialCommunityIcons
-                name="calendar-today"
-                size={20}
-                color="black"
-              />
-            )}
-          </View>
+          {isMoodLogWithBeaconCheck(moodLogEntry) && (
+            <View className="flex-row gap-1">
+              {moodLogEntry.beaconBroadcasted && (
+                <MaterialCommunityIcons
+                  name="broadcast"
+                  size={20}
+                  color={Colors.app.ripple['100']}
+                />
+              )}
+              {moodLogEntry.isDailyCheckIn && (
+                <MaterialCommunityIcons
+                  name="calendar-today"
+                  size={20}
+                  color="black"
+                />
+              )}
+            </View>
+          )}
         </View>
       </View>
     </Pressable>
