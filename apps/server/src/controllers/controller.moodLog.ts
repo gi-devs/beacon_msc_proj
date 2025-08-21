@@ -82,9 +82,56 @@ async function getByJournalEntryId(
   }
 }
 
+async function getByMoodLogDateFilter(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  const decoded = req.user as UserPayload;
+  const userId = decoded.userId;
+  const months = req.query.months as string | undefined;
+  const weeks = req.query.weeks as string | undefined;
+  const days = req.query.days as string | undefined;
+
+  try {
+    const moodLogs = await moodLogService.fetchMoodLogAverage(
+      userId,
+      months,
+      weeks,
+      days,
+    );
+    res.status(200).json(moodLogs);
+  } catch (e) {
+    next(e);
+  }
+}
+
+async function getByMoodLogAveragesByMonth(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  const decoded = req.user as UserPayload;
+  const userId = decoded.userId;
+  const { months } = req.params;
+
+  try {
+    const moodLogs = await moodLogService.fetchMoodLogAverageMonths(
+      userId,
+      months,
+    );
+
+    res.status(200).json(moodLogs);
+  } catch (e) {
+    next(e);
+  }
+}
+
 export const moodLogController = {
   create,
   getManyByUserId,
   getDetail,
   getByJournalEntryId,
+  getByMoodLogDateFilter,
+  getByMoodLogAveragesByMonth,
 };

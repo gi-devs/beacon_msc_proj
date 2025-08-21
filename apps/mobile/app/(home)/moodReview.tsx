@@ -31,9 +31,6 @@ const MoodReview = () => {
   return (
     <SafeWrapper className="flex-1">
       {isMoodList ? <MoodList /> : <JournalList />}
-      {/*<Link href="/(mood-logging)/journal">*/}
-      {/*  <Text style={{ color: 'blue' }}>Go to Journal Entry</Text>*/}
-      {/*</Link>*/}
       <ListPicker isMoodList={isMoodList} setIsMoodList={setIsMoodList} />
     </SafeWrapper>
   );
@@ -121,8 +118,6 @@ const MoodList = () => {
     loading,
     hasMore,
   } = useMoodLogStore();
-  const { handleVibration } = usePressScaleAnimation();
-  const router = useRouter();
   return (
     <>
       <Text className="text-2xl my-8 mb-6">Mood Logs</Text>
@@ -187,7 +182,7 @@ const ListPicker = ({
   }));
 
   return (
-    <View className="mt-4 w-[300px] mx-auto rounded-full bg-white flex-row relative overflow-hidden border-4 border-white">
+    <View className="mt-4 w-[300px] mx-auto rounded-full bg-white flex-row relative overflow-hidden border-4 border-white mb-4">
       {/* Animated background pill */}
       <Animated.View
         style={[

@@ -1,7 +1,7 @@
 import prisma, { DbClient } from '@/lib/prisma';
 import { MoodLog, Prisma } from '@/generated/prisma';
 import { CustomError } from '@/utils/custom-error';
-import { DataRequestOptions } from '@beacon/types';
+import { DataRequestOptions, MoodLogsAverageByMonth } from '@beacon/types';
 
 export async function getUserMoodLogs(
   userId: string,
@@ -22,6 +22,72 @@ export async function getUserMoodLogs(
   } catch (error) {
     console.error('Error fetching user mood logs:', error);
     throw new CustomError('Failed to fetch mood logs from database', 500);
+  }
+}
+
+export async function getUserMoodLogsDateFilter(
+  userId: string,
+  dateFrom: Date,
+): Promise<MoodLog[]> {
+  try {
+    return prisma.moodLog.findMany({
+      where: {
+        userId,
+        createdAt: {
+          gte: dateFrom,
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  } catch (error) {
+    console.error('Error fetching user mood logs with date filter:', error);
+    throw new CustomError('Failed to fetch mood logs from database', 500);
+  }
+}
+
+export async function getUserMoodLogsAverageByMonth(
+  userId: string,
+  startDate: Date,
+): Promise<MoodLogsAverageByMonth[]> {
+  try {
+    const moodLogs = await prisma.moodLog.groupBy({
+      by: ['createdAt'],
+      where: {
+        userId,
+        createdAt: {
+          gte: startDate,
+        },
+      },
+      _avg: {
+        stressScale: true,
+        anxietyScale: true,
+        sadnessScale: true,
+      },
+      _count: {
+        _all: true,
+      },
+    });
+
+    return moodLogs.map((log) => {
+      const month = log.createdAt.toLocaleString('default', { month: 'short' });
+      const avgScale =
+        ((log._avg.stressScale || 0) +
+          (log._avg.anxietyScale || 0) +
+          (log._avg.sadnessScale || 0)) /
+        3;
+
+      return {
+        month,
+        averageScore: Math.round(avgScale),
+        totalLogs: log._count._all,
+      };
+    });
+  } catch (error) {
+    console.error('Error fetching monthly mood log averages:', error);
+    throw new CustomError(
+      'Failed to fetch monthly mood averages from database',
+      500,
+    );
   }
 }
 

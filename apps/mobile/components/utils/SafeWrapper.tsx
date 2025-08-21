@@ -12,7 +12,7 @@ export const SafeWrapper = ({
   className,
   viewProps,
 }: SafeWrapperProps) => {
-  const composedClass = clsx('mt-safe px-6 pb-4 mb-[100px]', className);
+  const composedClass = clsx('mt-safe px-6 mb-[100px]', className);
 
   return (
     <View className={composedClass} {...viewProps}>

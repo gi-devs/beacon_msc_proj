@@ -8,6 +8,8 @@ import { parseToSeverError } from '@/utils/parseToSeverError';
 import {
   JournalEntryDTO,
   MoodLogDTO,
+  MoodLogsAverageByMonth,
+  MoodLogsForGraph,
   MoodLogWithBeaconCheck,
   PaginatedResponse,
 } from '@beacon/types';
@@ -57,6 +59,33 @@ export async function getMoodLogByJournalEntryIdRequest(
     const res = await axiosInstance.get(
       `/mood-log/journal-entry/${journalEntryId}`,
     );
+    return res.data;
+  } catch (error) {
+    console.log(parseToSeverError(error).message);
+    throw error;
+  }
+}
+
+export async function getMoodLogAverageRequest(
+  months: number,
+  weeks: number,
+  days: number,
+): Promise<MoodLogsForGraph[]> {
+  try {
+    const res = await axiosInstance.get(
+      `/mood-log/average?months=${months}&weeks=${weeks}&days=${days}`,
+    );
+    return res.data;
+  } catch (error) {
+    console.log(parseToSeverError(error).message);
+    throw error;
+  }
+}
+export async function getMoodLogAverageByMonthsRequest(
+  months: number,
+): Promise<MoodLogsAverageByMonth[]> {
+  try {
+    const res = await axiosInstance.get(`/mood-log/average/months/${months}`);
     return res.data;
   } catch (error) {
     console.log(parseToSeverError(error).message);

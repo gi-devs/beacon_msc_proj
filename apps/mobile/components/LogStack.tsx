@@ -16,6 +16,7 @@ import {
 } from '@/utils/analyseMoodScore';
 import { formatShortDate } from '@/utils/dateFormatter';
 import { useMoodLogStore } from '@/store/useMoodLogStore';
+import UIButton from '@/components/ui/UIButton';
 
 export type MoodStackItem = {
   moodLogId: number;
@@ -74,19 +75,33 @@ const LogStack = ({ isOpen }: LogStackProps) => {
 
   return (
     <View className="relative w-full">
-      {moodStack.map((item, index) => (
-        <LogCard
-          key={index}
-          style={[
-            {
-              zIndex: 3 - index,
-            },
-            index === 0 ? null : animatedStyle,
-          ]}
-          isOpen={isOpen}
-          moodItem={item}
-        />
-      ))}
+      {moodStack.length > 0 ? (
+        moodStack.map((item, index) => (
+          <LogCard
+            key={index}
+            style={[
+              {
+                zIndex: 3 - index,
+              },
+              index === 0 ? null : animatedStyle,
+            ]}
+            isOpen={isOpen}
+            moodItem={item}
+          />
+        ))
+      ) : (
+        <View>
+          <UIButton
+            href="/(mood-logging)"
+            variant="outline"
+            buttonClassName="rounded-md"
+            textClassName="underline text-blue-500"
+          >
+            <Text className="no-underline text-black">No logs yet. </Text>Create
+            a log to see it!
+          </UIButton>
+        </View>
+      )}
     </View>
   );
 };
