@@ -12,8 +12,8 @@ async function create(
   const data = req.body;
 
   try {
-    const moodLog = await journalEntryService.create(data, userId);
-    res.status(201).json(moodLog);
+    const journalEntry = await journalEntryService.create(data, userId);
+    res.status(201).json(journalEntry);
   } catch (e) {
     next(e);
   }

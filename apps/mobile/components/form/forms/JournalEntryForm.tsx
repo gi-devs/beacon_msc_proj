@@ -16,6 +16,7 @@ import MoodFace from '@/components/MoodFace';
 import UIButton from '@/components/ui/UIButton';
 import Slider from '@react-native-community/slider';
 import { FormTextInput } from '@/components/form/FormTextInput';
+import { useJournalEntryStore } from '@/store/useJournalEntryStore';
 
 const JournalEntryForm = ({
   shouldPost,
@@ -51,11 +52,15 @@ const JournalEntryForm = ({
       tags: createJournalEntryData.tags || [],
     },
   });
+  const { updateSingleItem } = useJournalEntryStore();
 
   const onSubmit = async (data: CreateJournalEntryData) => {
     try {
       if (shouldPost) {
-        await createJournalEntryRequest(data);
+        const entry = await createJournalEntryRequest(data);
+        if (entry) {
+          updateSingleItem(entry);
+        }
         reset();
         resetCreateJournalEntryData();
         Toast.success('Journal entry created successfully!');
