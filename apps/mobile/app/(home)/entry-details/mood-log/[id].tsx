@@ -12,89 +12,26 @@ import Colors from '@/constants/Colors';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { getBeaconRepliesWithMoodLogIdRequest } from '@/api/beaconApi';
 import { getBeaconReplyMessage } from '@/utils/getBeaconReplyMessage';
-import {
-  MoodLogWithBeaconCheckExtended,
-  useMoodLogStore,
-} from '@/store/useMoodLogStore';
+import { useMoodLogStore } from '@/store/useMoodLogStore';
 import { useJournalEntryStore } from '@/store/useJournalEntryStore';
+import { useGetDetail } from '@/hooks/effects/useGetDetails';
+import { useRelatedEntity } from '@/hooks/effects/useRelatedEntity';
 
 const MoodLogReview = () => {
   const { id } = useLocalSearchParams();
-  const router = useRouter();
   const { items, fetchSingle, updateSingleItem } = useMoodLogStore();
   const { items: journalItems } = useJournalEntryStore();
-  const [selected, setSelected] =
-    useState<MoodLogWithBeaconCheckExtended | null>(null);
-  const [journalEntry, setJournalEntry] = useState<JournalEntryDTO | null>(
-    null,
-  );
   const [replies, setReplies] = useState<BeaconRepliesDTOWithUser[] | null>(
     null,
   );
-
-  useEffect(() => {
-    const failed = (message = 'Mood log not found') => {
-      Toast.error(message);
-      router.push('/(home)');
-    };
-
-    const getDetail = async () => {
-      try {
-        if (!id) return failed();
-
-        const parsedId = parseInt(id as string, 10);
-        if (isNaN(parsedId)) return failed();
-
-        const found = items.find((item) => item.id === parsedId);
-
-        if (found) {
-          setSelected(found);
-        } else {
-          const fetched = await fetchSingle(parsedId);
-          if (fetched) {
-            setSelected(fetched);
-          } else {
-            failed();
-          }
-        }
-      } catch (e) {
-        failed();
-      }
-    };
-    setJournalEntry(null);
-    setReplies(null);
-    setSelected(null);
-
-    void getDetail();
-  }, [id]);
-
-  useEffect(() => {
-    const getJournalEntry = async () => {
-      if (!selected) return;
-
-      if (selected.journalEntryId) {
-        const journal = journalItems.find(
-          (item) => item.id === selected.journalEntryId,
-        );
-        if (journal) {
-          setJournalEntry(journal);
-          return;
-        }
-      }
-
-      try {
-        const fetched = await getJournalEntryByMoodLogIdRequest(selected.id);
-        if (fetched) {
-          setJournalEntry(fetched);
-          updateSingleItem({ ...selected, journalEntryId: fetched.id });
-        }
-      } catch (error) {
-        console.error('Failed to fetch journal entry:', error);
-      }
-    };
-
-    void getJournalEntry();
-  }, [selected]);
+  const selected = useGetDetail({ id, items, fetchSingle });
+  const journalEntry = useRelatedEntity({
+    selected,
+    selectedRelatedId: selected?.journalEntryId,
+    storeItems: journalItems,
+    fetchBySelectedId: getJournalEntryByMoodLogIdRequest,
+    updateSelected: updateSingleItem,
+  });
 
   useEffect(() => {
     const getBeaconReplies = async () => {

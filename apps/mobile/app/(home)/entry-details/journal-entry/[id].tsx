@@ -14,83 +14,21 @@ import { getMoodLogByJournalEntryIdRequest } from '@/api/moodLoggerApi';
 import { MoodLogDTO } from '@beacon/types';
 import { useMoodLogStore } from '@/store/useMoodLogStore';
 import MoodLogDisplayCard from '@/components/MoodLogDisplayCard';
+import { useGetDetail } from '@/hooks/effects/useGetDetails';
+import { useRelatedEntity } from '@/hooks/effects/useRelatedEntity';
 
 const MoodLogReview = () => {
   const { id } = useLocalSearchParams();
-  const router = useRouter();
   const { items, fetchSingle, updateSingleItem } = useJournalEntryStore();
   const { items: moodLogItems } = useMoodLogStore();
-  const [selected, setSelected] = useState<JournalEntryDTOExtended | null>(
-    null,
-  );
-  const [moodLog, setMoodLog] = useState<MoodLogDTO | null>(null);
-
-  useEffect(() => {
-    const failed = (message = 'Mood log not found') => {
-      Toast.error(message);
-      router.push('/(home)');
-    };
-
-    const getDetail = async () => {
-      try {
-        if (!id) failed();
-
-        const parsedId = parseInt(id as string, 10);
-
-        if (isNaN(parsedId)) failed();
-
-        const found = items.find((item) => item.id === parsedId);
-
-        if (found) {
-          setSelected(found);
-          return;
-        } else {
-          // TODO: fetch from server if not found in context
-          const fetched = await fetchSingle(parsedId);
-
-          if (fetched) {
-            setSelected(fetched);
-            return;
-          }
-        }
-
-        failed();
-      } catch (e) {
-        failed();
-        router.push('/(home)');
-      }
-    };
-
-    void getDetail();
-  }, [id]);
-
-  useEffect(() => {
-    const getMoodLog = async () => {
-      if (!selected) return;
-
-      if (selected.moodLogId) {
-        const moodLog = moodLogItems.find(
-          (item) => item.id === selected.moodLogId,
-        );
-        if (moodLog) {
-          setMoodLog(moodLog);
-          return;
-        }
-      }
-
-      try {
-        const fetched = await getMoodLogByJournalEntryIdRequest(selected.id);
-        if (fetched) {
-          setMoodLog(fetched);
-          updateSingleItem({ ...selected, moodLogId: fetched.id });
-        }
-      } catch (error) {
-        console.error('Failed to fetch journal entry:', error);
-      }
-    };
-
-    void getMoodLog();
-  }, [selected]);
+  const selected = useGetDetail({ id, items, fetchSingle });
+  const moodLog = useRelatedEntity({
+    selected,
+    selectedRelatedId: selected?.moodLogId,
+    storeItems: moodLogItems,
+    fetchBySelectedId: getMoodLogByJournalEntryIdRequest,
+    updateSelected: updateSingleItem,
+  });
 
   if (!selected) {
     return (
