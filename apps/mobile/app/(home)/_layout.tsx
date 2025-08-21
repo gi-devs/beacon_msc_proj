@@ -4,11 +4,8 @@ import OnboardingScreen from '@/components/utils/OnboardingScreen';
 import { useEffect, useState } from 'react';
 import CustomTabBar from '@/components/ui/CustomTabBar';
 import { AsyncItemKey, getAsyncItem, saveAsyncItem } from '@/lib/aysncStorage';
-import { MoodLogProvider, useMoodLogs } from '@/context/moodLogContext';
-import {
-  JournalEntryProvider,
-  useJournalEntries,
-} from '@/context/journalEntryContext';
+import { useJournalEntries } from '@/context/journalEntryContext';
+import { useMoodLogStore } from '@/store/useMoodLogStore';
 
 export default function HomeTabsLayout() {
   const [isLoading, setIsLoading] = useState(true);
@@ -41,7 +38,7 @@ export default function HomeTabsLayout() {
 function HomeNavigator() {
   // init data
   const { refresh: refreshJournalEntries } = useJournalEntries();
-  const { refresh: refreshMoodLogs } = useMoodLogs();
+  const { refresh: refreshMoodLogs } = useMoodLogStore();
 
   useEffect(() => {
     refreshMoodLogs();

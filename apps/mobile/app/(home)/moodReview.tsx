@@ -8,32 +8,22 @@ import {
   Vibration,
   Animated as RNAnimated,
 } from 'react-native';
-import { useMoodLogs } from '@/context/moodLogContext';
 import { useEffect, useState } from 'react';
-import {
-  formateTo24HourTime,
-  formatShortDate,
-  getDayOfWeek,
-} from '@/utils/dateFormatter';
 import { SafeWrapper } from '@/components/utils/SafeWrapper';
-import { analyseMoodScales } from '@/utils/analyseMoodScore';
-import { getMoodColor } from '@/utils/computeColour';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { MoodLogWithBeaconCheck } from '@beacon/types';
 import UIButton from '@/components/ui/UIButton';
 import { useJournalEntries } from '@/context/journalEntryContext';
-import { truncateText } from '@/utils/truncatedText';
 import { usePressScaleAnimation } from '@/hooks/usePressScaleAnimation';
-import { Link, useRouter } from 'expo-router';
-import { AppStyles } from '@/constants/AppStyles';
+import { useRouter } from 'expo-router';
 import JournalEntryDisplayCard from '@/components/JournalEntryDisplayCard';
 import MoodLogDisplayCard from '@/components/MoodLogDisplayCard';
+import { useMoodLogStore } from '@/store/useMoodLogStore';
 
 const MoodReview = () => {
   const [isMoodList, setIsMoodList] = useState(true);
@@ -130,7 +120,7 @@ const MoodList = () => {
     refresh,
     loading,
     hasMore,
-  } = useMoodLogs();
+  } = useMoodLogStore();
   const { handleVibration } = usePressScaleAnimation();
   const router = useRouter();
   return (

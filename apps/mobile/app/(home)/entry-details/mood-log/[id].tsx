@@ -1,10 +1,7 @@
 import { ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeWrapper } from '@/components/utils/SafeWrapper';
-import {
-  MoodLogWithBeaconCheckExtended,
-  useMoodLogs,
-} from '@/context/moodLogContext';
+import { MoodLogWithBeaconCheckExtended } from '@/context/moodLogContext';
 import { useEffect, useState } from 'react';
 import { Toast } from 'toastify-react-native';
 import MoodLogDetail from '@/components/MoodLogDetail';
@@ -17,11 +14,12 @@ import Colors from '@/constants/Colors';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { getBeaconRepliesWithMoodLogIdRequest } from '@/api/beaconApi';
 import { getBeaconReplyMessage } from '@/utils/getBeaconReplyMessage';
+import { useMoodLogStore } from '@/store/useMoodLogStore';
 
 const MoodLogReview = () => {
   const { id } = useLocalSearchParams();
   const router = useRouter();
-  const { items, fetchSingle, updateSingleItem } = useMoodLogs();
+  const { items, fetchSingle, updateSingleItem } = useMoodLogStore();
   const { items: journalItems } = useJournalEntries();
   const [selected, setSelected] =
     useState<MoodLogWithBeaconCheckExtended | null>(null);
@@ -128,12 +126,14 @@ const MoodLogReview = () => {
     <SafeWrapper className="flex-1 pb-0">
       <ScrollView>
         <DateTimeDisplay date={selected.createdAt} />
-        <MaterialCommunityIcons
-          name="broadcast"
-          size={24}
-          color={Colors.app.ripple['100']}
-          style={{ marginBottom: 8 }}
-        />
+        {selected.beaconBroadcasted && (
+          <MaterialCommunityIcons
+            name="broadcast"
+            size={24}
+            color={Colors.app.ripple['100']}
+            style={{ marginBottom: 8 }}
+          />
+        )}
         <MoodLogDetail moodLog={selected} />
         <View className="mt-4">
           <Text className="text-xl text-gray-600 my-4">Journal Entry:</Text>

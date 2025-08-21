@@ -9,14 +9,14 @@ import {
 import { capitaliseFirstLetter } from '@/utils/capitalise';
 import HomeLinks from '@/components/HomeLinks';
 import Colors from '@/constants/Colors';
-import { useMoodLogs } from '@/context/moodLogContext';
 import { formatShortDate } from '@/utils/dateFormatter';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useMoodLogStore } from '@/store/useMoodLogStore';
 
 const HomeIndex = () => {
   const { user } = useAuthStore();
   const { isLogStackOpen, openLogStack, closeLogStack } = useLogStack();
-  const { items: moodLogs } = useMoodLogs();
+  const { items: moodLogs } = useMoodLogStore();
   const [moodStack, setMoodStack] = useState<MoodStackItem[]>([]);
 
   const greetingTimeText = () => {

@@ -15,7 +15,7 @@ import {
   getMoodLogDetailRequest,
 } from '@/api/moodLoggerApi';
 import { AppStyles } from '@/constants/AppStyles';
-import { useMoodLogs } from '@/context/moodLogContext';
+import { useMoodLogStore } from '@/store/useMoodLogStore';
 
 const MoodLogForm = ({
   shouldPost,
@@ -52,7 +52,7 @@ const MoodLogForm = ({
   });
   const [stress, anxiety, sadness] = moodValues;
   const moodAverage = (stress + anxiety + sadness) / 3;
-  const { updateSingleItem } = useMoodLogs();
+  const { updateSingleItem } = useMoodLogStore();
 
   const onSubmit = async (data: CreateMoodLogData) => {
     try {
