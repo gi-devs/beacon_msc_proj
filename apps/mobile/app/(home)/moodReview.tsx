@@ -18,7 +18,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import UIButton from '@/components/ui/UIButton';
-import { usePressScaleAnimation } from '@/hooks/usePressScaleAnimation';
+import { usePressScaleAnimation } from '@/hooks/ui/usePressScaleAnimation';
 import { useRouter } from 'expo-router';
 import JournalEntryDisplayCard from '@/components/JournalEntryDisplayCard';
 import MoodLogDisplayCard from '@/components/MoodLogDisplayCard';

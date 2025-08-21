@@ -7,7 +7,7 @@ import {
 
 export function useOpeningAnimation(
   hasAnimated: boolean,
-  setHasAnimated: (v: boolean) => void,
+  setHasAnimated: (bool: boolean) => void,
 ) {
   const top = useSharedValue(-1000);
   const infoOpacity = useSharedValue(0);

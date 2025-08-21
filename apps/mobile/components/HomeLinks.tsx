@@ -10,7 +10,7 @@ import {
 import { AppStyles } from '@/constants/AppStyles';
 import { Href, LinkProps, useRouter } from 'expo-router';
 import { useRef } from 'react';
-import { usePressScaleAnimation } from '@/hooks/usePressScaleAnimation';
+import { usePressScaleAnimation } from '@/hooks/ui/usePressScaleAnimation';
 
 const HomeLinks = ({
   color,

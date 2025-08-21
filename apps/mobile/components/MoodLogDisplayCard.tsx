@@ -8,7 +8,7 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
 import { useRouter } from 'expo-router';
-import { usePressScaleAnimation } from '@/hooks/usePressScaleAnimation';
+import { usePressScaleAnimation } from '@/hooks/ui/usePressScaleAnimation';
 import { MoodLogWithBeaconCheck } from '@beacon/types';
 import { analyseMoodScales } from '@/utils/analyseMoodScore';
 

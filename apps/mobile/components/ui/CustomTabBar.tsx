@@ -5,7 +5,7 @@ import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
 import { useRouter } from 'expo-router';
-import { usePressScaleAnimation } from '@/hooks/usePressScaleAnimation';
+import { usePressScaleAnimation } from '@/hooks/ui/usePressScaleAnimation';
 
 export default function CustomTabBar({
   state,

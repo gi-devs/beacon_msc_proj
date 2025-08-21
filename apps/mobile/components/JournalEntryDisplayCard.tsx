@@ -7,7 +7,7 @@ import {
 } from '@/utils/dateFormatter';
 import { truncateText } from '@/utils/truncatedText';
 import { JournalEntryDTO } from '@beacon/types';
-import { usePressScaleAnimation } from '@/hooks/usePressScaleAnimation';
+import { usePressScaleAnimation } from '@/hooks/ui/usePressScaleAnimation';
 import { useRouter } from 'expo-router';
 
 const JournalEntryDisplayCard = ({

@@ -13,7 +13,7 @@ import {
   FormSecureTextInput,
   FormTextInput,
 } from '@/components/form/FormTextInput';
-import { useIsMounted } from '@/hooks/useIsMounted';
+import { useIsMounted } from '@/hooks/ui/useIsMounted';
 import { useEffect } from 'react';
 import { LogInData, logInSchema } from '@beacon/validation';
 import { useAuthStore } from '@/store/useAuthStore';
