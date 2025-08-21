@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react';
 import { Toast } from 'toastify-react-native';
 import MoodLogDetail from '@/components/MoodLogDetail';
 import DateTimeDisplay from '@/components/DateTimeDisplay';
-import { useJournalEntries } from '@/context/journalEntryContext';
 import { BeaconRepliesDTOWithUser, JournalEntryDTO } from '@beacon/types';
 import { getJournalEntryByMoodLogIdRequest } from '@/api/moodLoggerApi';
 import JournalEntryDisplayCard from '@/components/JournalEntryDisplayCard';
@@ -15,12 +14,13 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { getBeaconRepliesWithMoodLogIdRequest } from '@/api/beaconApi';
 import { getBeaconReplyMessage } from '@/utils/getBeaconReplyMessage';
 import { useMoodLogStore } from '@/store/useMoodLogStore';
+import { useJournalEntryStore } from '@/store/useJournalEntryStore';
 
 const MoodLogReview = () => {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const { items, fetchSingle, updateSingleItem } = useMoodLogStore();
-  const { items: journalItems } = useJournalEntries();
+  const { items: journalItems } = useJournalEntryStore();
   const [selected, setSelected] =
     useState<MoodLogWithBeaconCheckExtended | null>(null);
   const [journalEntry, setJournalEntry] = useState<JournalEntryDTO | null>(

@@ -18,12 +18,12 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import UIButton from '@/components/ui/UIButton';
-import { useJournalEntries } from '@/context/journalEntryContext';
 import { usePressScaleAnimation } from '@/hooks/usePressScaleAnimation';
 import { useRouter } from 'expo-router';
 import JournalEntryDisplayCard from '@/components/JournalEntryDisplayCard';
 import MoodLogDisplayCard from '@/components/MoodLogDisplayCard';
 import { useMoodLogStore } from '@/store/useMoodLogStore';
+import { useJournalEntryStore } from '@/store/useJournalEntryStore';
 
 const MoodReview = () => {
   const [isMoodList, setIsMoodList] = useState(true);
@@ -46,7 +46,7 @@ const JournalList = () => {
     refresh,
     loading,
     hasMore,
-  } = useJournalEntries();
+  } = useJournalEntryStore();
   const { animatedStyle, handleVibration, handlePressOut, handlePressIn } =
     usePressScaleAnimation();
   const router = useRouter();

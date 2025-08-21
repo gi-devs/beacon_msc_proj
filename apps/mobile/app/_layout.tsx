@@ -7,7 +7,6 @@ import { UIProvider } from '@/context/uiContext';
 import { NotificationProvider } from '@/context/notificationContext';
 import { useEffect } from 'react';
 import { LocationProvider } from '@/context/locationContext';
-import { JournalEntryProvider } from '@/context/journalEntryContext';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useAuthInit } from '@/hooks/effects/useAuthInit';
 
@@ -18,13 +17,11 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <NotificationProvider>
         <LocationProvider>
-          <JournalEntryProvider>
-            <UIProvider>
-              <StatusBar backgroundColor="transparent" translucent={true} />
-              <ToastManager />
-              <RootNavigator />
-            </UIProvider>
-          </JournalEntryProvider>
+          <UIProvider>
+            <StatusBar backgroundColor="transparent" translucent={true} />
+            <ToastManager />
+            <RootNavigator />
+          </UIProvider>
         </LocationProvider>
       </NotificationProvider>
     </SafeAreaProvider>

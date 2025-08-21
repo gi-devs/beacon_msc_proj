@@ -1,14 +1,11 @@
+import { createPaginatedStore } from '@/store/createPaginatedStore';
 import { JournalEntryDTO } from '@beacon/types';
-import { createPaginatedContext } from '@/context/createPaginatedContext';
 import {
   getJournalEntriesRequest,
   getJournalEntryDetailRequest,
 } from '@/api/moodLoggerApi';
 
-export const {
-  Provider: JournalEntryProvider,
-  usePaginated: useJournalEntries,
-} = createPaginatedContext<JournalEntryDTO>(
+export const useJournalEntryStore = createPaginatedStore<JournalEntryDTO>(
   getJournalEntriesRequest,
   getJournalEntryDetailRequest,
   10,

@@ -4,13 +4,13 @@ import { SafeWrapper } from '@/components/utils/SafeWrapper';
 import { useEffect, useState } from 'react';
 import { JournalEntryDTO } from '@beacon/types';
 import { Toast } from 'toastify-react-native';
-import { useJournalEntries } from '@/context/journalEntryContext';
 import MoodFace from '@/components/MoodFace';
+import { useJournalEntryStore } from '@/store/useJournalEntryStore';
 
 const MoodLogReview = () => {
   const { id } = useLocalSearchParams();
   const router = useRouter();
-  const { items, fetchSingle } = useJournalEntries();
+  const { items, fetchSingle } = useJournalEntryStore();
   const [selected, setSelected] = useState<JournalEntryDTO | null>(null);
 
   useEffect(() => {
