@@ -8,8 +8,15 @@ import { useMoodLogStore } from '@/store/useMoodLogStore';
 import { useJournalEntryStore } from '@/store/useJournalEntryStore';
 
 export default function HomeTabsLayout() {
-  const [isLoading, setIsLoading] = useState(true);
+  // init data
+  const { refresh: refreshJournalEntries } = useJournalEntryStore();
+  const { refresh: refreshMoodLogs } = useMoodLogStore();
   const [showOnboarding, setShowOnboarding] = useState(false);
+
+  useEffect(() => {
+    void refreshMoodLogs();
+    void refreshJournalEntries();
+  }, []);
 
   const turnOffOnboarding = async () => {
     setShowOnboarding(false);
@@ -20,13 +27,10 @@ export default function HomeTabsLayout() {
     const checkFirstTime = async () => {
       const onboarded = await getAsyncItem(AsyncItemKey.OnboardingComplete);
       setShowOnboarding(!onboarded); // show onboarding if not complete
-      setIsLoading(false);
     };
 
-    checkFirstTime();
+    void checkFirstTime();
   }, []);
-
-  if (isLoading) return null; // or splash screen
 
   return showOnboarding ? (
     <OnboardingScreen onFinish={turnOffOnboarding} />
@@ -36,15 +40,6 @@ export default function HomeTabsLayout() {
 }
 
 function HomeNavigator() {
-  // init data
-  const { refresh: refreshJournalEntries } = useJournalEntryStore();
-  const { refresh: refreshMoodLogs } = useMoodLogStore();
-
-  useEffect(() => {
-    refreshMoodLogs();
-    refreshJournalEntries();
-  }, []);
-
   return (
     <Tabs
       screenOptions={{

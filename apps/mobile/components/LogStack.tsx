@@ -10,6 +10,12 @@ import Animated, {
 import { useEffect, useState } from 'react';
 import Colors from '@/constants/Colors';
 import { useRouter } from 'expo-router';
+import {
+  analyseMoodScales,
+  getHighestMoodScale,
+} from '@/utils/analyseMoodScore';
+import { formatShortDate } from '@/utils/dateFormatter';
+import { useMoodLogStore } from '@/store/useMoodLogStore';
 
 export type MoodStackItem = {
   moodLogId: number;
@@ -24,7 +30,6 @@ export type MoodStackItem = {
 
 type LogStackProps = {
   isOpen: boolean;
-  moodStack: MoodStackItem[];
 };
 
 export const useLogStack = () => {
@@ -36,12 +41,30 @@ export const useLogStack = () => {
   return { isLogStackOpen, openLogStack, closeLogStack };
 };
 
-const LogStack = ({ isOpen, moodStack }: LogStackProps) => {
+const LogStack = ({ isOpen }: LogStackProps) => {
   const marginTop = useSharedValue(-30);
   const animatedStyle = useAnimatedStyle(() => ({
     marginTop: marginTop.value,
   }));
-  const splitMoodStack = moodStack.slice(0, 3);
+
+  const { items: moodLogs } = useMoodLogStore();
+  const [moodStack, setMoodStack] = useState<MoodStackItem[]>([]);
+
+  useEffect(() => {
+    const formattedMoodStack = moodLogs.slice(0, 3).map((log) => ({
+      moodLogId: log.id,
+      mood: analyseMoodScales(log).score,
+      date: formatShortDate(log.createdAt),
+      broadcasted: log.beaconBroadcasted,
+      highestScale: getHighestMoodScale({
+        sadnessScale: log.sadnessScale,
+        stressScale: log.stressScale,
+        anxietyScale: log.anxietyScale,
+      }),
+    }));
+    setMoodStack(formattedMoodStack);
+  }, [moodLogs]);
+
   useEffect(() => {
     marginTop.value = withTiming(isOpen ? 10 : -30, { duration: 200 });
     if (isOpen) {
@@ -51,7 +74,7 @@ const LogStack = ({ isOpen, moodStack }: LogStackProps) => {
 
   return (
     <View className="relative w-full">
-      {splitMoodStack.map((item, index) => (
+      {moodStack.map((item, index) => (
         <LogCard
           key={index}
           style={[

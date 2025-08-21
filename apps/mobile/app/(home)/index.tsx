@@ -1,23 +1,14 @@
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import UIButton from '@/components/ui/UIButton';
-import { useEffect, useState } from 'react';
-import LogStack, { MoodStackItem, useLogStack } from '@/components/LogStack';
-import {
-  analyseMoodScales,
-  getHighestMoodScale,
-} from '@/utils/analyseMoodScore';
+import LogStack, { useLogStack } from '@/components/LogStack';
 import { capitaliseFirstLetter } from '@/utils/capitalise';
 import HomeLinks from '@/components/HomeLinks';
 import Colors from '@/constants/Colors';
-import { formatShortDate } from '@/utils/dateFormatter';
 import { useAuthStore } from '@/store/useAuthStore';
-import { useMoodLogStore } from '@/store/useMoodLogStore';
 
 const HomeIndex = () => {
   const { user } = useAuthStore();
   const { isLogStackOpen, openLogStack, closeLogStack } = useLogStack();
-  const { items: moodLogs } = useMoodLogStore();
-  const [moodStack, setMoodStack] = useState<MoodStackItem[]>([]);
 
   const greetingTimeText = () => {
     const currentHour = new Date().getHours();
@@ -29,22 +20,6 @@ const HomeIndex = () => {
       return 'Good Evening';
     }
   };
-
-  useEffect(() => {
-    console.log('moodLogs changed');
-    const formattedMoodStack = moodLogs.map((log) => ({
-      moodLogId: log.id,
-      mood: analyseMoodScales(log).score,
-      date: formatShortDate(log.createdAt),
-      broadcasted: log.beaconBroadcasted,
-      highestScale: getHighestMoodScale({
-        sadnessScale: log.sadnessScale,
-        stressScale: log.stressScale,
-        anxietyScale: log.anxietyScale,
-      }),
-    }));
-    setMoodStack(formattedMoodStack);
-  }, [moodLogs]);
 
   return (
     <ScrollView
@@ -69,7 +44,7 @@ const HomeIndex = () => {
             }
           }}
         >
-          <LogStack isOpen={isLogStackOpen} moodStack={moodStack} />
+          <LogStack isOpen={isLogStackOpen} />
         </Pressable>
         <UIButton
           variant="ghost"
