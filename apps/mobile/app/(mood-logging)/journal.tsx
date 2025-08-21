@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import { useScroll } from '@/context/scrollContext';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import JournalEntryForm from '@/components/form/Forms/JournalEntryForm';
 import { analyseMoodScales } from '@/utils/analyseMoodScore';
 import { useLogCreator } from '@/context/logCreatorContext';
 import { useState } from 'react';
@@ -20,6 +19,7 @@ import { createDailyLogRequest } from '@/api/moodLoggerApi';
 import { Toast } from 'toastify-react-native';
 import { CreateJournalEntryData } from '@beacon/validation';
 import { parseToSeverError } from '@/utils/parseToSeverError';
+import JournalEntryForm from '@/components/form/forms/JournalEntryForm';
 
 const Journal = () => {
   const { setHasScrolled } = useScroll();

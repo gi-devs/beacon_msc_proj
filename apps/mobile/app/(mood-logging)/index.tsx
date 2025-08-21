@@ -6,9 +6,9 @@ import {
   NativeSyntheticEvent,
   NativeScrollEvent,
 } from 'react-native';
-import MoodLogForm from '@/components/form/Forms/MoodLogForm';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useScroll } from '@/context/scrollContext';
+import MoodLogForm from '@/components/form/forms/MoodLogForm';
 
 export default function MoodLoggingIndex() {
   const { setHasScrolled } = useScroll();

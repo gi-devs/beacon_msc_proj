@@ -12,7 +12,6 @@ import MoodFace from '@/components/MoodFace';
 import replyMessages from '@/constants/beaconReplyMessages';
 import { pickRandomItemFromArray } from '@beacon/utils';
 import UIButton from '@/components/ui/UIButton';
-import BeaconReplyForm from '@/components/form/Forms/BeaconReplyForm';
 import { CreateBeaconFormData } from '@beacon/validation';
 import useConfirmModal from '@/hooks/useConfirmation';
 import {
@@ -20,6 +19,7 @@ import {
   BeaconReplyDetailsDTO,
   BeaconReplyTextKey,
 } from '@beacon/types';
+import BeaconReplyForm from '@/components/form/forms/BeaconReplyForm';
 
 const BeaconReplyId = () => {
   const [loading, setLoading] = useState(true);
