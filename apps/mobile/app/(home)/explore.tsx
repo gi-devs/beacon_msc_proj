@@ -4,22 +4,14 @@ import TodayMoodLineChart from '@/components/graphs/TodayMoodLineGraph';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import HeaderWithRouteUI from '@/components/ui/HeaderWithRouteUI';
 
 const Explore = () => {
   const router = useRouter();
   return (
-    <SafeWrapper>
-      <View className="my-2 flex-row justify-between items-center">
-        <Text className="text-lg">Explore</Text>
-        <Pressable
-          onPress={() => {
-            router.push('/(home)/(community)');
-          }}
-        >
-          <MaterialIcons name="people-alt" size={24} color="black" />
-        </Pressable>
-      </View>
-      <ScrollView showsVerticalScrollIndicator={false}>
+    <SafeWrapper className="flex-1">
+      <HeaderWithRouteUI header="Explore" />
+      <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
         <View className="my-8 mb-4">
           <Text className="text-3xl">
             Explore your mood patterns and insights over time.

@@ -24,12 +24,14 @@ import JournalEntryDisplayCard from '@/components/JournalEntryDisplayCard';
 import MoodLogDisplayCard from '@/components/MoodLogDisplayCard';
 import { useMoodLogStore } from '@/store/useMoodLogStore';
 import { useJournalEntryStore } from '@/store/useJournalEntryStore';
+import HeaderWithRouteUI from '@/components/ui/HeaderWithRouteUI';
 
 const MoodReview = () => {
   const [isMoodList, setIsMoodList] = useState(true);
 
   return (
     <SafeWrapper className="flex-1">
+      <HeaderWithRouteUI header="Mood Review" />
       {isMoodList ? <MoodList /> : <JournalList />}
       <ListPicker isMoodList={isMoodList} setIsMoodList={setIsMoodList} />
     </SafeWrapper>
@@ -49,29 +51,6 @@ const JournalList = () => {
   const router = useRouter();
   return (
     <>
-      <View className="flex-row justify-between  items-center my-8 mb-6">
-        <Text className="text-2xl">Journal Entries</Text>
-        <RNAnimated.View
-          className="p-2 rounded-full shadow-md"
-          style={[
-            animatedStyle,
-            {
-              backgroundColor: Colors.app.ripple['400'],
-            },
-          ]}
-        >
-          <Pressable
-            onTouchStart={handlePressIn}
-            onTouchEnd={handlePressOut}
-            onPress={() => {
-              handleVibration();
-              router.push('/(mood-logging)/journal');
-            }}
-          >
-            <Feather name="plus" size={24} color="white" />
-          </Pressable>
-        </RNAnimated.View>
-      </View>
       {journalEntries.length > 0 ? (
         <FlatList
           data={journalEntries}
@@ -82,8 +61,33 @@ const JournalList = () => {
           refreshControl={
             <RefreshControl refreshing={loading} onRefresh={refresh} />
           }
+          ListHeaderComponent={
+            <View className="flex-row justify-between  items-center my-8 mb-6">
+              <Text className="text-2xl">Journal Entries</Text>
+              <RNAnimated.View
+                className="p-2 rounded-full shadow-md"
+                style={[
+                  animatedStyle,
+                  {
+                    backgroundColor: Colors.app.ripple['400'],
+                  },
+                ]}
+              >
+                <Pressable
+                  onTouchStart={handlePressIn}
+                  onTouchEnd={handlePressOut}
+                  onPress={() => {
+                    handleVibration();
+                    router.push('/(mood-logging)/journal');
+                  }}
+                >
+                  <Feather name="plus" size={24} color="white" />
+                </Pressable>
+              </RNAnimated.View>
+            </View>
+          }
           ListFooterComponent={
-            <>
+            <View className="mb-20">
               {loading && (
                 <ActivityIndicator className="my-4" size="small" color="#000" />
               )}
@@ -98,7 +102,7 @@ const JournalList = () => {
                   Load More
                 </UIButton>
               )}
-            </>
+            </View>
           }
         />
       ) : (
@@ -120,7 +124,6 @@ const MoodList = () => {
   } = useMoodLogStore();
   return (
     <>
-      <Text className="text-2xl my-8 mb-6">Mood Logs</Text>
       {moodLogs.length > 0 ? (
         <FlatList
           data={moodLogs}
@@ -131,8 +134,11 @@ const MoodList = () => {
           refreshControl={
             <RefreshControl refreshing={loading} onRefresh={refresh} />
           }
+          ListHeaderComponent={
+            <Text className="text-2xl my-8 mb-6">Mood Logs</Text>
+          }
           ListFooterComponent={
-            <>
+            <View className="mb-20">
               {loading && (
                 <ActivityIndicator className="my-4" size="small" color="#000" />
               )}
@@ -147,7 +153,7 @@ const MoodList = () => {
                   Load More
                 </UIButton>
               )}
-            </>
+            </View>
           }
         />
       ) : (
@@ -182,7 +188,7 @@ const ListPicker = ({
   }));
 
   return (
-    <View className="mt-4 w-[300px] mx-auto rounded-full bg-white flex-row relative overflow-hidden border-4 border-white mb-4">
+    <View className="mt-4 w-[300px] rounded-full bg-white flex-row absolute overflow-hidden border-4 border-white mb-4 bottom-0 self-center">
       {/* Animated background pill */}
       <Animated.View
         style={[
