@@ -25,6 +25,7 @@ import MoodLogDisplayCard from '@/components/MoodLogDisplayCard';
 import { useMoodLogStore } from '@/store/useMoodLogStore';
 import { useJournalEntryStore } from '@/store/useJournalEntryStore';
 import HeaderWithRouteUI from '@/components/ui/HeaderWithRouteUI';
+import { AppStyles } from '@/constants/AppStyles';
 
 const MoodReview = () => {
   const [isMoodList, setIsMoodList] = useState(true);
@@ -188,7 +189,16 @@ const ListPicker = ({
   }));
 
   return (
-    <View className="mt-4 w-[300px] rounded-full bg-white flex-row absolute overflow-hidden border-4 border-white mb-4 bottom-0 self-center">
+    <View
+      style={[
+        AppStyles.navShadow,
+        {
+          borderColor: 'white',
+          borderWidth: 4,
+        },
+      ]}
+      className="mt-4 w-[300px] rounded-full bg-white flex-row absolute mb-4 bottom-0 self-center"
+    >
       {/* Animated background pill */}
       <Animated.View
         style={[

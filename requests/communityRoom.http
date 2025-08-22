@@ -1,0 +1,9 @@
+POST {{BASE_URL}}/community-room/posts/create/cmelsvk000000l0p5ywpbg4zz
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "Http Post Title",
+  "content": "This is a post created via HTTP client.",
+  "moodFace": 50
+}

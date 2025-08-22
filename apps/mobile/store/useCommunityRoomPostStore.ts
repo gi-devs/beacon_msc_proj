@@ -14,6 +14,7 @@ type RoomState = {
 type CommunityPostStore = {
   rooms: Record<string, RoomState>;
   loading: boolean;
+  setLoading: (loading: boolean) => void;
   activeRoomId: string | null;
   setRoomId: (roomId: string) => void;
   fetchPage: (pageToFetch: number, clear?: boolean) => Promise<void>;
@@ -29,6 +30,7 @@ export const useCommunityPostStore = create<CommunityPostStore>((set, get) => ({
   rooms: {},
   loading: false,
   activeRoomId: null,
+  setLoading: (loading) => set({ loading }),
 
   setRoomId: (roomId) => {
     set((state) => {

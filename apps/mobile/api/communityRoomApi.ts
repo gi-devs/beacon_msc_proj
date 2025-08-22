@@ -2,6 +2,7 @@ import { CommunityPostDTO, PaginatedResponse } from '@beacon/types';
 import axiosInstance from '@/lib/axios';
 import { parseToSeverError } from '@/utils/parseToSeverError';
 import { UserCommunityRoomDTO } from '@beacon/types/dist/community-room';
+import { CreateCommunityRoomPostData } from '@beacon/validation';
 
 export async function getUserCommunityRoomsRequest(
   take: number,
@@ -39,6 +40,27 @@ export async function getCommunityRoomPostByIdRequest(
 ): Promise<CommunityPostDTO> {
   try {
     const res = await axiosInstance.get(`/community-room/posts/${postId}`);
+    return res.data;
+  } catch (error) {
+    console.log(parseToSeverError(error).message);
+    throw error;
+  }
+}
+
+export async function createCommunityRoomPostRequest(
+  roomId: string,
+  data: CreateCommunityRoomPostData,
+): Promise<CommunityPostDTO> {
+  try {
+    const { content, moodFace, title } = data;
+    const res = await axiosInstance.post(
+      `/community-room/posts/create/${roomId}`,
+      {
+        title,
+        content,
+        moodFace,
+      },
+    );
     return res.data;
   } catch (error) {
     console.log(parseToSeverError(error).message);

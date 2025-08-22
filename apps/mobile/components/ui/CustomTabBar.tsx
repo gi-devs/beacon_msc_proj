@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
 import { useRouter } from 'expo-router';
 import { usePressScaleAnimation } from '@/hooks/ui/usePressScaleAnimation';
+import { AppStyles } from '@/constants/AppStyles';
 
 export default function CustomTabBar({
   state,
@@ -25,7 +26,10 @@ export default function CustomTabBar({
   const middleIndex = Math.floor(routesWithIcons.length / 2);
 
   return (
-    <View className="flex-row items-center justify-around bg-white absolute left-0 bottom-0 right-0 rounded-t-3xl h-[100px]">
+    <View
+      className="flex-row items-center justify-around bg-white absolute left-0 bottom-0 right-0 rounded-t-3xl h-[100px]"
+      style={AppStyles.navShadow}
+    >
       {routesWithIcons.map((route, index) => {
         const { options } = descriptors[route.key];
 

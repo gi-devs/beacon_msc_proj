@@ -51,6 +51,7 @@ export default {
       ANDROID_API_URL: process.env.BACKEND_URL_ANDROID,
       DEVICE_URL: process.env.BACKEND_URL_DEVICE,
       DEVICE_URL_MO: process.env.BACKEND_URL_DEVICE_MO,
+      DEVICE_URL_N: process.env.BACKEND_URL_DEVICE_N,
       eas: {
         projectId: '5023d697-c77c-4fe6-bf73-fe7f7987444e',
       },

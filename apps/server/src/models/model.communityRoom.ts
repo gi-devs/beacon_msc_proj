@@ -2,10 +2,17 @@ import prisma, { DbClient } from '@/lib/prisma';
 import { CustomError } from '@/utils/custom-error';
 import { DataRequestOptions } from '@beacon/types';
 
-export async function getCommunityRoomBy(id: string, tx: DbClient = prisma) {
+export async function getCommunityRoomById(id: string, tx: DbClient = prisma) {
   try {
     return await tx.communityRoom.findUnique({
       where: { id },
+      include: {
+        members: {
+          select: {
+            id: true,
+          },
+        },
+      },
     });
   } catch (error) {
     throw new CustomError('Error fetching beacon reply by ID', 500);

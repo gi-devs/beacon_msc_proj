@@ -2,8 +2,9 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Drawer } from 'expo-router/drawer';
 import { useCommunitiesStore } from '@/store/useCommunitiesStore';
 import { useEffect } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, Text, TouchableOpacity, View } from 'react-native';
 import { usePathname, useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
 const CommunityLayout = () => {
   return <CommunityNavigator />;
@@ -12,7 +13,20 @@ const CommunityLayout = () => {
 const CommunityNavigator = () => {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <Drawer drawerContent={() => <CustomDrawerContent />}>
+      <Drawer
+        drawerContent={() => <CustomDrawerContent />}
+        screenOptions={({ navigation }) => ({
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => navigation.toggleDrawer()}
+              style={{ marginLeft: 16 }}
+            >
+              <Ionicons name="menu" size={28} color="black" />
+            </TouchableOpacity>
+          ),
+          drawerStyle: { width: 300 },
+        })}
+      >
         <Drawer.Screen
           name="index"
           options={{

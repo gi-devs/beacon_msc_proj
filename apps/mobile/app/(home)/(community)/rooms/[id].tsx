@@ -13,6 +13,7 @@ import CommunityPostDisplay from '@/components/CommunityPostDisplay';
 import { SafeWrapper } from '@/components/utils/SafeWrapper';
 import { useCommunityPostStore } from '@/store/useCommunityRoomPostStore';
 import UIButton from '@/components/ui/UIButton';
+import CommunityRoomPostForm from '@/components/form/forms/CommunityRoomPostForm';
 
 const CommunityRoom = () => {
   const { id } = useLocalSearchParams();
@@ -27,6 +28,7 @@ const CommunityRoom = () => {
     activeRoomId && rooms[activeRoomId] ? rooms[activeRoomId].items : [];
   const hasMore =
     activeRoomId && rooms[activeRoomId] ? rooms[activeRoomId].hasMore : false;
+  const [wantsToPost, setWantsToPost] = useState(false);
 
   useEffect(() => {
     const community = items.find((c) => c.id === id);
@@ -55,13 +57,37 @@ const CommunityRoom = () => {
       }}
     >
       <FlatList
+        onTouchEnd={() => {
+          if (wantsToPost) {
+            setWantsToPost(false);
+          }
+        }}
         data={postItems}
         keyExtractor={(item: CommunityPostDTO) => item.id.toString()}
         renderItem={({ item }) => <CommunityPostDisplay data={item} />}
         ListHeaderComponent={
-          <Text className="text-3xl pt-6">
-            Welcome To {currentCommunity.roomName}
-          </Text>
+          <View
+            className="pt-6"
+            onTouchEnd={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <Text className="text-3xl mb-4">
+              Welcome To {currentCommunity.roomName}
+            </Text>
+            {wantsToPost ? (
+              <CommunityRoomPostForm callback={() => setWantsToPost(false)} />
+            ) : (
+              <UIButton
+                variant="primary"
+                size="sm"
+                buttonClassName="px-10 mb-2 mr-2"
+                onPress={() => setWantsToPost(true)}
+              >
+                Create Post
+              </UIButton>
+            )}
+          </View>
         }
         contentContainerStyle={{ gap: 16, paddingBottom: 32 }}
         refreshControl={

@@ -23,4 +23,11 @@ export const AppStyles = {
     shadowRadius: 1.8,
     elevation: 7, // Android
   },
+  navShadow: {
+    shadowColor: '#858585',
+    shadowOffset: { width: 0, height: -1 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3,
+    elevation: 5, // Android
+  },
 };

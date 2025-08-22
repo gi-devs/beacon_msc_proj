@@ -22,3 +22,6 @@ export * from './notificationSetting/createNotificationSetting';
 
 // beacon schemas
 export * from './beacon/createBeaconReplySchema';
+
+// community room
+export * from './communityRoomPost/createCommunityRoomPostSchema';

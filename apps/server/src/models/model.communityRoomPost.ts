@@ -1,5 +1,6 @@
 import prisma, { DbClient } from '@/lib/prisma';
 import { DataRequestOptions } from '@beacon/types';
+import { Prisma } from '@/generated/prisma';
 
 export async function getCommunityRoomPostsByRoomId(
   roomId: string,
@@ -64,5 +65,18 @@ export async function getCommunityPostById(
     });
   } catch (error) {
     throw new Error('Error fetching community post by ID');
+  }
+}
+
+export async function createCommunityRoomPost(
+  data: Prisma.CommunityRoomPostCreateInput,
+  tx: DbClient = prisma,
+) {
+  try {
+    return await tx.communityRoomPost.create({
+      data,
+    });
+  } catch (error) {
+    throw new Error('Error creating community room post');
   }
 }
