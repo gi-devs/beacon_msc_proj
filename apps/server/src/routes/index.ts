@@ -8,3 +8,4 @@ export { default as notificationSettingRoutes } from './route.notificationSettin
 export { default as beaconRoutes } from './route.beacon';
 export { default as communityRoomRoutes } from './route.communityRoom';
 export { default as communityRoomPostRoutes } from './route.communityRoomPost';
+export { default as beaconNotificationRoutes } from './route.beaconNotification';

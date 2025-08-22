@@ -14,10 +14,10 @@ import { createCommunityRooms } from '@/jobs/createCommunityRooms';
 
 (async () => {
   try {
-    // await scheduleNotificationsForBeacons();
-    // await sendNotificationsForBeacons();
+    await scheduleNotificationsForBeacons();
+    await sendNotificationsForBeacons();
     // await notifyBeaconOwners();
-    await createCommunityRooms();
+    // await createCommunityRooms();
     console.log('Job completed successfully');
     process.exit(0);
   } catch (err) {

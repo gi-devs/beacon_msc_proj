@@ -87,6 +87,7 @@ const HomeIndex = () => {
             title="Send Out Affirmations"
             imgSrc={require('../../assets/items/connected_globe.png')}
             imageOffsetX={10}
+            linkTo="/(beacon)"
           />
         </View>
       </ScrollView>

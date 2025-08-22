@@ -11,3 +11,8 @@ Authorization: Bearer {{access_token}}
   "replyTextKey": "sad",
   "replyTextId": 1
 }
+
+### get notifs
+GET {{ BASE_URL }}/beacon-notification?take=10&skip=0
+Content-Type: application/json
+Authorization: Bearer {{access_token}}

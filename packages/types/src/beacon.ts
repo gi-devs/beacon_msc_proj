@@ -30,3 +30,33 @@ export type BeaconRepliesDTOWithUser = BeaconRepliesDTO & {
   replierId: string;
   replierUsername: string;
 };
+
+export type BeaconNotificationDTO = {
+  id: number;
+  createdAt: Date;
+  updatedAt: Date;
+  status: BeaconNotificationStatusType;
+  beacon: {
+    beaconId: number;
+    expiresAt: Date;
+    ownerUsername: string;
+    moodInfo: {
+      moodFace: number;
+      scales: {
+        stress: number;
+        anxiety: number;
+        sadness: number;
+      };
+    };
+  };
+};
+
+export type BeaconNotificationStatusType =
+  | 'PENDING'
+  | 'SENT'
+  | 'SENT_SILENTLY'
+  | 'REPLIED'
+  | 'OWNER_NOTIFIED'
+  | 'EXPIRED'
+  | 'DECLINED'
+  | 'CANCELLED';

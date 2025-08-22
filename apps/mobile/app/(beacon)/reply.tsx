@@ -70,8 +70,8 @@ const BeaconReplyId = () => {
 
       try {
         const data = await getBeaconReplyDetails(
-          notificationData.beaconId.toString(),
-          notificationData.notificationId.toString(),
+          notificationData.beaconId,
+          notificationData.notificationId,
         );
         setBeaconReplyDetails(data);
 
