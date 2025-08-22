@@ -47,8 +47,9 @@ const MoodLogReview = () => {
         <View
           className="bg-white p-4 rounded-md flex-1"
           style={{
-            borderColor: getMoodColor(selected.moodFace),
-            borderWidth: 1,
+            outlineColor: getMoodColor(selected.moodFace),
+            outlineWidth: 1,
+            outlineOffset: -5,
           }}
         >
           <View>

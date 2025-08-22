@@ -3,6 +3,7 @@ import { CommunityPostDTO } from '@beacon/types';
 import { formateTo24HourTime, formatShortDate } from '@/utils/dateFormatter';
 import MoodFace from '@/components/MoodFace';
 import { AppStyles } from '@/constants/AppStyles';
+import { getMoodColor } from '@/utils/computeColour';
 
 const CommunityPostDisplay = ({ data }: { data: CommunityPostDTO }) => {
   const now = new Date();
@@ -13,8 +14,15 @@ const CommunityPostDisplay = ({ data }: { data: CommunityPostDTO }) => {
   );
   return (
     <View
-      className="border bg-white shadow-lg p-4 px-5"
-      style={AppStyles.cardShadow}
+      className="bg-white shadow-lg py-6 px-5 rounded-md"
+      style={[
+        AppStyles.cardShadow,
+        {
+          outlineColor: getMoodColor(data.moodFace),
+          outlineWidth: 1,
+          outlineOffset: -3,
+        },
+      ]}
     >
       <View className="flex-row items-center gap-4 mb-2">
         <MoodFace mood={data.moodFace} size={36} />

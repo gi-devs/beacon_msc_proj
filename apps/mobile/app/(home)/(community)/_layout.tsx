@@ -1,9 +1,9 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Drawer } from 'expo-router/drawer';
 import { useCommunitiesStore } from '@/store/useCommunitiesStore';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { Link, usePathname, useRouter } from 'expo-router';
+import { usePathname, useRouter } from 'expo-router';
 
 const CommunityLayout = () => {
   return <CommunityNavigator />;

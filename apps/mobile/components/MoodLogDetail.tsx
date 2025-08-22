@@ -39,10 +39,11 @@ const MoodScaleDetails = ({
     <View className="gap-2">
       <Text className="text-xl text-gray-600">{scaleName}</Text>
       <View
-        className="flex-row items-center border rounded-lg p-4 gap-4 bg-white"
+        className="flex-row items-center rounded-md p-4 gap-4 bg-white"
         style={{
-          borderColor: getMoodColor(scale),
-          borderWidth: 1,
+          outlineColor: getMoodColor(scale),
+          outlineWidth: 1,
+          outlineOffset: -3,
         }}
       >
         <MoodFace mood={scale} />

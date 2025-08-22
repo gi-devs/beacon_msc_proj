@@ -21,8 +21,9 @@ const JournalEntryDisplayCard = ({
     <Pressable
       className="p-4 mb-4 border-gray-200 bg-white rounded-md"
       style={{
-        borderColor: getMoodColor(journalEntry.moodFace),
-        borderWidth: 1,
+        outlineColor: getMoodColor(journalEntry.moodFace),
+        outlineWidth: 1,
+        outlineOffset: -3,
       }}
       onPress={() => {
         handleVibration();
