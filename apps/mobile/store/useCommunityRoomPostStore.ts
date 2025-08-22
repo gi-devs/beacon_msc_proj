@@ -22,6 +22,7 @@ type CommunityPostStore = {
   refresh: () => Promise<void>;
   fetchSingle: (id: number) => Promise<null | CommunityPostDTO>;
   updateSingleItem: (item: CommunityPostDTO) => void;
+  removeSingleItem: (id: number) => void;
 };
 
 const LIMIT = 10;
@@ -149,6 +150,23 @@ export const useCommunityPostStore = create<CommunityPostStore>((set, get) => ({
                 new Date(b.createdAt).getTime() -
                 new Date(a.createdAt).getTime(),
             ),
+          },
+        },
+      };
+    });
+  },
+  removeSingleItem: (id: number) => {
+    const { activeRoomId } = get();
+    if (!activeRoomId) return;
+    set((state) => {
+      const room = state.rooms[activeRoomId];
+      if (!room) return {};
+      return {
+        rooms: {
+          ...state.rooms,
+          [activeRoomId]: {
+            ...room,
+            items: room.items.filter((i) => i.id !== id),
           },
         },
       };

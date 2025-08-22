@@ -1,6 +1,7 @@
 import { CommunityPostDTO } from '@beacon/types';
 import {
   createCommunityRoomPost,
+  deleteCommunityRoomPostById,
   getCommunityPostById,
 } from '@/models/model.communityRoomPost';
 import {
@@ -10,6 +11,7 @@ import {
 import { getUserById } from '@/models/model.user';
 import { getCommunityRoomById } from '@/models/model.communityRoom';
 import { handleZodError } from '@/utils/handle-zod-error';
+import { CustomError } from '@/utils/custom-error';
 
 async function fetchCommunityRoomPostByPostId(
   postId: string,
@@ -17,7 +19,7 @@ async function fetchCommunityRoomPostByPostId(
   const postIdInt = parseInt(postId, 10);
 
   if (isNaN(postIdInt)) {
-    throw new Error('Invalid post ID');
+    throw new CustomError('Invalid post ID', 400);
   }
 
   const post = await getCommunityPostById(postIdInt);
@@ -56,17 +58,17 @@ async function createUserCommunityRoomPost(
   // check user exists
   const user = await getUserById(userId);
   if (!user) {
-    throw new Error('User not found');
+    throw new CustomError('User not found', 404);
   }
   // check room exists
   const room = await getCommunityRoomById(roomId);
   if (!room) {
-    throw new Error('Community room not found');
+    throw new CustomError('Community room not found', 404);
   }
 
   // check user is member of room
   if (!room.members.some((member) => member.id === userId)) {
-    throw new Error('User is not a member of this community room');
+    throw new CustomError('User is not a member of this community room', 403);
   }
 
   // create
@@ -94,7 +96,32 @@ async function createUserCommunityRoomPost(
   };
 }
 
+export async function deleteUserCommunityRoomPost(
+  userId: string,
+  postId: string,
+) {
+  const postIdInt = parseInt(postId, 10);
+
+  if (isNaN(postIdInt)) {
+    throw new CustomError('Invalid post ID', 400);
+  }
+
+  const post = await getCommunityPostById(postIdInt);
+
+  if (!post) {
+    throw new CustomError('Post not found', 404);
+  }
+  if (post.postUser.id !== userId) {
+    throw new CustomError('User is not the owner of this post', 403);
+  }
+  // proceed to delete
+  await deleteCommunityRoomPostById(postIdInt);
+
+  return null;
+}
+
 export const communityRoomPostService = {
   fetchCommunityRoomPostByPostId,
   createUserCommunityRoomPost,
+  deleteUserCommunityRoomPost,
 };

@@ -5,6 +5,7 @@ import { communityRoomPostController } from '@/controllers/controller.communityR
 const router = Router();
 
 router.get('/:postId', verifyToken, communityRoomPostController.getPostById);
-router.post('/create/:roomId', verifyToken, communityRoomPostController.create);
+router.delete('/:postId', verifyToken, communityRoomPostController.deletePost);
+router.post('/room/:roomId', verifyToken, communityRoomPostController.create);
 
 export default router;

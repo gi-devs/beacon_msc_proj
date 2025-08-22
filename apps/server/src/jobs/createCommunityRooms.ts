@@ -1,8 +1,13 @@
-import prisma from '@/lib/prisma';
-import { pickRandomItemFromArray } from '@beacon/utils';
-import roomNames from '@/data/roomNames.json';
-import { normaliseDate } from '@/utils/dates';
+import {
+  decodeGeohash,
+  encodeGeohash,
+  getDistanceFromGeohashes,
+  pickRandomItemFromArray,
+} from '@beacon/utils';
 import { addDays } from 'date-fns';
+import { normaliseDate } from '@/utils/dates';
+import prisma from '@/lib/prisma';
+import roomNames from '@/data/roomNames.json';
 
 export async function createCommunityRooms() {
   /*
@@ -20,7 +25,11 @@ export async function createCommunityRooms() {
   // only get users who have an active session
   const sessions = await prisma.session.findMany({
     include: {
-      user: true, // include user data for each session
+      user: {
+        include: {
+          LocationSetting: true,
+        },
+      },
     },
   });
   const activeUserIds = sessions.map((session) => session.user.id);
@@ -28,6 +37,25 @@ export async function createCommunityRooms() {
   if (activeUserIds.length === 0) {
     console.log('No active users found. No rooms will be created.');
     return;
+  }
+
+  const userLocations = new Map<
+    string,
+    { lat: number; lon: number; geohash: string }
+  >();
+  const activeUsersWithLocation = sessions.map((session) => session.user);
+
+  for (const user of activeUsersWithLocation) {
+    if (user.LocationSetting?.geohash) {
+      const { latitude, longitude } = decodeGeohash(
+        user.LocationSetting.geohash,
+      );
+      userLocations.set(user.id, {
+        lat: latitude,
+        lon: longitude,
+        geohash: user.LocationSetting.geohash,
+      });
+    }
   }
 
   const existingRooms = await prisma.communityRoom.findMany({
@@ -43,10 +71,11 @@ export async function createCommunityRooms() {
           members: true, // count of members in each room
         },
       },
+      location: true,
     },
   });
 
-  const usersNotInRooms = activeUserIds.filter(
+  let usersNotInRooms = activeUserIds.filter(
     (userId) =>
       !existingRooms.some((room: (typeof existingRooms)[number]) =>
         room.members.some((member) => member.id === userId),
@@ -67,85 +96,116 @@ export async function createCommunityRooms() {
     (room) => room._count.members < 6 && room.expiresAt > threeDaysFromNow,
   );
 
-  const totalFreeSlots = roomsWithSpace.reduce(
-    (acc, room) => acc + (5 - room._count.members),
-    0,
-  );
+  const roomsWithSpaceLocations = new Map<string, string>();
+  roomsWithSpace.forEach((room) => {
+    if (room.location) {
+      roomsWithSpaceLocations.set(room.id, room.location?.geohash);
+    }
+  });
 
-  if (totalFreeSlots >= countOfUsersToAssign) {
-    let userIndex = 0;
-    for (const room of roomsWithSpace) {
-      const freeSlots = 5 - room._count.members;
-      const usersToAssign = usersNotInRooms.slice(
-        userIndex,
-        userIndex + freeSlots,
+  for (const room of roomsWithSpace) {
+    const freeSlots = 5 - room._count.members;
+
+    // Split users by whether they have location
+    const locatedUsers = usersNotInRooms.filter((id) => userLocations.has(id));
+    const unlocatedUsers = usersNotInRooms.filter(
+      (id) => !userLocations.has(id),
+    );
+
+    let usersToAssign: string[] = [];
+
+    if (room.location?.geohash && locatedUsers.length > 0) {
+      // Sort by distance
+      const sorted = locatedUsers.sort(
+        (a, b) =>
+          getDistanceFromGeohashes(
+            userLocations.get(a)!.geohash,
+            room.location!.geohash,
+          ) -
+          getDistanceFromGeohashes(
+            userLocations.get(b)!.geohash,
+            room.location!.geohash,
+          ),
       );
-
-      if (usersToAssign.length > 0) {
-        await prisma.communityRoom.update({
-          where: { id: room.id },
-          data: {
-            members: {
-              connect: usersToAssign.map((u) => ({ id: u })),
-            },
-          },
-        });
-        console.log(
-          `Assigned ${usersToAssign.length} users to room ${room.roomName}`,
-        );
-        userIndex += usersToAssign.length;
-      }
-
-      if (userIndex >= countOfUsersToAssign) break;
-    }
-  } else {
-    let userIndex = 0;
-    for (const room of roomsWithSpace) {
-      const free = 5 - room._count.members;
-      const toAssign = usersNotInRooms.slice(userIndex, userIndex + free);
-
-      if (toAssign.length > 0) {
-        await prisma.communityRoom.update({
-          where: { id: room.id },
-          data: {
-            members: {
-              connect: toAssign.map((u) => ({ id: u })),
-            },
-          },
-        });
-        userIndex += toAssign.length;
-      }
+      usersToAssign = sorted.slice(0, freeSlots);
     }
 
-    // any leftover users need new rooms
-    const remainingUsers = usersNotInRooms.slice(userIndex);
-    if (remainingUsers.length === 1) {
+    // Fill remaining slots with unlocated users if needed
+    if (usersToAssign.length < freeSlots && unlocatedUsers.length > 0) {
+      const needed = freeSlots - usersToAssign.length;
+      usersToAssign = [...usersToAssign, ...unlocatedUsers.slice(0, needed)];
+    }
+
+    if (usersToAssign.length > 0) {
+      await prisma.communityRoom.update({
+        where: { id: room.id },
+        data: {
+          members: { connect: usersToAssign.map((u) => ({ id: u })) },
+        },
+      });
+
       console.log(
-        '1 user left unassigned. Waiting for another user before creating a new room.',
+        `Assigned ${usersToAssign.length} users (location prioritised) to room ${room.roomName}`,
       );
-      return;
+
+      // Remove assigned users from pool
+      usersNotInRooms = usersNotInRooms.filter(
+        (id) => !usersToAssign.includes(id),
+      );
+    }
+  }
+
+  if (usersNotInRooms.length === 0) {
+    console.log(
+      `All ${countOfUsersToAssign} users have been assigned to rooms.`,
+    );
+    return;
+  }
+
+  if (usersNotInRooms.length === 1) {
+    console.log('1 user left unassigned, waiting for another user');
+    return;
+  }
+
+  const roomsToCreate = Math.ceil(usersNotInRooms.length / 5);
+
+  function computeCentralPoints(users: string[]) {
+    const points = users.map((id) => userLocations.get(id)).filter(Boolean);
+    if (points.length === 0) return null;
+
+    const avgLat = points.reduce((sum, p) => sum + p!.lat, 0) / points.length;
+    const avgLon = points.reduce((sum, p) => sum + p!.lon, 0) / points.length;
+    return { lat: avgLat, lon: avgLon };
+  }
+
+  for (let i = 0; i < roomsToCreate; i++) {
+    const assignedUsers = usersNotInRooms.slice(i * 5, (i + 1) * 5);
+    const central = computeCentralPoints(assignedUsers);
+
+    const baseName = pickRandomItemFromArray(roomNames, 1)[0];
+    const room = await prisma.communityRoom.create({
+      data: {
+        roomName: baseName,
+        expiresAt: oneWeekFromNow,
+        members: { connect: assignedUsers.map((u) => ({ id: u })) },
+      },
+    });
+
+    if (central) {
+      await prisma.communityRoomLocation.create({
+        data: {
+          roomId: room.id,
+          latitude: central.lat,
+          longitude: central.lon,
+          geohash: encodeGeohash(central.lat, central.lon),
+        },
+      });
     }
 
-    if (remainingUsers.length > 1) {
-      const roomsToCreate = Math.ceil(remainingUsers.length / 5);
-
-      for (let i = 0; i < roomsToCreate; i++) {
-        const baseName = pickRandomItemFromArray(roomNames, 1)[0];
-        await prisma.communityRoom.create({
-          data: {
-            roomName: baseName,
-            expiresAt: oneWeekFromNow,
-            members: {
-              connect: remainingUsers
-                .slice(i * 5, (i + 1) * 5)
-                .map((u) => ({ id: u })),
-            },
-          },
-        });
-        console.log(
-          `Created room ${baseName} with members ${{ usersIds: remainingUsers }}`,
-        );
-      }
-    }
+    console.log(
+      `Created room ${baseName} with ${assignedUsers.length} members ${
+        central ? '(with location)' : '(no location)'
+      }`,
+    );
   }
 }

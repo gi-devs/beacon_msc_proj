@@ -36,7 +36,7 @@ const CommunityRoom = () => {
       setCurrentCommunity(community);
       navigation.setOptions({ title: community.roomName });
       setRoomId(community.id);
-      refresh();
+      void refresh();
     } else {
       router.push(`/(home)/(community)`);
     }

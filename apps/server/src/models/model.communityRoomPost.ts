@@ -80,3 +80,18 @@ export async function createCommunityRoomPost(
     throw new Error('Error creating community room post');
   }
 }
+
+export async function deleteCommunityRoomPostById(
+  postId: number,
+  tx: DbClient = prisma,
+) {
+  try {
+    return await tx.communityRoomPost.delete({
+      where: {
+        id: postId,
+      },
+    });
+  } catch (error) {
+    throw new Error('Error deleting community room post');
+  }
+}

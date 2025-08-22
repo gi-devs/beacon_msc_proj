@@ -54,13 +54,25 @@ export async function createCommunityRoomPostRequest(
   try {
     const { content, moodFace, title } = data;
     const res = await axiosInstance.post(
-      `/community-room/posts/create/${roomId}`,
+      `/community-room/posts/room/${roomId}`,
       {
         title,
         content,
         moodFace,
       },
     );
+    return res.data;
+  } catch (error) {
+    console.log(parseToSeverError(error).message);
+    throw error;
+  }
+}
+
+export async function deleteCommunityRoomPostRequest(
+  postId: number,
+): Promise<{ message: string }> {
+  try {
+    const res = await axiosInstance.delete(`/community-room/posts/${postId}`);
     return res.data;
   } catch (error) {
     console.log(parseToSeverError(error).message);

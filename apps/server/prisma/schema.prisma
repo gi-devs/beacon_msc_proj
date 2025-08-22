@@ -199,6 +199,21 @@ model CommunityRoom {
   createdAt          DateTime            @default(now())
   members            User[]
   communityRoomPosts CommunityRoomPost[]
+
+  locationRoomId Int?                   @unique @map("location_room_id")
+  location       CommunityRoomLocation? @relation(fields: [locationRoomId], references: [id], onDelete: Cascade)
+}
+
+model CommunityRoomLocation {
+  id        Int      @id @default(autoincrement())
+  roomId    String   @unique
+  geohash   String
+  latitude  Float
+  longitude Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  room CommunityRoom?
 }
 
 model CommunityRoomPost {

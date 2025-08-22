@@ -1,5 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
-import { communityRoomPostService } from '@/services/service.communityRoomPost';
+import {
+  communityRoomPostService,
+  deleteUserCommunityRoomPost,
+} from '@/services/service.communityRoomPost';
 
 async function getPostById(
   req: Request,
@@ -40,7 +43,20 @@ async function create(
   }
 }
 
+async function deletePost(req: Request, res: Response, next: NextFunction) {
+  const decoded = req.user as { userId: string };
+  const userId = decoded.userId;
+  const postId = req.params.postId as string;
+  try {
+    await communityRoomPostService.deleteUserCommunityRoomPost(userId, postId);
+    res.status(204).send();
+  } catch (e) {
+    next(e);
+  }
+}
+
 export const communityRoomPostController = {
   getPostById,
   create,
+  deletePost,
 };
