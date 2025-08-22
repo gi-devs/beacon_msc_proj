@@ -235,8 +235,10 @@ model CommunityRoomPost {
 enum BeaconNotificationStatus {
   PENDING
   SENT
+  SENT_SILENTLY
   REPLIED
   OWNER_NOTIFIED
+  EXPIRED
   DECLINED
   CANCELLED
 }

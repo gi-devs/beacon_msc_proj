@@ -624,15 +624,19 @@ export async function sendNotificationsForBeacons() {
     );
   }) as SafeBeaconNotification[];
 
+  const unNotifiedToUpdateSilent = unNotifiedBeaconNotifications.filter((n) => {
+    return (
+      n.beacon.active &&
+      n.user &&
+      (!n.user.NotificationSetting ||
+        n.user.NotificationSetting.push === false ||
+        !n.user.pushToken)
+    );
+  });
+
   const unNotifiedToCancel = unNotifiedBeaconNotifications
     .filter((n) => {
-      return (
-        !n.beacon.active ||
-        !n.user ||
-        !n.user.NotificationSetting ||
-        !n.user.pushToken ||
-        n.user.NotificationSetting.push === false
-      );
+      return !n.beacon.active || !n.user;
     })
     .map((n) => n.id);
 
@@ -653,7 +657,7 @@ export async function sendNotificationsForBeacons() {
     },
   });
 
-  if (unNotifiedToSend.length === 0) {
+  if (unNotifiedToSend.length === 0 && unNotifiedToUpdateSilent.length === 0) {
     console.log(
       '[sendNotificationsForBeacons] No notifications to send after filtering.',
     );
@@ -725,12 +729,32 @@ export async function sendNotificationsForBeacons() {
           },
         });
       }
+
       console.log(
         `[sendNotificationsForBeacons] Sent ${successfulIds.length} notifications successfully. Here are the receipts: ${JSON.stringify(receipts, null, 2)}`,
       );
     } catch (error) {
       console.error('Error sending push notifications', error);
     }
+  }
+
+  try {
+    if (unNotifiedToUpdateSilent.length > 0) {
+      const silentIds = unNotifiedToUpdateSilent.map((n) => n.id);
+      await prisma.beaconNotification.updateMany({
+        where: { id: { in: silentIds } },
+        data: {
+          status: BeaconNotificationStatus.SENT_SILENTLY,
+          notifiedAt: new Date(),
+        },
+      });
+
+      console.log(
+        `[sendNotificationsForBeacons] Updated ${silentIds.length} silent notifications successfully.`,
+      );
+    }
+  } catch (error) {
+    console.error('Error updating silent notifications', error);
   }
 }
 
