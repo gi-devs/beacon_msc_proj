@@ -31,16 +31,6 @@ export async function getCommunityRoomsByUserId(
       skip,
       take,
       include: {
-        communityRoomPosts: {
-          include: {
-            postUser: {
-              select: {
-                id: true,
-                username: true,
-              },
-            },
-          },
-        },
         members: {
           select: {
             id: true,

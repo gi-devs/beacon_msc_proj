@@ -1,10 +1,14 @@
-import { PaginatedResponse } from '@beacon/types';
+import { CommunityPostDTO, PaginatedResponse } from '@beacon/types';
 import {
   getCommunityRoomByUserIdCount,
   getCommunityRoomsByUserId,
 } from '@/models/model.communityRoom';
 import { UserCommunityRoomDTO } from '@beacon/types';
 import { normaliseDate } from '@/utils/dates';
+import {
+  getCommunityRoomPostByRoomIdCount,
+  getCommunityRoomPostsByRoomId,
+} from '@/models/model.communityRoomPost';
 
 async function fetchUsersCommunityRooms(
   userId: string,
@@ -34,17 +38,6 @@ async function fetchUsersCommunityRooms(
       id: member.id,
       username: member.username,
     })),
-    posts: room.communityRoomPosts.map((post) => ({
-      id: post.id,
-      title: post.title,
-      content: post.content,
-      createdAt: post.createdAt,
-      moodFace: post.moodFace,
-      postUser: {
-        id: post.postUser.id,
-        username: post.postUser.username,
-      },
-    })),
   }));
 
   const userCommunitiesCount = await getCommunityRoomByUserIdCount(userId);
@@ -58,6 +51,48 @@ async function fetchUsersCommunityRooms(
   };
 }
 
+async function fetchCommunityRoomPostsByRoomId(
+  roomId: string,
+  skip: string,
+  take: string,
+): Promise<PaginatedResponse<CommunityPostDTO>> {
+  const skipInt = parseInt(skip, 10) || 0;
+  const takeInt = parseInt(take, 10) || 10;
+
+  if (isNaN(skipInt) || isNaN(takeInt)) {
+    throw new Error('Invalid skip or take parameters');
+  }
+
+  const posts = await getCommunityRoomPostsByRoomId(roomId, undefined, {
+    skip: skipInt,
+    take: takeInt,
+    order: { createdAt: 'desc' },
+  });
+
+  const postCount = await getCommunityRoomPostByRoomIdCount(roomId);
+
+  const formattedPosts: CommunityPostDTO[] = posts.map((post) => ({
+    id: post.id,
+    title: post.title,
+    content: post.content,
+    createdAt: post.createdAt,
+    moodFace: post.moodFace,
+    postUser: {
+      id: post.postUser.id,
+      username: post.postUser.username,
+    },
+  }));
+
+  return {
+    items: formattedPosts,
+    totalCount: postCount,
+    page: Math.floor(skipInt / takeInt) + 1,
+    totalPages: Math.ceil(postCount / takeInt),
+    hasMore: skipInt + takeInt < postCount,
+  };
+}
+
 export const communityRoomService = {
   fetchUsersCommunityRooms,
+  fetchCommunityRoomPostsByRoomId,
 };

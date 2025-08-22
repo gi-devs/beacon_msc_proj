@@ -13,6 +13,7 @@ import {
   notificationSettingRoutes,
   beaconRoutes,
   communityRoomRoutes,
+  communityRoomPostRoutes,
 } from '@/routes';
 import { scheduleNotificationsForBeacons } from '@/jobs/scheduleNotifications';
 
@@ -40,6 +41,7 @@ app.use('/location-setting', locationSettingRoutes);
 app.use('/notification-setting', notificationSettingRoutes);
 app.use('/beacon', beaconRoutes);
 app.use('/community-room', communityRoomRoutes);
+app.use('/community-room/posts', communityRoomPostRoutes);
 
 // ! for testing purposes only - remove in production and use cron job instead
 app.get('/manual-call/notification', async (req, res) => {

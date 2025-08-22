@@ -1,7 +1,7 @@
 import { UserPayloadReduced } from './server';
 
 export type CommunityPostDTO = {
-  id: string;
+  id: number;
   title: string;
   content: string;
   createdAt: Date;
@@ -15,5 +15,4 @@ export type UserCommunityRoomDTO = {
   expired: boolean;
   createdAt: Date;
   members: UserPayloadReduced[];
-  posts: CommunityPostDTO[];
 };
