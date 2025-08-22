@@ -13,6 +13,7 @@ export type UserCommunityRoomDTO = {
   id: string;
   roomName: string;
   expired: boolean;
+  expiresAt: Date;
   createdAt: Date;
   members: UserPayloadReduced[];
 };

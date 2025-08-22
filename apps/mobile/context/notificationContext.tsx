@@ -11,6 +11,7 @@ import {
   checkLocalStorageAndUpdatePushSetting,
   fetchAndSavePushToken,
   getNotificationPermissions,
+  updateServerPushNotificationSetting,
 } from '@/lib/notification';
 import { AppState } from 'react-native';
 import { LinkProps, useRouter } from 'expo-router';
@@ -27,6 +28,8 @@ type NotificationContextType = {
   hasNotificationsEnabled: boolean;
   notificationData: any | null;
   setNotificationData: (data: any) => void;
+  dailyScheduled: boolean;
+  setDailyScheduled: (value: boolean) => void;
 };
 
 type NotificationProviderProps = {
@@ -62,6 +65,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
     AsyncItemKey.NotificationIdleCheck,
   );
   const { isAuthenticated, isLoading: authIsLoading } = useAuthStore();
+  const [dailyScheduled, setDailyScheduled] = useState<boolean>(false);
   const router = useRouter();
 
   const notificationListener = useRef<Notifs.EventSubscription | null>(null);
@@ -111,6 +115,14 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
     }
   };
 
+  const hasDailyCheckInNotificationScheduled = async (): Promise<boolean> => {
+    const scheduledNotifications =
+      await Notifs.getAllScheduledNotificationsAsync();
+    return scheduledNotifications.some(
+      (notification) => notification.content.data?.key === 'DAILY_CHECK_IN',
+    );
+  };
+
   // ---------- auth side effects ----------
   useEffect(() => {
     if (isAuthenticated) {
@@ -127,6 +139,11 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
 
             if (granted && !wasGranted) {
               void fetchAndSavePushToken();
+              void updateServerPushNotificationSetting(true);
+              void saveAsyncItem(
+                AsyncItemKey.HasPushNotificationsEnabled,
+                'true',
+              );
             }
           })();
 
@@ -183,6 +200,13 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
     };
   }, []);
 
+  useEffect(() => {
+    void (async () => {
+      const isScheduled = await hasDailyCheckInNotificationScheduled();
+      setDailyScheduled(isScheduled);
+    })();
+  }, []);
+
   return (
     <NotificationContext.Provider
       value={{
@@ -190,6 +214,8 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
         hasNotificationsEnabled,
         notificationData,
         setNotificationData,
+        dailyScheduled,
+        setDailyScheduled,
       }}
     >
       {children}

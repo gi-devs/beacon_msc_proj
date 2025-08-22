@@ -33,6 +33,7 @@ async function fetchUsersCommunityRooms(
     id: room.id,
     roomName: room.roomName,
     expired: room.expiresAt < today,
+    expiresAt: room.expiresAt,
     createdAt: room.createdAt,
     members: room.members.map((member) => ({
       id: member.id,

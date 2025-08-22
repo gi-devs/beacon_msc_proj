@@ -7,6 +7,7 @@ const router = Router();
 router.get('/', verifyToken, locationSettingController.getByUserId);
 router.post('/', verifyToken, locationSettingController.create);
 router.patch('/', verifyToken, locationSettingController.update);
+router.delete('/', verifyToken, locationSettingController.deleteLocation);
 
 // ! ---------------
 // ! For Testing

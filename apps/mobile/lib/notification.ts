@@ -169,9 +169,9 @@ export async function checkLocalStorageAndUpdatePushSetting() {
   return false;
 }
 
-export async function toggleDailyCheckInNotification() {
+export async function toggleDailyCheckInNotification(): Promise<boolean> {
   const { status: existingStatus } = await Notifications.getPermissionsAsync();
-  if (existingStatus !== 'granted') return; // exit if permissions are not granted
+  if (existingStatus !== 'granted') return false; // exit if permissions are not granted
 
   const existing = await Notifications.getAllScheduledNotificationsAsync();
   const storedId = await getAsyncItem(AsyncItemKey.DailyCheckInNotificationId); // <- key name fix
@@ -200,7 +200,11 @@ export async function toggleDailyCheckInNotification() {
       );
     }
 
-    return; // toggled off
+    if (__DEV__) {
+      console.log('[Notifs] Daily check-in cancelled', storedId);
+    }
+
+    return false; // toggled off
   }
 
   // Schedule new notification
@@ -227,7 +231,7 @@ export async function toggleDailyCheckInNotification() {
     console.log('[Notifs] Daily check-in scheduled:', id);
   }
 
-  return; // toggled on
+  return true; // toggled on
 }
 
 async function getScheduledKeys() {

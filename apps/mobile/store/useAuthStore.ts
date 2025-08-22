@@ -11,6 +11,8 @@ import { deleteSecureItem, SecureItemKey } from '@/lib/secureStore';
 import { Toast } from 'toastify-react-native';
 import { useRouter } from 'expo-router';
 import { UserPayload } from '@beacon/types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Notification from 'expo-notifications';
 
 type AuthState = {
   user: UserPayload | null;
@@ -113,10 +115,20 @@ export const useAuthStore = create<AuthState>((set, get) => {
 
     logout: async () => {
       const isLoggedOut = await logoutSession();
+      const allAsyncKeys = await AsyncStorage.getAllKeys();
       if (isLoggedOut) {
         set({ user: null, isAuthenticated: false });
-        await clearTokens();
-        await deleteSecureItem(SecureItemKey.PushToken);
+        // remove all keys except 'onboarding-complete'
+        allAsyncKeys.forEach((key: string) => {
+          if (!key.includes('beacon-onboarding-complete')) {
+            AsyncStorage.removeItem(key);
+          }
+        });
+
+        const secureKeys = Object.values(SecureItemKey) as SecureItemKey[];
+        await Promise.all(secureKeys.map((key) => deleteSecureItem(key)));
+
+        await Notification.cancelAllScheduledNotificationsAsync();
       } else {
         Toast.error('Failed to log out');
       }

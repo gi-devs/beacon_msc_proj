@@ -55,6 +55,22 @@ async function update(
   }
 }
 
+async function deleteLocation(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  const decoded = req.user as UserPayload;
+  const userId = decoded.userId;
+
+  try {
+    await locationSettingService.deleteUserLocationSetting(userId);
+    res.status(204).send();
+  } catch (e) {
+    next(e);
+  }
+}
+
 // ! ---------------
 // ! For Testing
 // ! ---------------
@@ -77,4 +93,5 @@ export const locationSettingController = {
   getByUserId,
   update,
   getIntersectingUsers,
+  deleteLocation,
 };

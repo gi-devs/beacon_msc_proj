@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { AppState } from 'react-native';
 import { getLocationStatus, pushLocationIfPermitted } from '@/lib/location';
 import { useIdleTime } from '@/hooks/useIdleTime';
-import { AsyncItemKey } from '@/lib/aysncStorage';
+import { AsyncItemKey, deleteAsyncItem } from '@/lib/aysncStorage';
 import { useAuthStore } from '@/store/useAuthStore';
 
 type LocationContextType = {
@@ -77,6 +77,11 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({
 
           if (allowed && !wasAllowed) {
             await pushLocation(true);
+          }
+
+          if (wasAllowed && !allowed) {
+            // remove stored location if permission was revoked
+            await deleteAsyncItem(AsyncItemKey.LastLocation);
           }
         })();
         // auth check and push location if idle time exceeded

@@ -1,4 +1,13 @@
-import { Linking, Platform, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Linking,
+  Platform,
+  Pressable,
+  ScrollView,
+  Switch,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import UIButton from '@/components/ui/UIButton';
 import {
   pushLocalBeaconNotification,
@@ -11,103 +20,63 @@ import { getLocation, requestLocationPermissions } from '@/lib/location';
 import { useLocation } from '@/context/locationContext';
 import { Link } from 'expo-router';
 import { useAuthStore } from '@/store/useAuthStore';
+import { SafeWrapper } from '@/components/utils/SafeWrapper';
+import HeaderWithRouteUI from '@/components/ui/HeaderWithRouteUI';
+import { AntDesign } from '@expo/vector-icons';
 
 const Profile = () => {
   const { logout, user } = useAuthStore();
-  const { hasNotificationsEnabled } = useNotification();
+  const { hasNotificationsEnabled, dailyScheduled, setDailyScheduled } =
+    useNotification();
   const { isLocationEnabled } = useLocation();
   return (
-    <View className="mt-safe">
-      <Text>You are: {user?.username || "can't get username"}</Text>
-      {/*Should clear a storage items for this user if they log out LIKE IN DEV MODE*/}
-      <TouchableOpacity onPress={logout}>
-        <Text>Sign Out</Text>
-      </TouchableOpacity>
-      <View>
-        <Text className="text-center text-2xl font-bold">
-          {hasNotificationsEnabled
-            ? 'Your notifications are enabled!'
-            : 'Beacon is better with notifications!'}
-        </Text>
-        <Text className="text-center text-2xl font-bold">
-          {isLocationEnabled
-            ? 'Location is enabled'
-            : 'Location is not enabled'}
-        </Text>
-        {hasNotificationsEnabled ? (
-          <Text className="text-center text-lg">
-            Settings page is under construction
-          </Text>
-        ) : (
-          <UIButton
-            onPress={async () => {
-              await requestNotificationPermissions();
-            }}
-          >
-            Click here to enable notifications
-          </UIButton>
-        )}
-      </View>
-      <UIButton
-        variant="destructive"
-        size="sm"
-        onPress={() => {
-          void logout();
-          void resetApp();
-        }}
-        buttonClassName="mt-4"
-      >
-        Reset App
-      </UIButton>
-      <UIButton
-        variant="ghost"
-        onPress={() => toggleDailyCheckInNotification()}
-        buttonClassName="mt-4"
-      >
-        Toggle Daily Check-In Notification
-      </UIButton>
-      <UIButton
-        variant="ghost"
-        onPress={() => requestLocationPermissions()}
-        buttonClassName="mt-4"
-      >
-        Request location permissions
-      </UIButton>
-      <UIButton
-        variant="ghost"
-        onPress={async () => {
-          console.log(await getLocation());
-        }}
-        buttonClassName="mt-4"
-      >
-        Get location
-      </UIButton>
-      <UIButton
-        variant="ghost"
-        onPress={async () => {
-          if (Platform.OS === 'ios') {
-            return await Linking.openURL('app-settings:');
-          }
-
-          if (Platform.OS === 'android') {
-            return await Linking.openSettings();
-          }
-        }}
-        buttonClassName="mt-4"
-      >
-        App settings
-      </UIButton>
-      <UIButton
-        variant="ghost"
-        buttonClassName="mt-4"
-        onPress={async () => await pushLocalBeaconNotification()}
-      >
-        Beacon Notification Local
-      </UIButton>
-      <Link href="/(mood-logging)?mode=daily-log">
-        <Text className="text-blue-500">Go to Daily Mood Logging</Text>
-      </Link>
-    </View>
+    <SafeWrapper className="flex-1">
+      <HeaderWithRouteUI header="Settings" />
+      <ScrollView className="flex-1 py-8">
+        <View className="gap-4">
+          <View className="flex-row items-center justify-between">
+            <Text className="text-center text-2xl font-bold capitalize">
+              {user?.username || "can't get username"}
+            </Text>
+            <Pressable onPress={logout}>
+              <AntDesign name="login" size={24} color="black" />
+            </Pressable>
+          </View>
+          <View>
+            <View className="w-full h-px bg-gray-300 mb-4" />
+            <Text className="text-2xl mb-2">Notifications</Text>
+            <View className="flex-row items-center justify-between mb-4">
+              <Text>
+                {hasNotificationsEnabled
+                  ? 'Your notifications are enabled!'
+                  : 'Beacon is better with notifications!'}
+              </Text>
+            </View>
+            <View className="flex-row items-center justify-between">
+              <Text>Daily log notifications</Text>
+              <Switch
+                value={dailyScheduled}
+                onValueChange={async () => {
+                  const isOn = await toggleDailyCheckInNotification();
+                  setDailyScheduled(isOn);
+                }}
+              />
+            </View>
+          </View>
+          <View>
+            <View className="w-full h-px bg-gray-300 mb-4" />
+            <Text className="text-2xl mb-2">Locations</Text>
+            <View className="flex-row items-center justify-between">
+              <Text>
+                {isLocationEnabled
+                  ? 'Location is enabled'
+                  : 'Location is not enabled'}
+              </Text>
+            </View>
+          </View>
+        </View>
+      </ScrollView>
+    </SafeWrapper>
   );
 };
 
