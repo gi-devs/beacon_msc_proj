@@ -11,7 +11,7 @@ export const getApiUrl = () => {
   }
 
   if (isPhysical) {
-    return Constants.expoConfig?.extra?.DEVICE_URL_N;
+    return Constants.expoConfig?.extra?.DEVICE_URL;
   }
 
   if (isAndroid) {

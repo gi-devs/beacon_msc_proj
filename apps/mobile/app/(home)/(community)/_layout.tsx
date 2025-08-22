@@ -4,7 +4,9 @@ import { useCommunitiesStore } from '@/store/useCommunitiesStore';
 import { useEffect } from 'react';
 import { Pressable, Text, TouchableOpacity, View } from 'react-native';
 import { usePathname, useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import Colors from '@/constants/Colors';
+import { AppStyles } from '@/constants/AppStyles';
 
 const CommunityLayout = () => {
   return <CommunityNavigator />;
@@ -30,7 +32,7 @@ const CommunityNavigator = () => {
         <Drawer.Screen
           name="index"
           options={{
-            title: 'Community',
+            title: 'Communities',
             headerShown: true,
             headerTitleAlign: 'center',
             headerStyle: { backgroundColor: '#f8f8f8' },
@@ -58,12 +60,20 @@ function CustomDrawerContent() {
     void refresh();
   }, []);
 
+  const isIndexActive = pathname === '/';
+
   return (
     <View className="pt-safe px-4">
-      <Text className="text-lg font-bold text-gray-800 mb-4">
-        My Communities
-      </Text>
+      <Pressable onPress={() => router.push('/(home)/(community)')}>
+        <View className="flex-row gap-4">
+          <MaterialIcons name="people-alt" size={24} color="black" />
+          <Text className="text-lg font-bold text-gray-800 mb-4">
+            Communities
+          </Text>
+        </View>
+      </Pressable>
 
+      {/* --- Dynamic Rooms --- */}
       {items.map((c) => {
         const href = `/rooms/${c.id}`;
         const isActive = pathname.startsWith(href);
@@ -71,10 +81,13 @@ function CustomDrawerContent() {
         return (
           <Pressable
             key={c.id}
-            onPress={() => router.push(`/(home)/(community)/rooms/${c.id}`)} // navigation
-            className={`mb-3 rounded-xl px-4 py-3 shadow-sm ${
-              isActive ? 'bg-blue-500' : 'bg-red-500'
-            }`}
+            onPress={() => router.push(`/(home)/(community)/rooms/${c.id}`)}
+            className="mb-3 rounded-xl px-4 py-3 shadow-sm"
+            style={{
+              backgroundColor: isActive ? Colors.app.ripple['300'] : '#FFFFFF',
+              borderWidth: 1,
+              borderColor: Colors.app.ripple['300'],
+            }}
           >
             <Text
               className={`text-base font-medium ${

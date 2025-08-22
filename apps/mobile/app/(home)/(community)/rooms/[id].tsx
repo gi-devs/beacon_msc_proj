@@ -75,7 +75,11 @@ const CommunityRoom = () => {
             <Text className="text-3xl mb-4">
               Welcome To {currentCommunity.roomName}
             </Text>
-            {wantsToPost ? (
+            {currentCommunity.expired ? (
+              <Text className="mb-4 text-red-600">
+                This community has expired and is read-only.
+              </Text>
+            ) : wantsToPost ? (
               <CommunityRoomPostForm callback={() => setWantsToPost(false)} />
             ) : (
               <UIButton
