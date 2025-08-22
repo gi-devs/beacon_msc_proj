@@ -4,7 +4,7 @@ import { getMoodLogAverageByMonthsRequest } from '@/api/moodLoggerApi';
 import { analyseMoodScales } from '@/utils/analyseMoodScore';
 import { formateTo24HourTime } from '@/utils/dateFormatter';
 
-interface ExploreMoodState {
+type ExploreMoodState = {
   todayLogs: MoodLogDTO[];
   getDatasetToday: () => number[];
   getLabelsToday: () => string[];
@@ -15,7 +15,7 @@ interface ExploreMoodState {
 
   computeTodayLogs: (logs: MoodLogDTO[]) => void;
   fetchMonthlyAverages: (months: number) => Promise<void>;
-}
+};
 
 export const useExploreMoodStore = create<ExploreMoodState>((set, get) => ({
   todayLogs: [],

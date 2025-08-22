@@ -198,20 +198,21 @@ model CommunityRoom {
   expiresAt          DateTime
   createdAt          DateTime            @default(now())
   members            User[]
-  CommitityRoomPosts CommunityRoomPost[]
+  communityRoomPosts CommunityRoomPost[]
 }
 
 model CommunityRoomPost {
-  id        String   @id @default(cuid())
-  roomId    String
-  userId    String
-  title     String
-  content   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String   @id @default(cuid())
+  roomId     String
+  postUserId String
+  title      String
+  content    String
+  moodFace   Int      @default(50)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  room CommunityRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  user User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  room     CommunityRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  postUser User          @relation(fields: [postUserId], references: [id], onDelete: Cascade)
 
   @@index([roomId, createdAt])
 }

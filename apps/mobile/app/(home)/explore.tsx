@@ -1,11 +1,24 @@
 import { SafeWrapper } from '@/components/utils/SafeWrapper';
 import SixMonthMoodBarGraph from '@/components/graphs/SixMonthMoodBarGraph';
 import TodayMoodLineChart from '@/components/graphs/TodayMoodLineGraph';
-import { ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
 const Explore = () => {
+  const router = useRouter();
   return (
     <SafeWrapper>
+      <View className="my-2 flex-row justify-between items-center">
+        <Text className="text-lg">Explore</Text>
+        <Pressable
+          onPress={() => {
+            router.push('/(home)/(community)');
+          }}
+        >
+          <MaterialIcons name="people-alt" size={24} color="black" />
+        </Pressable>
+      </View>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View className="my-8 mb-4">
           <Text className="text-3xl">
@@ -21,7 +34,7 @@ const Explore = () => {
         <View className="mb-8">
           <Text className="font-semibold block text-base">
             Why do higher score indicate worst moods?
-          </Text>{' '}
+          </Text>
           <Text className="text-base mb-4">
             Beacon aims to help you understand periods of distress in your life,
             This allows you to better see negative trend and patterns in your

@@ -13,6 +13,11 @@ export type UserPayload = {
   };
 };
 
+export type UserPayloadReduced = {
+  id: string;
+  username: string;
+};
+
 export type DataRequestOptions = {
   skip?: number;
   take?: number;

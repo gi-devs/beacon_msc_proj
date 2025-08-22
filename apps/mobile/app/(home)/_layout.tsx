@@ -6,6 +6,7 @@ import CustomTabBar from '@/components/ui/CustomTabBar';
 import { AsyncItemKey, getAsyncItem, saveAsyncItem } from '@/lib/aysncStorage';
 import { useMoodLogStore } from '@/store/useMoodLogStore';
 import { useJournalEntryStore } from '@/store/useJournalEntryStore';
+import { useUI } from '@/context/uiContext';
 
 export default function HomeTabsLayout() {
   // init data
@@ -40,12 +41,15 @@ export default function HomeTabsLayout() {
 }
 
 function HomeNavigator() {
+  const {
+    navbar: { isVisible },
+  } = useUI();
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
       }}
-      tabBar={(props) => <CustomTabBar {...props} />}
+      tabBar={(props) => (isVisible ? <CustomTabBar {...props} /> : null)}
     >
       <Tabs.Screen
         name="index"
@@ -95,6 +99,7 @@ function HomeNavigator() {
           },
         }}
       />
+      <Tabs.Screen name="(community)" />
     </Tabs>
   );
 }

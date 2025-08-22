@@ -17,7 +17,6 @@ import {
 import { formatShortDate } from '@/utils/dateFormatter';
 import { useMoodLogStore } from '@/store/useMoodLogStore';
 import UIButton from '@/components/ui/UIButton';
-import { getMoodColor } from '@/utils/computeColour';
 
 export type MoodStackItem = {
   moodLogId: number;
@@ -71,7 +70,6 @@ const LogStack = ({ isOpen }: LogStackProps) => {
         anxietyScale: log.anxietyScale,
       }),
     }));
-    console.log('Formatted Mood Stack:', formattedMoodStack);
     setMoodStack(formattedMoodStack);
   }, [moodLogs]);
 

@@ -14,7 +14,7 @@ export async function createCommunityRooms() {
     If a user is added to a room, if they create new account. If no rooms are available, user will need to wait for next room reset.
    */
   const today = normaliseDate(new Date());
-  const oneWeekFromNow = addDays(today, 7);
+  const oneWeekFromNow = addDays(today, 8);
   const threeDaysFromNow = addDays(today, 3);
 
   // only get users who have an active session
