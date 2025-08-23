@@ -256,7 +256,7 @@ export async function scheduleNotificationsForBeacons() {
     const timeSinceLastNotification =
       now.getTime() - latestNotification.notifiedAt.getTime();
     const userPushIntervalInMs =
-      user.NotificationSetting!.minBeaconPushInterval * 60 * 1000;
+      user.NotificationSetting!.minBeaconPushInterval;
 
     // If the latest notification is within the user's minBeaconPushInterval, skip this user
     return timeSinceLastNotification >= userPushIntervalInMs;

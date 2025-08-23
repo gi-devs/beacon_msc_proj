@@ -1,26 +1,19 @@
-import React, { useRef } from 'react';
-import { View, Text, TouchableOpacity, Image } from 'react-native';
+import React, { useEffect } from 'react';
+import { View } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedProps,
-  withTiming,
   withDelay,
+  withRepeat,
   withSequence,
+  withTiming,
   interpolateColor,
 } from 'react-native-reanimated';
 import { Svg, Circle as SVGCircle } from 'react-native-svg';
 
 const AnimatedCircle = Animated.createAnimatedComponent(SVGCircle);
 
-const RippleCircles = ({
-  callback,
-  disabled = false,
-  onAnimateEnd,
-}: {
-  callback?: () => void | Promise<void>;
-  disabled?: boolean;
-  onAnimateEnd?: () => void | Promise<void>;
-}) => {
+const RippleCirclesAnimated = ({ size = 300 }: { size?: number }) => {
   const vWidth = 981;
   const vHeight = 981;
 
@@ -70,43 +63,42 @@ const RippleCircles = ({
   ];
 
   const progressList = shapes.map(() => useSharedValue(0));
-  const loopInterval = useRef<number | null>(null);
 
-  const animateOnce = () => {
-    for (let i = 0; i < progressList.length; i++) {
-      const reverseIndex = progressList.length - 1 - i;
-      progressList[reverseIndex].value = withDelay(
-        i * 200,
-        withSequence(
-          withTiming(1, { duration: 1200 }),
-          withTiming(0, { duration: 1200 }),
+  useEffect(() => {
+    const baseDuration = 1000;
+    const delayBetween = 1000;
+    const totalCircles = progressList.length;
+    const totalWaveDuration =
+      baseDuration * 2 + (totalCircles - 1) * delayBetween;
+
+    progressList.forEach((progress, i) => {
+      const reverseIndex = totalCircles - 1 - i; // flip to start from inner circle
+      const startDelay = reverseIndex * delayBetween;
+
+      const holdDuration = totalWaveDuration - startDelay;
+
+      progress.value = withRepeat(
+        withDelay(
+          startDelay,
+          withSequence(
+            withTiming(1, { duration: holdDuration / 2 }),
+            withTiming(0, { duration: holdDuration / 2 }),
+          ),
         ),
+        -1,
+        false,
       );
-    }
-  };
-
-  const startRippleLoop = () => {
-    if (loopInterval.current) return; // prevent multiple loops
-
-    animateOnce(); // kick off once immediately
-
-    loopInterval.current = setInterval(() => {
-      animateOnce();
-    }, 3400);
-  };
-
-  const stopRippleLoop = () => {
-    if (loopInterval.current) {
-      clearInterval(loopInterval.current);
-      loopInterval.current = null;
-    }
-  };
+    });
+  }, []);
 
   return (
-    <View className="flex-1 justify-center items-center bg-black">
+    <View
+      className="justify-center items-center"
+      style={{ width: size, height: size }}
+    >
       <Svg
-        width={vWidth}
-        height={vHeight}
+        width="100%"
+        height="100%"
         viewBox={`0 0 ${vWidth} ${vHeight}`}
         preserveAspectRatio="xMidYMid meet"
       >
@@ -117,10 +109,7 @@ const RippleCircles = ({
               [0, 1],
               [shape.fill, '#FFFFFF'],
             );
-
-            return {
-              stroke: strokeColor,
-            };
+            return { stroke: strokeColor };
           });
 
           return (
@@ -137,35 +126,8 @@ const RippleCircles = ({
           );
         })}
       </Svg>
-
-      <TouchableOpacity
-        onPress={async () => {
-          startRippleLoop();
-
-          try {
-            if (callback) {
-              await callback();
-            }
-
-            if (onAnimateEnd) {
-              await onAnimateEnd();
-            }
-          } catch (_) {
-          } finally {
-            stopRippleLoop();
-          }
-        }}
-        className="translate-x-1 absolute bottom-20 h-[330px] w-[330px] rounded-full items-center justify-center disabled:opacity-50"
-        disabled={disabled}
-      >
-        <Image
-          source={require('@/assets/items/send_beacon.png')}
-          className="w-80"
-          resizeMode="contain"
-        />
-      </TouchableOpacity>
     </View>
   );
 };
 
-export default RippleCircles;
+export default RippleCirclesAnimated;
