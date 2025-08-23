@@ -13,6 +13,7 @@ coverage/
 
 # private files
 .env.development
+.env.production
 .env
 certs/
 
