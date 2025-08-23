@@ -1,6 +1,6 @@
 import { ScrollView, Text, View } from 'react-native';
 import { useEffect, useState } from 'react';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Router, useLocalSearchParams, useRouter } from 'expo-router';
 import { useNotification } from '@/context/notificationContext';
 import { Toast } from 'toastify-react-native';
 import { format } from 'date-fns';
@@ -21,6 +21,12 @@ import {
 import BeaconReplyForm from '@/components/form/forms/BeaconReplyForm';
 import { useBeaconNotificationStore } from '@/store/useBeaconNotificationStore';
 
+type ReplyTextOption = {
+  id: number;
+  text: string;
+  key: BeaconReplyTextKey;
+};
+
 const BeaconReplyId = () => {
   const [loading, setLoading] = useState(true);
   const { notificationData, setNotificationData } = useNotification() as {
@@ -30,16 +36,17 @@ const BeaconReplyId = () => {
   const router = useRouter();
   const [beaconReplyDetails, setBeaconReplyDetails] =
     useState<BeaconNotificationDTO | null>(null);
-  const [replyTexts, setReplyTexts] = useState<
-    { id: number; text: string; key: BeaconReplyTextKey }[]
-  >([]);
+  const [replyTexts, setReplyTexts] = useState<ReplyTextOption[]>([]);
   const [bannerText, setBannerText] = useState<string>('');
   const [submitFn, setSubmitFn] = useState<(() => void) | null>(null);
   const [hasSelection, setHasSelection] = useState<() => boolean>(
     () => () => false,
   );
-  const { items: beaconNotifications, fetchSingle } =
-    useBeaconNotificationStore();
+  const {
+    items: beaconNotifications,
+    fetchSingle,
+    updateSingleItem,
+  } = useBeaconNotificationStore();
   const { id } = useLocalSearchParams();
 
   useEffect(() => {
@@ -47,46 +54,35 @@ const BeaconReplyId = () => {
       setLoading(true);
 
       try {
-        let notifToFindId;
+        const parseId = Array.isArray(id) ? id[0] : id;
+        const notifId = getNotifId(parseId, notificationData);
+        if (!notifId)
+          return redirectWithError(
+            'This beacon cannot be found. Returning to home.',
+            router,
+          );
 
-        if (id && typeof id === 'string') {
-          notifToFindId = id;
-        } else if (notificationData) {
-          notifToFindId = notificationData.notificationId;
-        } else {
-          Toast.error('This beacon cannot be found. Returning to home.');
-          router.replace('/(home)');
-          return;
-        }
-
-        if (typeof notifToFindId === 'string') {
-          notifToFindId = parseInt(notifToFindId, 10);
-        }
-
-        if (isNaN(notifToFindId)) {
-          Toast.error('This beacon cannot be found. Returning to home.');
-          router.replace('/(home)');
-          return;
-        }
-
-        const existsInStore = beaconNotifications.find(
-          (n) => n.id === notifToFindId,
-        );
+        const existsInStore = beaconNotifications.find((n) => n.id === notifId);
         let data;
-        if (existsInStore) {
-          data = existsInStore;
-          setBeaconReplyDetails(existsInStore);
-        } else {
-          const fetchedBeaconNotification = await fetchSingle(notifToFindId);
-          if (fetchedBeaconNotification) {
-            data = fetchedBeaconNotification;
-            setBeaconReplyDetails(fetchedBeaconNotification);
-          } else {
-            Toast.error('This beacon cannot be found. Returning to home.');
-            router.replace('/(home)');
+
+        if (!existsInStore) {
+          const fetchedBeaconNotification = await fetchSingle(notifId);
+
+          if (!fetchedBeaconNotification) {
+            redirectWithError(
+              'This beacon cannot be found. Returning to home.',
+              router,
+            );
             return;
           }
+
+          data = fetchedBeaconNotification;
+        } else {
+          data = existsInStore;
         }
+
+        validateBeaconData(data, router);
+        setBeaconReplyDetails(data);
 
         // --- decide highest mood scale ---
         const { scales } = data.beacon.moodInfo;
@@ -96,55 +92,18 @@ const BeaconReplyId = () => {
           scales.sadness,
         );
 
-        let moodKey: 'stress' | 'anxious' | 'sad' = 'stress';
-        if (highestScale === scales.anxiety) {
-          moodKey = 'anxious';
-        } else if (highestScale === scales.sadness) {
-          moodKey = 'sad';
-        }
+        // --- get mood + generic messages ---
+        const moodKey = getHighestMoodKey(data.beacon.moodInfo.scales);
+        const selectedReplies = randomiseReplyOptions(moodKey);
+        setReplyTexts(selectedReplies);
 
-        // --- pick mood + generic messages ---
-        const moodMessages = Object.entries(replyMessages[moodKey]).map(
-          ([id, text]) =>
-            ({ id: Number(id), text, key: moodKey }) as {
-              id: number;
-              text: string;
-              key: BeaconReplyTextKey;
-            },
-        );
-        const genericMessages = Object.entries(replyMessages.generic).map(
-          ([id, text]) =>
-            ({ id: Number(id), text, key: 'generic' }) as {
-              id: number;
-              text: string;
-              key: BeaconReplyTextKey;
-            },
-        );
-
-        // combine and pick 6 random
-        const combined = [...moodMessages, ...genericMessages];
-        const selected = pickRandomItemFromArray(combined, 6);
-        setReplyTexts(selected);
-
-        const ownerUsername = data.beacon.ownerUsername;
         // --- banner ---
-        if (moodKey === 'stress') {
-          setBannerText(
-            `${ownerUsername} is feeling pretty stressed today, let them know someone is thinking of them!`,
-          );
-        } else if (moodKey === 'anxious') {
-          setBannerText(
-            `${ownerUsername} is feeling pretty anxious today, let them know someone is thinking of them!`,
-          );
-        } else {
-          setBannerText(
-            `${ownerUsername} is feeling pretty sad today, let them know someone is thinking of them!`,
-          );
-        }
+        const ownerUsername = data.beacon.ownerUsername;
+        const banner = formBannerText(moodKey, ownerUsername);
+        setBannerText(banner);
       } catch (error) {
         const err = parseToSeverError(error);
-        Toast.error(err.message);
-        router.replace('/(home)');
+        redirectWithError(err.message, router);
       } finally {
         setLoading(false);
       }
@@ -165,15 +124,16 @@ const BeaconReplyId = () => {
       if (!submitFn) {
         return;
       }
-      await requestBeaconReply(data);
+      const replied = await requestBeaconReply(data);
+      updateSingleItem(replied);
       Toast.success('Reply sent successfully!');
-      router.replace('/(home)');
+      router.replace('/(beacon)');
     } catch (error) {
       const err = parseToSeverError(error);
       Toast.error(err.message);
 
       if (err.statusCode === 403 || err.statusCode === 404) {
-        router.replace('/(home)');
+        router.replace('/(beacon)');
       }
     }
   };
@@ -254,5 +214,109 @@ const BeaconReplyId = () => {
     </SafeAreaView>
   );
 };
+
+// -------------- HELPERS --------------
+function getNotifId(
+  id: string | undefined | null,
+  notificationData: BeaconPushNotificationData | null,
+): number | null {
+  let notifId;
+
+  if (id) {
+    notifId = id;
+  } else if (notificationData) {
+    notifId = notificationData.notificationId;
+  } else {
+    return null;
+  }
+
+  if (typeof notifId === 'string') {
+    notifId = parseInt(notifId, 10);
+  }
+
+  return typeof notifId === 'number' && !isNaN(notifId) ? notifId : null;
+}
+
+function redirectWithError(
+  message: string,
+  router: Router,
+  callback?: () => void,
+) {
+  Toast.error(message);
+  router.replace('/(beacon)');
+  if (callback) {
+    callback();
+  }
+}
+
+function validateBeaconData(
+  data: BeaconNotificationDTO | null,
+  router: Router,
+): boolean {
+  if (!data) {
+    redirectWithError(
+      'This beacon cannot be found. Returning to home.',
+      router,
+    );
+    return false;
+  }
+
+  if (data.status === 'REPLIED') {
+    redirectWithError('You have already replied to this beacon.', router);
+    return false;
+  }
+
+  if (data.beacon.expiresAt && new Date(data.beacon.expiresAt) < new Date()) {
+    redirectWithError('This beacon has expired. Returning to home.', router);
+    return false;
+  }
+
+  return true;
+}
+
+function getHighestMoodKey(scales: {
+  stress: number;
+  anxiety: number;
+  sadness: number;
+}): BeaconReplyTextKey {
+  const highest = Math.max(scales.stress, scales.anxiety, scales.sadness);
+
+  if (highest === scales.anxiety) return 'anxious' as BeaconReplyTextKey;
+  if (highest === scales.sadness) return 'sad' as BeaconReplyTextKey;
+  return 'stress' as BeaconReplyTextKey;
+}
+
+function randomiseReplyOptions(moodKey: BeaconReplyTextKey): ReplyTextOption[] {
+  const moodMessages = Object.entries(replyMessages[moodKey]).map(
+    ([id, text]) => ({
+      id: Number(id),
+      text,
+      key: moodKey,
+    }),
+  );
+
+  const genericMessages = Object.entries(replyMessages.generic).map(
+    ([id, text]) => ({
+      id: Number(id),
+      text,
+      key: 'generic' as BeaconReplyTextKey,
+    }),
+  );
+
+  return pickRandomItemFromArray([...moodMessages, ...genericMessages], 6);
+}
+
+function formBannerText(
+  moodKey: BeaconReplyTextKey,
+  ownerUsername: string,
+): string {
+  if (moodKey === 'stress') {
+    return `${ownerUsername} is feeling pretty stressed today, let them know someone is thinking of them!`;
+  }
+  if (moodKey === 'anxious') {
+    return `${ownerUsername} is feeling pretty anxious today, let them know someone is thinking of them!`;
+  }
+  return `${ownerUsername} is feeling pretty sad today, let them know someone is thinking of them!`;
+}
 
 export default BeaconReplyId;

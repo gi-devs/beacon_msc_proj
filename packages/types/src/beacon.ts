@@ -49,6 +49,7 @@ export type BeaconNotificationDTO = {
       };
     };
   };
+  reply?: Omit<BeaconRepliesDTO, 'beaconId'>;
 };
 
 export type BeaconNotificationStatusType =

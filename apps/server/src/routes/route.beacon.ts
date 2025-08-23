@@ -6,8 +6,6 @@ const router = Router();
 
 router.use(verifyToken);
 
-router.get('/:id/notification/:beaconNotifId', beaconController.receive);
-
 router.post('/:id/notification/:beaconNotifId', beaconController.reply);
 
 router.post(

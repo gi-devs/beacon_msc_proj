@@ -24,21 +24,7 @@ export async function getBeaconReplyDetails(
   }
 }
 
-export async function requestBeaconReply(data: CreateBeaconFormData) {
-  try {
-    const res = await axiosInstance.post(
-      `beacon/${data.beaconId}/notification/${data.beaconNotificationId}`,
-      {
-        replyTextKey: data.replyTextKey,
-        replyTextId: data.replyTextId,
-      },
-    );
-    return res.data;
-  } catch (error) {
-    console.log(parseToSeverError(error).message);
-    throw error;
-  }
-}
+// for Mood log page
 
 export async function getBeaconRepliesWithMoodLogIdRequest(
   moodLogId: number,
@@ -55,6 +41,8 @@ export async function getBeaconRepliesWithMoodLogIdRequest(
     throw error;
   }
 }
+
+// working
 
 export async function getUserBeaconNotificationsRequest(
   take: number = 10,
@@ -80,6 +68,24 @@ export async function getSingleBeaconNotificationsRequest(
     return res.data;
   } catch (error) {
     console.log(error);
+    console.log(parseToSeverError(error).message);
+    throw error;
+  }
+}
+
+export async function requestBeaconReply(
+  data: CreateBeaconFormData,
+): Promise<BeaconNotificationDTO> {
+  try {
+    const res = await axiosInstance.post(
+      `beacon/${data.beaconId}/notification/${data.beaconNotificationId}`,
+      {
+        replyTextKey: data.replyTextKey,
+        replyTextId: data.replyTextId,
+      },
+    );
+    return res.data;
+  } catch (error) {
     console.log(parseToSeverError(error).message);
     throw error;
   }

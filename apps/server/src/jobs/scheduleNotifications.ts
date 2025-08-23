@@ -38,6 +38,53 @@ export async function scheduleNotificationsForBeacons() {
   console.log('[scheduleNotificationsForBeacons] Scheduling Notifications....');
   const now = new Date();
 
+  // * any beacon which is going to expire in the next 5 minutes should be updated to active = false
+  const fiveMinutesFromNow = new Date(now.getTime() + 5 * 60 * 1000);
+  try {
+    prisma.$transaction(async (tx) => {
+      const expiredBeacons = await tx.beacon.updateMany({
+        where: {
+          active: true,
+          expiresAt: {
+            lte: fiveMinutesFromNow,
+          },
+        },
+        data: {
+          active: false,
+        },
+      });
+
+      // update any pending notifications for these beacons to expired
+      if (expiredBeacons.count > 0) {
+        await tx.beaconNotification.updateMany({
+          where: {
+            beacon: {
+              active: false,
+            },
+            status: {
+              in: [
+                BeaconNotificationStatus.PENDING,
+                BeaconNotificationStatus.SENT_SILENTLY,
+                BeaconNotificationStatus.SENT,
+              ],
+            },
+          },
+          data: {
+            status: BeaconNotificationStatus.EXPIRED,
+          },
+        });
+        console.log(
+          `[scheduleNotificationsForBeacons] Marked ${expiredBeacons.count} beacons as expired and their pending notifications as EXPIRED.`,
+        );
+      }
+    });
+  } catch (e) {
+    console.error(
+      '[scheduleNotificationsForBeacons] Error updating expired beacons:',
+      e,
+    );
+  }
+
   // * Fetch all active beacons with their user and location settings
   const beacons = await prisma.beacon.findMany({
     where: {
@@ -533,25 +580,12 @@ export async function scheduleNotificationsForBeacons() {
   await prisma.beaconNotification.createMany({
     data: notifications,
   });
+
   console.log(
     `[scheduleNotificationsForBeacons] Created notifications for beacons: ${Array.from(
       mapOfUsersToNotifyOfBeacons.keys(),
     ).join(', ')}`,
   );
-
-  // * any beacon which is going to expire in the next 5 minutes should be updated to active = false
-  const fiveMinutesFromNow = new Date(now.getTime() + 5 * 60 * 1000);
-  await prisma.beacon.updateMany({
-    where: {
-      active: true,
-      expiresAt: {
-        lte: fiveMinutesFromNow,
-      },
-    },
-    data: {
-      active: false,
-    },
-  });
 
   console.log(
     '[scheduleNotificationsForBeacons] Notifications scheduled successfully.',
