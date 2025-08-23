@@ -8,6 +8,7 @@ import {
   PaginatedResponse,
 } from '@beacon/types';
 
+// TODO: get rid
 export async function getBeaconReplyDetails(
   id: number,
   beaconNotifId: number,
@@ -39,11 +40,6 @@ export async function requestBeaconReply(data: CreateBeaconFormData) {
   }
 }
 
-// router.post(
-//   '/mood-log/:moodLogId/replies',
-//   beaconController.beaconRepliesWithMoodLogId,
-// );
-
 export async function getBeaconRepliesWithMoodLogIdRequest(
   moodLogId: number,
   take: number = 10,
@@ -65,16 +61,9 @@ export async function getUserBeaconNotificationsRequest(
   skip: number = 0,
 ): Promise<PaginatedResponse<BeaconNotificationDTO>> {
   try {
-    console.log(
-      'Fetching user beacon notifications with take:',
-      take,
-      'skip:',
-      skip,
-    );
     const res = await axiosInstance.get(
       `beacon-notification?take=${take}&skip=${skip}`,
     );
-    console.log(res.data);
     return res.data;
   } catch (error) {
     console.log(error);
@@ -87,9 +76,7 @@ export async function getSingleBeaconNotificationsRequest(
   id: number,
 ): Promise<BeaconNotificationDTO> {
   try {
-    console.log('Fetching beacon notification with id:', id);
     const res = await axiosInstance.get(`beacon-notification/${id}`);
-    console.log(res.data);
     return res.data;
   } catch (error) {
     console.log(error);

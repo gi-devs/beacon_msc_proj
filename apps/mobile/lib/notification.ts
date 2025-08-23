@@ -276,10 +276,10 @@ export async function pushLocalBeaconNotification(): Promise<void> {
         body: "Someone just put up a beacon near you, why don't you send them something nice!",
         data: {
           dataType: 'BEACON_NOTIFICATION',
-          beaconId: 12,
-          notificationId: 156,
+          beaconId: 19,
+          notificationId: 193,
           receiverUserId: 'cmdmdvby00000fd65z35q7fm5',
-          beaconExpiresAt: '2025-08-19T03:00:09.160Z',
+          beaconExpiresAt: '2025-08-24T03:00:09.160Z',
           route: '/(beacon)/reply',
         },
       },

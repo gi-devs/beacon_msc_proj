@@ -30,11 +30,16 @@ async function getSingleNotification(
   res: Response,
   next: NextFunction,
 ): Promise<void> {
+  const decoded = req.user as { userId: string };
+  const userId = decoded.userId;
   const notificationId = req.params.id;
 
   try {
     const notification =
-      await beaconNotificationService.fetchBeaconNotification(notificationId);
+      await beaconNotificationService.fetchBeaconNotification(
+        notificationId,
+        userId,
+      );
 
     res.status(200).json(notification);
   } catch (e) {

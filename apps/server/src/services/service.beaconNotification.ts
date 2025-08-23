@@ -9,6 +9,7 @@ import {
   BeaconNotificationStatusType,
   PaginatedResponse,
 } from '@beacon/types';
+import { CustomError } from '@/utils/custom-error';
 
 async function fetchUserBeaconNotifications(
   userId: string,
@@ -19,13 +20,13 @@ async function fetchUserBeaconNotifications(
   const skipNum = parseInt(skip, 10);
 
   if (isNaN(takeNum) || isNaN(skipNum) || takeNum < 1 || skipNum < 0) {
-    throw new Error('Invalid pagination parameters');
+    throw new CustomError('Invalid pagination parameters', 400);
   }
 
   const user = await getUserById(userId);
 
   if (!user) {
-    throw new Error('User not found');
+    throw new CustomError('User not found', 404);
   }
 
   const beaconNotifications = await getAllBeaconNotificationsByUserId(
@@ -42,7 +43,7 @@ async function fetchUserBeaconNotifications(
       const moodLog = n.beacon.dailyCheckIn.MoodLog;
 
       if (!moodLog) {
-        throw new Error('Associated MoodLog not found');
+        throw new CustomError('Associated MoodLog not found', 500);
       }
 
       return {
@@ -78,22 +79,30 @@ async function fetchUserBeaconNotifications(
 
 async function fetchBeaconNotification(
   id: string,
+  userId: string,
 ): Promise<BeaconNotificationDTO> {
   const idNum = parseInt(id, 10);
 
   if (isNaN(idNum) || idNum < 1) {
-    throw new Error('Invalid beacon notification ID');
+    throw new CustomError('Invalid beacon notification ID', 400);
   }
 
   const beaconNotification = await getBeaconNotificationById(idNum);
 
   if (!beaconNotification) {
-    throw new Error('Beacon notification not found');
+    throw new CustomError('Beacon notification not found', 404);
+  }
+
+  if (beaconNotification.userId !== userId) {
+    throw new CustomError(
+      'Unauthorized access to this beacon notification',
+      403,
+    );
   }
 
   const moodLog = beaconNotification.beacon.dailyCheckIn.MoodLog;
   if (!moodLog) {
-    throw new Error('Associated MoodLog not found');
+    throw new CustomError('Associated MoodLog not found', 500);
   }
 
   return {

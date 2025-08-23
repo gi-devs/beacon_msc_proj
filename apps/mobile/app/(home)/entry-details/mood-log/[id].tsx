@@ -2,7 +2,6 @@ import { ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeWrapper } from '@/components/utils/SafeWrapper';
 import { useEffect, useState } from 'react';
-import { Toast } from 'toastify-react-native';
 import MoodLogDetail from '@/components/MoodLogDetail';
 import DateTimeDisplay from '@/components/DateTimeDisplay';
 import { BeaconRepliesDTOWithUser, JournalEntryDTO } from '@beacon/types';

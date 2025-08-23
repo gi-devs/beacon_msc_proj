@@ -1,11 +1,11 @@
 import { ScrollView, Text, View } from 'react-native';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useNotification } from '@/context/notificationContext';
 import { Toast } from 'toastify-react-native';
 import { format } from 'date-fns';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { getBeaconReplyDetails, requestBeaconReply } from '@/api/beaconApi';
+import { requestBeaconReply } from '@/api/beaconApi';
 import { parseToSeverError } from '@/utils/parseToSeverError';
 import { getMoodColor } from '@/utils/computeColour';
 import MoodFace from '@/components/MoodFace';
@@ -13,13 +13,13 @@ import replyMessages from '@/constants/beaconReplyMessages';
 import { pickRandomItemFromArray } from '@beacon/utils';
 import UIButton from '@/components/ui/UIButton';
 import { CreateBeaconFormData } from '@beacon/validation';
-import useConfirmModal from '@/hooks/useConfirmation';
 import {
+  BeaconNotificationDTO,
   BeaconPushNotificationData,
-  BeaconReplyDetailsDTO,
   BeaconReplyTextKey,
 } from '@beacon/types';
 import BeaconReplyForm from '@/components/form/forms/BeaconReplyForm';
+import { useBeaconNotificationStore } from '@/store/useBeaconNotificationStore';
 
 const BeaconReplyId = () => {
   const [loading, setLoading] = useState(true);
@@ -29,7 +29,7 @@ const BeaconReplyId = () => {
   };
   const router = useRouter();
   const [beaconReplyDetails, setBeaconReplyDetails] =
-    useState<BeaconReplyDetailsDTO | null>(null);
+    useState<BeaconNotificationDTO | null>(null);
   const [replyTexts, setReplyTexts] = useState<
     { id: number; text: string; key: BeaconReplyTextKey }[]
   >([]);
@@ -38,55 +38,68 @@ const BeaconReplyId = () => {
   const [hasSelection, setHasSelection] = useState<() => boolean>(
     () => () => false,
   );
+  const { items: beaconNotifications, fetchSingle } =
+    useBeaconNotificationStore();
+  const { id } = useLocalSearchParams();
 
   useEffect(() => {
-    const fetchBeaconReplyDetails = async () => {
-      console.log(notificationData);
+    const getPageData = async () => {
       setLoading(true);
-      if (
-        !notificationData?.dataType ||
-        notificationData.dataType !== 'BEACON_NOTIFICATION'
-      ) {
-        router.replace('/(home)');
-        Toast.warn('This beacon cannot be found. Returning to home.');
-        return;
-      }
-
-      if (notificationData.beaconExpiresAt) {
-        const expiresAt = new Date(notificationData.beaconExpiresAt);
-        const now = new Date();
-        if (expiresAt < now) {
-          router.replace('/(home)');
-          Toast.warn('This beacon has expired. Returning to home.');
-          return;
-        }
-      }
-
-      if (!notificationData.beaconId || !notificationData.notificationId) {
-        router.replace('/(home)');
-        Toast.warn('This beacon cannot be found. Returning to home.');
-        return;
-      }
 
       try {
-        const data = await getBeaconReplyDetails(
-          notificationData.beaconId,
-          notificationData.notificationId,
+        let notifToFindId;
+
+        if (id && typeof id === 'string') {
+          notifToFindId = id;
+        } else if (notificationData) {
+          notifToFindId = notificationData.notificationId;
+        } else {
+          Toast.error('This beacon cannot be found. Returning to home.');
+          router.replace('/(home)');
+          return;
+        }
+
+        if (typeof notifToFindId === 'string') {
+          notifToFindId = parseInt(notifToFindId, 10);
+        }
+
+        if (isNaN(notifToFindId)) {
+          Toast.error('This beacon cannot be found. Returning to home.');
+          router.replace('/(home)');
+          return;
+        }
+
+        const existsInStore = beaconNotifications.find(
+          (n) => n.id === notifToFindId,
         );
-        setBeaconReplyDetails(data);
+        let data;
+        if (existsInStore) {
+          data = existsInStore;
+          setBeaconReplyDetails(existsInStore);
+        } else {
+          const fetchedBeaconNotification = await fetchSingle(notifToFindId);
+          if (fetchedBeaconNotification) {
+            data = fetchedBeaconNotification;
+            setBeaconReplyDetails(fetchedBeaconNotification);
+          } else {
+            Toast.error('This beacon cannot be found. Returning to home.');
+            router.replace('/(home)');
+            return;
+          }
+        }
 
         // --- decide highest mood scale ---
-        const { dailyCheckInMoodScales } = data;
+        const { scales } = data.beacon.moodInfo;
         const highestScale = Math.max(
-          dailyCheckInMoodScales.stressScale,
-          dailyCheckInMoodScales.anxietyScale,
-          dailyCheckInMoodScales.sadnessScale,
+          scales.stress,
+          scales.anxiety,
+          scales.sadness,
         );
 
         let moodKey: 'stress' | 'anxious' | 'sad' = 'stress';
-        if (highestScale === dailyCheckInMoodScales.anxietyScale) {
+        if (highestScale === scales.anxiety) {
           moodKey = 'anxious';
-        } else if (highestScale === dailyCheckInMoodScales.sadnessScale) {
+        } else if (highestScale === scales.sadness) {
           moodKey = 'sad';
         }
 
@@ -113,32 +126,39 @@ const BeaconReplyId = () => {
         const selected = pickRandomItemFromArray(combined, 6);
         setReplyTexts(selected);
 
+        const ownerUsername = data.beacon.ownerUsername;
         // --- banner ---
         if (moodKey === 'stress') {
           setBannerText(
-            `${data.ownerUsername} is feeling pretty stressed today, let them know someone is thinking of them!`,
+            `${ownerUsername} is feeling pretty stressed today, let them know someone is thinking of them!`,
           );
         } else if (moodKey === 'anxious') {
           setBannerText(
-            `${data.ownerUsername} is feeling pretty anxious today, let them know someone is thinking of them!`,
+            `${ownerUsername} is feeling pretty anxious today, let them know someone is thinking of them!`,
           );
         } else {
           setBannerText(
-            `${data.ownerUsername} is feeling pretty sad today, let them know someone is thinking of them!`,
+            `${ownerUsername} is feeling pretty sad today, let them know someone is thinking of them!`,
           );
         }
       } catch (error) {
-        const e = parseToSeverError(error);
-        Toast.error(e.message);
+        const err = parseToSeverError(error);
+        Toast.error(err.message);
         router.replace('/(home)');
-        return;
       } finally {
         setLoading(false);
       }
     };
 
-    fetchBeaconReplyDetails();
-  }, [notificationData]);
+    getPageData();
+  }, [
+    notificationData,
+    id,
+    beaconNotifications,
+    fetchSingle,
+    router,
+    setNotificationData,
+  ]);
 
   const handleSubmitReply = async (data: CreateBeaconFormData) => {
     try {
@@ -170,19 +190,24 @@ const BeaconReplyId = () => {
             <View className="mb-4 gap-2">
               <Text>{format(new Date(), 'MMMM dd, yyyy')}</Text>
               <Text className="text-2xl">
-                {beaconReplyDetails.ownerUsername}
+                {beaconReplyDetails.beacon.ownerUsername}
               </Text>
             </View>
 
             <View
               className="bg-white rounded-md px-6 py-2 items-center"
               style={{
-                borderColor: getMoodColor(beaconReplyDetails.moodFace),
+                borderColor: getMoodColor(
+                  beaconReplyDetails.beacon.moodInfo.moodFace,
+                ),
                 borderWidth: 5,
               }}
             >
               <View className="flex-row gap-6 items-center">
-                <MoodFace mood={beaconReplyDetails.moodFace} size={70} />
+                <MoodFace
+                  mood={beaconReplyDetails.beacon.moodInfo.moodFace}
+                  size={70}
+                />
                 <Text className="mt-2 flex-shrink flex-wrap leading-normal">
                   {bannerText}
                 </Text>
@@ -195,8 +220,8 @@ const BeaconReplyId = () => {
 
             <View className="flex-1 flex-col gap-4 mt-8">
               <BeaconReplyForm
-                beaconId={beaconReplyDetails.id}
-                beaconNotificationId={beaconReplyDetails.beaconNotificationId}
+                beaconId={beaconReplyDetails.beacon.beaconId}
+                beaconNotificationId={beaconReplyDetails.id}
                 replyOptions={replyTexts}
                 onSubmit={(data) => handleSubmitReply(data)}
                 onSelectedReply={(submit, hasSelection) => {

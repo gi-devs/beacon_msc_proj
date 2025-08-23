@@ -159,6 +159,7 @@ export async function scheduleNotificationsForBeacons() {
     return;
   }
 
+  console.log(activeUsersInSetOfGeohashes);
   /*
    This validates users from the geohashes by filtering with the required rules.
 
@@ -213,6 +214,8 @@ export async function scheduleNotificationsForBeacons() {
     // If the latest notification is within the user's minBeaconPushInterval, skip this user
     return timeSinceLastNotification >= userPushIntervalInMs;
   });
+
+  console.log('[scheduleNotificationsForBeacons] Valid users:', validUsers);
 
   // * create a map to track which users have been notified for each beacon already today
   const usersHaveBeenNotifiedByBeacon = new Map<string, Set<number>>();
@@ -769,9 +772,6 @@ async function getAllActiveUsersInGeohashes(
         geohash: {
           in: Array.from(setOfAllGeohashes),
         },
-      },
-      NotificationSetting: {
-        push: true,
       },
     },
     select: {
