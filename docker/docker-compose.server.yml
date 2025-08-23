@@ -17,6 +17,8 @@ services:
       - "traefik.http.routers.beacon.entrypoints=websecure"
       - "traefik.http.routers.beacon.tls.certresolver=letsencrypt"
       - "traefik.http.services.beacon.loadbalancer.server.port=4000"
+      - "traefik.http.middlewares.beacon-stripper.stripprefix.prefixes=/beacon-server"
+      - "traefik.http.routers.beacon.middlewares=beacon-stripper"
 
   db:
     image: postgres:15-alpine
