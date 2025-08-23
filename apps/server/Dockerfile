@@ -14,6 +14,8 @@ COPY packages/types ./packages/types
 RUN pnpm install
 
 WORKDIR /app/apps/server
+
+RUN pnpm prisma generate
 RUN pnpm build
 
 

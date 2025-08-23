@@ -20,3 +20,4 @@ certs/
 # Misc
 notes.md
 http-client.env.json
+**/acme.json
