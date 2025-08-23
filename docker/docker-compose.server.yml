@@ -13,7 +13,7 @@ services:
       - db
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.beacon.rule=Host(`projects.geraldineho.co.uk`)"
+      - "traefik.http.routers.beacon.rule=Host(`projects.geraldineho.co.uk`) || Host(`www.projects.geraldineho.co.uk`)"
       - "traefik.http.routers.beacon.entrypoints=websecure"
       - "traefik.http.routers.beacon.tls.certresolver=letsencrypt"
       - "traefik.http.services.beacon.loadbalancer.server.port=4000"
@@ -44,6 +44,8 @@ services:
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
       - "--certificatesresolvers.letsencrypt.acme.email=your@email.com"
       - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
     ports:
       - "80:80"
       - "443:443"
