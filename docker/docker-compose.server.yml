@@ -13,7 +13,7 @@ services:
       - db
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.beacon.rule=Host(`projects.geraldineho.co.uk/beacon-server`) || Host(`www.projects.geraldineho.co.uk/beacon-server`)"
+      - "traefik.http.routers.beacon.rule=Host(`projects.geraldineho.co.uk`) || Host(`www.projects.geraldineho.co.uk`) && PathPrefix(`/beacon-server`)"
       - "traefik.http.routers.beacon.entrypoints=websecure"
       - "traefik.http.routers.beacon.tls.certresolver=letsencrypt"
       - "traefik.http.services.beacon.loadbalancer.server.port=4000"
