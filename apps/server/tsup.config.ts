@@ -8,5 +8,6 @@ export default defineConfig({
   splitting: false,
   sourcemap: true,
   clean: true,
-  external: [], // don't exclude your workspaces
+  external: [],
+  noExternal: ['@beacon/utils', '@beacon/validation', '@beacon/types'],
 });
