@@ -13,7 +13,13 @@ import { Svg, Circle as SVGCircle } from 'react-native-svg';
 
 const AnimatedCircle = Animated.createAnimatedComponent(SVGCircle);
 
-const RippleCirclesAnimated = ({ size = 300 }: { size?: number }) => {
+const RippleCirclesAnimated = ({
+  size = 300,
+  animate = true,
+}: {
+  size?: number;
+  animate?: boolean;
+}) => {
   const vWidth = 981;
   const vHeight = 981;
 
@@ -65,6 +71,9 @@ const RippleCirclesAnimated = ({ size = 300 }: { size?: number }) => {
   const progressList = shapes.map(() => useSharedValue(0));
 
   useEffect(() => {
+    if (!animate) {
+      return;
+    }
     const baseDuration = 1000;
     const delayBetween = 1000;
     const totalCircles = progressList.length;

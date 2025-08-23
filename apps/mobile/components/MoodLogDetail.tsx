@@ -47,7 +47,7 @@ const MoodScaleDetails = ({
         }}
       >
         <MoodFace mood={scale} />
-        <View className="gap-1">
+        <View className="gap-1 flex-shrink">
           <Text className="text-lg font-semibold">
             {computeScaleToWords(scale)}
           </Text>

@@ -18,6 +18,7 @@ import RippleCirclesAnimated from '@/components/RippleCirclesAnimated';
 import { BlurView } from 'expo-blur';
 import * as Device from 'expo-device';
 import HeaderWithRouteUI from '@/components/ui/HeaderWithRouteUI';
+import { Ionicons } from '@expo/vector-icons';
 
 const BeaconNotifications = () => {
   const { refresh, items, loading, hasMore, fetchMore } =
@@ -56,9 +57,9 @@ const BeaconNotifications = () => {
   return (
     <>
       <View className="absolute top-0 left-0 right-0 bottom-0 justify-center items-center">
-        <RippleCirclesAnimated size={1200} />
+        <RippleCirclesAnimated size={1200} animate={false} />
       </View>
-      {Device.osName === 'ios' ? (
+      {Device.osName === 'iOS' ? (
         <BlurView
           style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}
           intensity={20}
@@ -66,7 +67,19 @@ const BeaconNotifications = () => {
       ) : (
         <View className="bg-white opacity-40 absolute inset-0 overflow-y-auto z-10" />
       )}
-      <SafeWrapper className="flex-1 z-20">
+      <SafeWrapper className="flex-1 z-20 mb-0">
+        <Pressable
+          className="mt-safe"
+          onPress={() => {
+            if (router.canGoBack()) {
+              router.back();
+            } else {
+              router.replace('/(home)');
+            }
+          }}
+        >
+          <Ionicons name="arrow-back-outline" size={24} color="black" />
+        </Pressable>
         <HeaderWithRouteUI
           header="Beacon Notifications"
           style={{
