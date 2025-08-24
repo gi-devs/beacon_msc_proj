@@ -20,9 +20,11 @@ import { Toast } from 'toastify-react-native';
 import { CreateJournalEntryData } from '@beacon/validation';
 import { parseToSeverError } from '@/utils/parseToSeverError';
 import JournalEntryForm from '@/components/form/forms/JournalEntryForm';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const Journal = () => {
   const { setHasScrolled } = useScroll();
+  const { user, setUser } = useAuthStore();
   const router = useRouter();
   const { mode, noLocationServices } = useLocalSearchParams();
   const {
@@ -68,6 +70,15 @@ const Journal = () => {
         const res = await createDailyLogRequest(data);
 
         if (res) {
+          if (user) {
+            setUser({
+              ...user,
+              appConfig: {
+                ...user.appConfig,
+                hasCompletedDailyCheckIn: true,
+              },
+            });
+          }
           Toast.success('Daily log created successfully!');
           router.push('/(home)');
         }
