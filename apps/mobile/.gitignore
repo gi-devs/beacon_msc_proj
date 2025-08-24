@@ -21,7 +21,7 @@ expo-env.d.ts
 # Android
 beacon-62984*.json
 google-services.json
-
+*.apk
 
 # Metro
 .metro-health-check*

@@ -6,13 +6,35 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "environment": "development",
+      "distribution": "internal",
+      "pnpm": "9.0.0"
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "environment": "preview",
+      "android": {
+        "buildType": "apk"
+      },
+      "pnpm": "9.0.0"
+    },
+    "preview2": {
+      "android": {
+        "gradleCommand": ":app:assembleRelease"
+      },
+      "pnpm": "9.0.0"
+    },
+    "preview3": {
+      "developmentClient": true,
+      "pnpm": "9.0.0"
+    },
+    "preview4": {
+      "distribution": "internal",
+      "pnpm": "9.0.0"
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "pnpm": "9.0.0"
     }
   },
   "submit": {

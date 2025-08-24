@@ -7,7 +7,7 @@ export const getApiUrl = () => {
   const isPhysical = Device.isDevice;
 
   if (isProd) {
-    return Constants.expoConfig?.extra?.API_URL;
+    return Constants.expoConfig?.extra?.PROD_URL;
   }
 
   if (isPhysical) {

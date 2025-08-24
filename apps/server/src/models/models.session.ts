@@ -41,6 +41,7 @@ export async function createSession(
       },
     });
   } catch (error) {
+    console.log(error);
     throw new CustomError('Error creating session', 500);
   }
 }
