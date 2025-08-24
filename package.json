@@ -7,8 +7,8 @@
   "scripts": {
     "dev:mobile": "pnpm --filter mobile start",
     "dev:server": "pnpm --filter server dev",
-    "dev:infra": "docker compose up -d",
-    "dev": "concurrently --kill-others-on-fail --names \"infra,server\" --prefix-colors \"cyan,yellow\" \"pnpm dev:infra\" \"pnpm --filter server dev\" && docker compose down",
+    "dev:infra": "docker compose -p beacon -f docker/docker-compose.db.yml up -d",
+    "dev": "concurrently --kill-others-on-fail --names \"infra,server\" --prefix-colors \"cyan,yellow\" \"pnpm dev:infra\" \"pnpm --filter server dev\" && docker compose -p beacon -f docker/docker-compose.db.yml down",
     "test": "pnpm --filter server test && pnpm --filter mobile test",
     "test:mobile": "pnpm --filter mobile test",
     "test:server": "pnpm --filter server test",
