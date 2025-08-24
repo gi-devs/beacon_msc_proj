@@ -1,4 +1,5 @@
 export function normaliseDate(date: Date): Date {
-  date.setUTCHours(0, 0, 0, 0); // Set time to midnight
-  return date;
+  return new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
+  );
 }

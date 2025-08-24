@@ -9,6 +9,7 @@ import * as console from 'node:console';
 import Expo from 'expo-server-sdk';
 import { BeaconNotificationStatus, Prisma } from '@/generated/prisma';
 import { BeaconPushNotificationData } from '@beacon/types';
+import { normaliseDate } from '@/utils/dates';
 
 type SafeBeaconNotification = Prisma.BeaconNotificationGetPayload<{
   include: {
@@ -595,7 +596,7 @@ export async function scheduleNotificationsForBeacons() {
 export async function sendNotificationsForBeacons() {
   // * get all unNotified beaconNotifications for today
   const now = new Date();
-  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const startOfDay = normaliseDate(new Date());
 
   const unNotifiedBeaconNotifications =
     await prisma.beaconNotification.findMany({
@@ -799,7 +800,7 @@ async function getAllActiveUsersInGeohashes(
   setOfAllGeohashes: Set<string>,
   now: Date,
 ) {
-  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const startOfDay = normaliseDate(now);
   return prisma.user.findMany({
     where: {
       LocationSetting: {
