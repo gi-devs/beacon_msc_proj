@@ -9,10 +9,17 @@ import { useEffect } from 'react';
 import { LocationProvider } from '@/context/locationContext';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useAuthInit } from '@/hooks/effects/useAuthInit';
+import * as NavigationBar from 'expo-navigation-bar';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  useEffect(() => {
+    // Hide navigation bar and enable immersive mode
+    void NavigationBar.setVisibilityAsync('hidden');
+    void NavigationBar.setBehaviorAsync('overlay-swipe');
+  }, []);
+
   return (
     <SafeAreaProvider>
       <NotificationProvider>

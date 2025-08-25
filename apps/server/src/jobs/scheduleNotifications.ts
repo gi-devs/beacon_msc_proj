@@ -702,10 +702,27 @@ export async function sendNotificationsForBeacons() {
     return;
   }
 
+  // if any unNotifiedToSend minPushInterval has not passed, put them in unNotifiedToUpdateSilent
+  const finalUnNotifiedToSend: SafeBeaconNotification[] = [];
+  for (const n of unNotifiedToSend) {
+    const minInterval = n.user.NotificationSetting.minBeaconPushInterval;
+
+    if (!minInterval) {
+      finalUnNotifiedToSend.push(n);
+      continue;
+    }
+
+    const timeSinceCreationSec = (now.getTime() - n.createdAt.getTime()) / 1000; // seconds
+
+    if (timeSinceCreationSec >= minInterval) {
+      finalUnNotifiedToSend.push(n);
+    }
+  }
+
   const expo = new Expo();
 
   const messages = [];
-  for (const notification of unNotifiedToSend) {
+  for (const notification of finalUnNotifiedToSend) {
     const { user, beacon } = notification;
     const { pushToken } = user;
 

@@ -59,10 +59,11 @@ const SignUp = () => {
       keyboardVerticalOffset={40}
     >
       <ScrollView
-        className="flex-col h-full pt-[40%] px-8 pb-20 bg-ripple-600 relative "
+        className="flex-col px-8 pb-20 bg-ripple-600 relative"
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{
           flexGrow: 1,
+          paddingTop: '40%',
         }}
       >
         <Image

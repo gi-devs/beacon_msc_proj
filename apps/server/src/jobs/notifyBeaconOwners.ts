@@ -49,6 +49,11 @@ export async function notifyBeaconOwners() {
           status: 'REPLIED', // only get notifications which have been replied to but not owner_notified
         },
       },
+      dailyCheckIn: {
+        select: {
+          moodLogId: true,
+        },
+      },
     },
   });
 
@@ -216,7 +221,6 @@ export async function notifyBeaconOwners() {
   }
 
   const messages = [];
-  const notificationsToUpdate = new Set<number>();
   for (const [userId, notificationInfo] of usersToNotifyAndNotifications) {
     const notificationIds = Array.from(notificationInfo.notificationIds);
     const beaconId = activeBeacons.find(
@@ -248,6 +252,16 @@ export async function notifyBeaconOwners() {
       continue;
     }
 
+    const moodLogId = activeBeacons.find((beacon) => beacon.user.id === userId)
+      ?.dailyCheckIn?.moodLogId;
+
+    let route;
+    if (!moodLogId) {
+      route = '/(home)/moodReview';
+    } else {
+      route = '/(home)/entry-details/mood-log/' + moodLogId;
+    }
+
     messages.push({
       to: user.pushToken.token,
       sound: 'default',
@@ -256,7 +270,7 @@ export async function notifyBeaconOwners() {
       data: {
         notificationIds: notificationIds,
         beaconId: beaconId,
-        // TODO: Set route to the beacon details page
+        route: route,
       },
     });
   }
