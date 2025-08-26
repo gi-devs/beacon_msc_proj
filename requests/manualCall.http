@@ -7,7 +7,7 @@ Authorization: Bearer {{ DEV_TOKEN}}
 
 {
   "userId": "cmes8mfvs0006l0v1o3cp47t5",
-  "beaconId": "90"
+  "beaconId": "91"
 }
 
 ### manual call owner notification
@@ -16,5 +16,5 @@ Content-Type: application/json
 Authorization: Bearer {{ DEV_TOKEN}}
 
 {
-  "notificationId": "355"
+  "notificationId": "356"
 }

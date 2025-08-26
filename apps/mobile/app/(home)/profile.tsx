@@ -74,9 +74,6 @@ const Profile = () => {
               </Text>
             </View>
           </View>
-          <Pressable onPress={() => pushLocalBeaconNotification()}>
-            <Text>NotificationTest</Text>
-          </Pressable>
         </View>
       </ScrollView>
     </SafeWrapper>
