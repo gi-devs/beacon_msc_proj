@@ -104,3 +104,17 @@ export async function updateBeaconNotificationById(
     throw new CustomError('Error updating beacon notification', 500);
   }
 }
+
+export async function createBeaconNotification(
+  data: Prisma.BeaconNotificationCreateInput,
+  tx: DbClient = prisma,
+) {
+  try {
+    return await tx.beaconNotification.create({
+      data,
+    });
+  } catch (error) {
+    console.log('Prisma Error: ', error);
+    throw new CustomError('Error creating beacon notification', 500);
+  }
+}

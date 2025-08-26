@@ -15,6 +15,7 @@ import {
   communityRoomRoutes,
   communityRoomPostRoutes,
   beaconNotificationRoutes,
+  devRoutes,
 } from '@/routes';
 import { scheduleNotificationsForBeacons } from '@/jobs/scheduleNotifications';
 
@@ -46,6 +47,7 @@ app.use('/community-room/posts', communityRoomPostRoutes);
 app.use('/beacon-notification', beaconNotificationRoutes);
 
 // ! for testing purposes only - remove in production and use cron job instead
+app.use('/dev', devRoutes);
 app.get('/manual-call/notification', async (req, res) => {
   try {
     await scheduleNotificationsForBeacons();

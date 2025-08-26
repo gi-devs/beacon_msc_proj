@@ -1,1 +1,20 @@
 GET {{ BASE_URL }}/manual-call/notification
+
+### manual call notification
+POST {{ BASE_URL }}/dev/manual/create-beacon-notification
+Content-Type: application/json
+Authorization: Bearer {{ DEV_TOKEN}}
+
+{
+  "userId": "cmes8mfvs0006l0v1o3cp47t5",
+  "beaconId": "90"
+}
+
+### manual call owner notification
+POST {{ BASE_URL }}/dev/manual/notify-beacon-owner
+Content-Type: application/json
+Authorization: Bearer {{ DEV_TOKEN}}
+
+{
+  "notificationId": "355"
+}
