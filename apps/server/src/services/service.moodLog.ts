@@ -38,7 +38,7 @@ async function create(
 
   const scales = [stressScale, anxietyScale, sadnessScale];
   const isValid = scales.every(
-    (scale) => Number.isInteger(scale) && scale >= 1 && scale <= 100,
+    (scale) => Number.isInteger(scale) && scale >= 0 && scale <= 100,
   );
 
   if (!isValid) {

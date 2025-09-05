@@ -15,8 +15,8 @@ async function fetchUsersCommunityRooms(
   skip: string,
   take: string,
 ): Promise<PaginatedResponse<UserCommunityRoomDTO>> {
-  const skipInt = parseInt(skip, 10) || 0;
-  const takeInt = parseInt(take, 10) || 10;
+  const skipInt = parseInt(skip, 10);
+  const takeInt = parseInt(take, 10);
 
   if (isNaN(skipInt) || isNaN(takeInt)) {
     throw new Error('Invalid skip or take parameters');
@@ -57,8 +57,8 @@ async function fetchCommunityRoomPostsByRoomId(
   skip: string,
   take: string,
 ): Promise<PaginatedResponse<CommunityPostDTO>> {
-  const skipInt = parseInt(skip, 10) || 0;
-  const takeInt = parseInt(take, 10) || 10;
+  const skipInt = parseInt(skip, 10);
+  const takeInt = parseInt(take, 10);
 
   if (isNaN(skipInt) || isNaN(takeInt)) {
     throw new Error('Invalid skip or take parameters');

@@ -53,7 +53,7 @@ async function createUserCommunityRoomPost(
     handleZodError(e);
   }
 
-  const { title, content } = parsedData;
+  const { title, content, moodFace } = parsedData;
 
   // check user exists
   const user = await getUserById(userId);
@@ -75,6 +75,7 @@ async function createUserCommunityRoomPost(
   const post = await createCommunityRoomPost({
     title,
     content,
+    moodFace,
     room: {
       connect: { id: roomId },
     },

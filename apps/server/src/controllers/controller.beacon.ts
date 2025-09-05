@@ -45,8 +45,8 @@ async function beaconRepliesWithMoodLogId(
 ): Promise<void> {
   try {
     const { moodLogId } = req.params;
-    const take = parseInt(req.query.take as string) || 10;
-    const skip = parseInt(req.query.skip as string) || 0;
+    const take = parseInt(req.query.take as string);
+    const skip = parseInt(req.query.skip as string);
 
     if (isNaN(take) || isNaN(skip) || isNaN(parseInt(moodLogId))) {
       throw new CustomError('Invalid pagination parameters', 400);

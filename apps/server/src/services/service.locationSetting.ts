@@ -13,11 +13,7 @@ import {
   getAllUsersAndLocationSettings,
   getUserById,
 } from '@/models/model.user';
-import {
-  decodeGeohash,
-  encodeGeohash,
-  getDistanceFromGeohashes,
-} from '@beacon/utils';
+import { decodeGeohash, getDistanceFromGeohashes } from '@beacon/utils';
 
 async function fetchUserLocationSetting(userId: string) {
   const locationSetting = await getLocationSettingByUserId(userId);
@@ -108,9 +104,9 @@ async function deleteUserLocationSetting(userId: string) {
   return;
 }
 
-// ! ---------------
-// ! For Testing
-// ! ---------------
+// ! --------------------------------------
+// ! For Testing - created by AI (ChatGPT)
+// ! --------------------------------------
 async function fetchIntersectingUsers() {
   const data = await getAllUsersAndLocationSettings();
 

@@ -84,7 +84,7 @@ const CommunityRoomPostForm = ({ callback }: { callback?: () => void }) => {
                   <Slider
                     value={typeof value === 'number' ? value : 50}
                     onValueChange={onChange}
-                    minimumValue={1}
+                    minimumValue={0}
                     maximumValue={100}
                     step={1}
                     thumbTintColor="#C8A69B"
