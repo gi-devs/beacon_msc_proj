@@ -1,3 +1,4 @@
+// This file was assisted with the help of AI (CoPilot).
 import {
   decodeGeohash,
   encodeGeohash,
@@ -169,6 +170,7 @@ export async function createCommunityRooms() {
 
   const roomsToCreate = Math.ceil(usersNotInRooms.length / 5);
 
+  // assisted with AI (CoPilot)
   function computeCentralPoints(users: string[]) {
     const points = users.map((id) => userLocations.get(id)).filter(Boolean);
     if (points.length === 0) return null;

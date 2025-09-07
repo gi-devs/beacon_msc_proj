@@ -1,3 +1,4 @@
+// This file was assisted with the help of AI (CoPilot).
 import React, { useEffect } from 'react';
 import { Svg, Circle, Path } from 'react-native-svg';
 import Animated, {
@@ -28,6 +29,7 @@ const MoodFace = ({ mood, size = 50, animated = true }: MoodFaceProps) => {
     }
   }, [mood]);
 
+  // assisted with AI (CoPilot)
   const animatedProps = useAnimatedProps(() => {
     const fill = interpolateColor(
       moodValue.value,
@@ -47,6 +49,7 @@ const MoodFace = ({ mood, size = 50, animated = true }: MoodFaceProps) => {
   );
 };
 
+// assisted with AI (CoPilot)
 function generateMouthPath(value: number): string {
   const clamped = Math.max(1, Math.min(100, value));
   const normalized = (clamped - 50) / 50; // range from -1 to 1

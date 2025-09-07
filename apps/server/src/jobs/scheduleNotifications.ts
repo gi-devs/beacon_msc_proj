@@ -1,3 +1,4 @@
+// This file was assisted with the help of AI (CoPilot).
 import prisma from '@/lib/prisma';
 import {
   boundingBox,
@@ -438,6 +439,7 @@ export async function scheduleNotificationsForBeacons() {
       }
 
       // check which beacon has had the least notifications sent today
+      // assisted with AI (CoPilot)
       const beaconWithLeastNotifications = Array.from(
         otherBeaconsWithThisUser,
       ).reduce((prev, curr) => {
@@ -448,7 +450,7 @@ export async function scheduleNotificationsForBeacons() {
         const prevCount = prevBeacon._count.beaconNotification;
         const currCount = currBeacon._count.beaconNotification;
 
-        return prevCount < currCount ? prev : curr; // 👈 now picks least
+        return prevCount < currCount ? prev : curr;
       }, beaconId); // default to current beacon
 
       // if the beacon with the least notifications is the current beacon, assign the user

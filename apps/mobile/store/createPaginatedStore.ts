@@ -1,3 +1,4 @@
+// This file was assisted with the help of AI (Copilot).
 import { create } from 'zustand';
 import { PaginatedResponse } from '@beacon/types';
 
@@ -58,6 +59,7 @@ export function createPaginatedStore<T>(
       await get().fetchPage(1, true);
     },
 
+    // This was assisted with the help of AI (Copilot).
     fetchSingle: async (id: number) => {
       try {
         set({ loading: true });
@@ -75,6 +77,7 @@ export function createPaginatedStore<T>(
       }
     },
 
+    // This was assisted with the help of AI (Copilot).
     updateSingleItem: (item: T) => {
       set((state) => {
         const map = new Map(state.items.map((i: any) => [i.id, i]));

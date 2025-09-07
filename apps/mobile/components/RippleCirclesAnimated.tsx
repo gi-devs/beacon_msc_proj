@@ -1,3 +1,4 @@
+// This file was created with the help of AI (ChatGPT).
 import React, { useEffect } from 'react';
 import { View } from 'react-native';
 import Animated, {

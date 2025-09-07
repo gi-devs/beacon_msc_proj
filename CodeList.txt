@@ -1,0 +1,283 @@
+--------------------------------------------------------------------------------------------------
+Mobile - Predominantly User Written
+--------------------------------------------------------------------------------------------------
+Module              | Files                         | Descriptions
+--------------------------------------------------------------------------------------------------
+api/                | authApi.ts                    | Authentication route API calls
+                    | beaconApi.ts                  | Beacon route API calls
+                    | communityRoomApi.ts           | Community room route API calls
+                    | locationSettingApi.ts         | Location setting route API calls
+                    | moodLoggerApi.ts              | Mood logger route API calls
+                    | notificationSettingApi.ts     | Notification setting route API calls
+                    | pushTokenApi.ts               | Push token route API calls
+
+constants/          | apiUrls.ts                    | API URL constants
+                    | AppStyles.ts                  | Application-wide styles
+                    | Colors.ts                     | Colour constants
+
+context/            | locationContext.tsx           | Context for managing user/device location
+                    | logCreatorContext.tsx         | Context for creating mood/journal/dailyCheckIn logs
+                    | notificationContext.tsx       | Context for managing notifications
+                    | scrollContext.tsx             | Context for scroll state and behaviour
+                    | uiContext.tsx                 | Context for global UI states
+
+hooks/              | effects/useAuthInit.ts        | Hook to initialise authentication state
+                    | effects/useGetDetails.ts      | Hook to get from store or fetch from api details of an entity
+                    | effects/useRelatedEntity.ts   | Hook to get from store or fetch from api related entities of another entity
+                    | ui/useIsMounted.ts            | Hook to check if a component is mounted
+                    | ui/useOpeningAnimation.ts     | Hook to handle state of initial homescreen opening animations
+                    | ui/usePressScaleAnimation.ts  | Hook to apply press scale animation and vibration effects
+
+lib/                | axios.ts                      | Axios instance configuration
+                    | aysncStorage.ts               | AsyncStorage functions
+                    | location.ts                   | Expo Location helper functions
+                    | notification.ts               | Expo Notification helper functions
+                    | secureStore.ts                | Expo SecureStore functions
+
+store/              | useAuthStore.ts               | Store for authentication state
+                    | useBeaconNotificationStore.ts | Store for handling user Beacon notifications
+                    | useCommunitiesStore.ts        | Store for handling user communities
+                    | useExploreMoodStore.ts        | Store for explore mood feature
+
+utils/              | analyseMoodScore.ts           | Utilities for analysing mood scores
+                    | capitalise.ts                 | Utilities to capitalise text
+                    | dateFormatter.ts              | Utilities to format dates
+                    | devMode.ts                    | Utility to for development
+                    | getBeaconReplyMessage.ts      | Utility to get a beacon message from message constant
+                    | parseToSeverError.ts          | Utility to parse api server errors
+                    | truncatedText.ts              | Utility to truncate text
+
+app/                | All files under app/ directory                             | All files under this directory are user written with
+                    |                                                            | assistance from GitHub Copilot for boilerplate code
+                    |                                                            |
+                    | (auth)/_layout.tsx                                         | Layout for authentication routes
+                    | (auth)/log-in.tsx                                          | Log-in screen
+                    | (auth)/sign-up.tsx                                         | Sign-up screen
+                    | (beacon)/_layout.tsx                                       | Layout for beacon routes
+                    | (beacon)/index.tsx                                         | Beacon index page
+                    | (beacon)/reply.tsx                                         | Beacon reply page
+                    | (home)/(community)/rooms/[id].tsx                          | Community room detail page
+                    | (home)/(community)/rooms/_layout.tsx                       | Layout for community rooms
+                    | (home)/(community)/rooms/index.tsx                         | Community rooms index
+                    | (home)/entry-details/journal-entry/[id].tsx                | Journal entry detail page
+                    | (home)/entry-details/journal-entry/mood-log/[id].tsx       | Mood log entry detail
+                    | (home)/entry-details/journal-entry/mood-log/_layout.tsx    | Layout for mood logs
+                    | (home)/entry-details/journal-entry/mood-log/explore.tsx    | Explore mood logs
+                    | (home)/entry-details/journal-entry/mood-log/index.tsx      | Mood log index
+                    | (home)/entry-details/journal-entry/mood-log/moodReview.tsx | Mood review page
+                    | (home)/entry-details/journal-entry/mood-log/profile.tsx    | Profile page
+                    | (home)/entry-details/mood-logging/_layout.tsx              | Layout for mood logging
+                    | (home)/entry-details/mood-logging/broadcast.tsx            | Mood broadcast page
+                    | (home)/entry-details/mood-logging/index.tsx                | Mood logging index
+                    | (home)/entry-details/mood-logging/journal.tsx              | Mood journal logging page
+                    | (home)/entry-details/_layout.tsx                           | Layout for entry details
+                    | (home)/entry-details/index.tsx                             | Entry details index
+
+components/form/    | forms/BeaconReplyForm.tsx     | Form for replying to a beacon
+                    | forms/CommunityRoomPostForm.tsx | Form for posting in a community room
+                    | forms/JournalEntryForm.tsx    | Form for creating journal entries
+                    | forms/MoodLogForm.tsx         | Form for logging moods
+                    | FormTextInput.tsx             | Reusable text input component for forms
+components/graphs/  | SixMonthMoodBarGraph.tsx      | Bar graph showing six months of mood data
+                    | TodayMoodLineGraph.tsx        | Line graph displaying today’s mood data
+components/ui/      | CustomTabBar.tsx              | Custom tab bar UI component
+                    | HeaderWithRouteUI.tsx         | Header component aware of routes
+                    | UIButton.tsx                  | Reusable button component
+components/utils/   | OnboardingScreen.tsx          | Onboarding screen component
+                    | SafeWrapper.tsx               | Safe wrapper for pages
+                    | CommunityPostDisplay.tsx      | Component to display a community post
+                    | DateTimeDisplay.tsx           | Component to display formatted date/time
+                    | HomeLinks.tsx                 | Component for displaying home navigation links
+                    | JournalEntryDisplayCard.tsx   | Card component for journal entry display
+                    | LogStack.tsx                  | Component for displaying logs in a stack
+                    | MoodLogDetail.tsx             | Detailed view for a mood log
+                    | MoodLogDisplayCard.tsx        | Card component for mood log display
+
+
+--------------------------------------------------------------------------------------------------
+Mobile - Predominantly AI Assisted
+--------------------------------------------------------------------------------------------------
+Module              | Files                         | Descriptions
+--------------------------------------------------------------------------------------------------
+constants/          | beaconReplyMessages.ts        | Reply messages for beacon interactions - created with AI
+
+hooks/              | ui/useIdleTime.ts             | Hook to track user idle time - assisted with AI
+
+store/              | createPaginatedStore.ts       | Store factory creating paginated data stores - assisted with AI
+                    | useCommunityRoomPostStore.ts  | Store for handling community room posts - assisted with AI
+                    | useJournalEntryStore.ts       | Store for journal entries - assisted by association
+                    | useMoodLogStore.ts            | Store for mood logs - assisted by association
+
+utils/              | computeColour.ts              | Utility to compute colours for mood face dynamically - created with AI
+
+components/utils/   | RippleCircles.tsx             | Ripple circles visual effect - largely assisted with help of AI
+                    | RippleCirclesAnimated.tsx     | Animated ripple circles effect - largely assisted with help of AI
+                    | MoodFace.tsx                  | Component to display a mood face - largely assisted with AI
+
+
+--------------------------------------------------------------------------------------------------
+Server - Predominantly User Written
+--------------------------------------------------------------------------------------------------
+Module              | Files                         | Descriptions
+--------------------------------------------------------------------------------------------------
+prisma/            | schema.prisma                  | Prisma schema defining database models and relations
+
+src/config/        | config.ts                      | Server configuration settings
+
+src/controllers/   | All files                          | All files under this directory are user written with
+                   |                                    | assistance from GitHub Copilot for boilerplate code
+                   |                                    |
+                   | controller.auth.ts                 | Controller for authentication logic
+                   | controller.beacon.ts               | Controller for beacon operations
+                   | controller.beaconNotification.ts   | Controller for beacon notifications
+                   | controller.communityRoom.ts        | Controller for community room operations
+                   | controller.communityRoomPost.ts    | Controller for community room posts
+                   | controller.dailyCheckIn.ts         | Controller for daily check-in functionality
+                   | controller.dev.ts                  | Controller for development/testing routes
+                   | controller.journalEntry.ts         | Controller for journal entries
+                   | controller.locationSetting.ts      | Controller for location settings
+                   | controller.moodLog.ts              | Controller for mood logs
+                   | controller.notificationSetting.ts  | Controller for notification settings
+                   | controller.pushToken.ts            | Controller for push token handling
+
+src/jobs/          | createCommunityRooms.ts        | Job to create community rooms - assisted with AI but mostly user written
+                   | notifyBeaconOwners.ts          | Job to notify beacon owners - assisted with AI but mostly user written
+                   | scheduleNotifications.ts       | Job to schedule and send notifications - assisted with AI but mostly user written
+
+src/lib/               | expoNotifications.ts           | function for creating Expo push notifications
+                   | prisma.ts                      | Prisma client singleton setup
+
+src/middleware/    | dev-check.ts                   | Middleware to check for dev routes using dev token
+                   | error.ts                       | Middleware for error handling
+                   | not-found.ts                   | Middleware to handle 404 Not Found routes
+                   | verify-token.ts                | Middleware to verify authentication tokens
+                   | index.ts                       | Entry point for combining and exporting middleware
+
+src/models/            | All files                      | All files under this directory are user written with
+                   |                                | assistance from GitHub Copilot for boilerplate code
+                   |                                |
+                   | model.beacon.ts                | Beacon model
+                   | model.beaconNotification.ts    | Beacon notification model
+                   | model.beaconReply.ts           | Beacon reply model
+                   | model.communityRoom.ts         | Community room model
+                   | model.communityRoomPost.ts     | Community room post model
+                   | model.dailyCheckIn.ts          | Daily check-in model
+                   | model.journalEntry.ts          | Journal entry model
+                   | model.locationSetting.ts       | Location setting model
+                   | model.moodLog.ts               | Mood log model
+                   | model.notificationSetting.ts   | Notification setting model
+                   | model.pushToken.ts             | Push token model
+                   | model.user.ts                  | User model
+                   | models.session.ts              | Session model
+
+src/models/        | All files                      | All files under this directory are user written with
+                   |                                | assistance from GitHub Copilot for boilerplate code
+                   |                                |
+                   | index.ts                       | Entry point for routes
+                   | route.auth.ts                  | Routes for authentication
+                   | route.beacon.ts                | Routes for beacon operations
+                   | route.beaconNotification.ts    | Routes for beacon notifications
+                   | route.communityRoom.ts         | Routes for community rooms
+                   | route.communityRoomPost.ts     | Routes for community room posts
+                   | route.dailyLog.ts              | Routes for daily logs
+                   | route.dev.ts                   | Routes for development/testing
+                   | route.journalEntry.ts          | Routes for journal entries
+                   | route.locationSetting.ts       | Routes for location settings
+                   | route.moodLog.ts               | Routes for mood logs
+                   | route.notificationSetting.ts   | Routes for notification settings
+                   | route.pushToken.ts             | Routes for push tokens
+                   | route.user.ts                  | Routes for user operations
+
+src/services/      | service.auth.ts                | Service for authentication logic
+                   | service.beacon.ts              | Service for beacon operations
+                   | service.beaconNotification.ts  | Service for beacon notifications
+                   | service.communityRoom.ts       | Service for community room logic
+                   | service.communityRoomPost.ts   | Service for community room posts
+                   | service.dailyCheckIn.ts        | Service for daily check-in functionality
+                   | service.journalEntry.ts        | Service for journal entries
+                   | service.locationSetting.ts     | Service for location settings
+                   | service.moodLog.ts             | Service for mood logs
+                   | service.notificationSetting.ts | Service for notification settings
+                   | service.pushToken.ts           | Service for push token management
+                   | services.dev.ts                | Development/testing service
+
+src/utils/         | custom-error.ts                | Utility for defining and handling custom errors
+                   | dates.ts                       | Utility functions for working with dates
+                   | handle-zod-error.ts            | Utility to handle and format Zod validation errors
+
+src/types/         | express.d.ts                   | TypeScript type for global Express Request with user
+
+src//              | app.ts                         | Main application setup (initialises middleware, routes, etc.)
+                   | server.ts                      | Server entry point (starts the server, binds app to a port)
+
+
+--------------------------------------------------------------------------------------------------
+Server - Predominantly AI Assisted
+--------------------------------------------------------------------------------------------------
+Module              | Files                         | Descriptions
+--------------------------------------------------------------------------------------------------
+data/               | roomNames.ts                  | Names of community rooms - created with AI
+
+scripts/            | seed/constants.ts             | Constants used for seeding
+                    | seed/seed.ts                  | Main database seeding script
+                    | seed/seed-helpers.ts          | Helper functions for seeding
+
+utils/              | handle-zod-error.ts           | Utility to handle and format Zod validation errors
+
+
+--------------------------------------------------------------------------------------------------
+Packages - Predominantly User Written
+--------------------------------------------------------------------------------------------------
+Module              | Files                         | Descriptions
+--------------------------------------------------------------------------------------------------
+types/             | auth.ts                        | Type definitions for authentication
+                   | beacon.ts                      | Type definitions for beacons
+                   | community-room.ts              | Type definitions for community rooms
+                   | daily-check-in.ts              | Type definitions for daily check-ins
+                   | index.ts                       | Entry point for exporting types
+                   | journal-entry.ts               | Type definitions for journal entries
+                   | mood-log.ts                    | Type definitions for mood logs
+                   | notification.ts                | Type definitions for notifications
+                   | server.ts                      | Type definitions for server structures
+
+utils/src/         | geohash.ts                     | Utility functions for using geohashing library
+
+validation/src/    | All files                                          | All files under this directory are user written with
+                   |                                                    | assistance from GitHub Copilot for boilerplate code
+                   |                                                    |
+                   | auth/logInSchema.ts                                | Zod schema for log-in validation
+                   | auth/signUpSchema.ts                               | Zod schema for sign-up validation
+                   | beacon/createBeaconReplySchema.ts                  | Zod schema for creating a beacon reply
+                   | communityRoomPost/…                                | (Schemas for community room posts - not expanded in screenshot)
+                   | dailyLog/createDailyLogSchema.ts                   | Zod schema for daily log creation
+                   | journalEntry/createJournalEntrySchema.ts           | Zod schema for journal entry creation
+                   | locationSetting/createLocationSetting.ts           | Zod schema for location setting creation
+                   | moodLog/createMoodLoggingSchema.ts                 | Zod schema for mood logging
+                   | notificationSetting/createNotificationSetting.ts   | Zod schema for notification setting
+                   | pushToken/syncPushTokenSchema.ts                   | Zod schema for syncing push tokens
+
+
+
+--------------------------------------------------------------------------------------------------
+Packages - Predominantly AI Assisted
+--------------------------------------------------------------------------------------------------
+Module              | Files                         | Descriptions
+--------------------------------------------------------------------------------------------------
+utils/src/          | locationCalculations.ts       | Utility functions for location-based calculations
+                    | randomiser.ts                 | Utility for randomisation
+
+
+--------------------------------------------------------------------------------------------------
+Docker - Predominantly User Written
+--------------------------------------------------------------------------------------------------
+Module              | Files                         | Descriptions
+--------------------------------------------------------------------------------------------------
+docker/             | docker-compose.dev.yml        | Docker Compose file for development environment - largely assisted with help of AI for debugging
+
+--------------------------------------------------------------------------------------------------
+Docker - Predominantly AI Assisted
+--------------------------------------------------------------------------------------------------
+Module              | Files                         | Descriptions
+--------------------------------------------------------------------------------------------------
+docker/             | docker-compose.server.yml     | Docker Compose file for server services - largely assisted with help of AI for debugging
+                    | docker-compose.db.yml         | Docker Compose file for database services - largely assisted with help of AI for debugging

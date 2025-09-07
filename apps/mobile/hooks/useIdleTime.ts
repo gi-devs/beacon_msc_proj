@@ -1,3 +1,5 @@
+// This file was assisted with the help of AI (ChatGPT).
+
 import { useRef } from 'react';
 import { AsyncItemKey, getAsyncItem, saveAsyncItem } from '@/lib/aysncStorage';
 

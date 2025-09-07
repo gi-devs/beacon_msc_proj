@@ -8,9 +8,7 @@ const axiosInstance = axios.create({
   baseURL: API_URL,
 });
 
-// Add a request interceptor
 axiosInstance.interceptors.request.use(async (config) => {
-  // Do something before request is sent
   const token = await getStoredAccessToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;

@@ -1,3 +1,4 @@
+// This file was created with the help of AI (ChatGPT).
 export function getMoodColor(value: number): string {
   const clamped = Math.max(1, Math.min(100, value));
 

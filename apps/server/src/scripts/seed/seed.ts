@@ -1,3 +1,4 @@
+// This file was assisted with the help of AI (ChatGPT).
 import dotenv from 'dotenv';
 import path from 'path';
 
@@ -26,6 +27,7 @@ const BASE_LAT = 55.876893562570345;
 const BASE_LON = -4.286377159029303;
 const EARTH_RADIUS = 6378137; // meters
 
+// created with the help of AI (ChatGPT)
 function randomNearbyGeohash50to1000m() {
   const distance = 50 + Math.random() * (1000 - 50);
   const bearing = Math.random() * 2 * Math.PI;

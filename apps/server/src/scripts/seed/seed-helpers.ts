@@ -1,3 +1,4 @@
+// This file was assisted with the help of AI (ChatGPT).
 import { faker } from '@faker-js/faker';
 import prisma from '@/lib/prisma';
 import { normaliseDate } from '@/utils/dates';
@@ -33,6 +34,7 @@ function randomReplyKey() {
   return keys[Math.floor(Math.random() * keys.length)] as BeaconReplyTextKey;
 }
 
+// created with the help of AI (ChatGPT)
 export async function seedDummyUserData() {
   const now = Date.now();
   const today = normaliseDate(new Date());

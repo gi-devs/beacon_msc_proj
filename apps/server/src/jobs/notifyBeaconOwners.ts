@@ -1,3 +1,4 @@
+// This file was assisted with the help of AI (CoPilot).
 import prisma from '@/lib/prisma';
 import { BeaconNotificationStatus, Prisma } from '@/generated/prisma';
 import console from 'node:console';
@@ -93,6 +94,7 @@ export async function notifyBeaconOwners() {
   const usersToNotifyFromFilter = new Map<string, UserFromBeacon>();
 
   // ---- Helper -----
+  // assisted with AI (CoPilot)
   function collectBeacons(
     beacons: BeaconWithUserAndNotifs[],
     condition: (beacon: BeaconWithUserAndNotifs) => boolean,

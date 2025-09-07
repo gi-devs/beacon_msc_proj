@@ -1,3 +1,5 @@
+// This file was assisted with the help of AI (ChatGPT).
+
 import { create } from 'zustand';
 import { PaginatedResponse, CommunityPostDTO } from '@beacon/types';
 import {
@@ -101,6 +103,7 @@ export const useCommunityPostStore = create<CommunityPostStore>((set, get) => ({
     await get().fetchPage(1, true);
   },
 
+  // This was assisted with the help of AI (ChatGPT).
   fetchSingle: async (id: number) => {
     try {
       set({ loading: true });
@@ -132,6 +135,7 @@ export const useCommunityPostStore = create<CommunityPostStore>((set, get) => ({
     }
   },
 
+  // This file was assisted with the help of AI (ChatGPT).
   updateSingleItem: (item: CommunityPostDTO) => {
     const { activeRoomId } = get();
     if (!activeRoomId) return;
@@ -155,6 +159,8 @@ export const useCommunityPostStore = create<CommunityPostStore>((set, get) => ({
       };
     });
   },
+
+  // This file was assisted with the help of AI (ChatGPT).
   removeSingleItem: (id: number) => {
     const { activeRoomId } = get();
     if (!activeRoomId) return;

@@ -1,3 +1,4 @@
+// This file was assisted with the help of AI (CoPilot).
 import { ZodError } from 'zod';
 import { CustomError } from '@/utils/custom-error';
 

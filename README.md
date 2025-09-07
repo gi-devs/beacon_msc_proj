@@ -53,7 +53,7 @@ ensure you have pnpm, node and docker.
 
 ### Environment Variables
 You will need to create a `.env.development` file in the root directory of the project. A sample `.env.example` [file](.env.example) is provided in the root directory. 
-You can copy this file and rename it to `.env.development` and change required enviroment variables.
+You can copy this file and rename it to `.env.development` and change required environment variables.
 
 ## Technologies Used
 Beacon is a typescript monorepo built with the following technologies:
@@ -64,9 +64,9 @@ Beacon is a typescript monorepo built with the following technologies:
 - **validation**: Zod
 
 ## Use of Generative AI
-Generative AI tools, specifically GitHub Copilot, were used to assist in the development of this project. The AI was used to generate code snippets and provide suggestions, which were then reviewed and modified to fit the project's requirements. It mostly used for boilerplate code and repetitive tasks. AI was not used for any core application logic, architecture, or design decisions. It was mainly used to assist with debugging, fixing errors and speeding up the development process.
+Generative AI tools, specifically ChatGPT and GitHub Copilot, were used to assist in the development of this project. The AI was used to generate code snippets and provide suggestions, which were then reviewed and modified to fit the project's requirements. It mostly used for boilerplate code and repetitive tasks. AI was not used for any large core application logic, architecture, or design decisions. It was mainly used to assist with debugging, fixing errors and speeding up the development process. 
 
-Files or sections where AI was heavily used in the application are documented in the code comments. This does not include short code snippets or auto completions, only those which were are significant sections of code.
+Files or sections where AI was heavily used in the application are documented in the code comments. This does not include short code snippets or auto completions, only those which were are significant sections of code. [CodeList.txt](CodeList.txt) contains a list of files and sections where AI was used and where it is mostly user written.
 
 ### Sections which were most assisted by AI:
 - Seeding scripts
@@ -76,6 +76,7 @@ Files or sections where AI was heavily used in the application are documented in
 - Location calculations and formulas
 - Testing dummy data creation
 - Build errors
+- General logical snippets/errors
 
 ### Sections which were not influenced by AI:
 - UI/UX design and implementation

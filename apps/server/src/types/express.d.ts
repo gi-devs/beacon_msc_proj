@@ -1,4 +1,3 @@
-// apps/server/src/types/express.d.ts
 import { UserPayload } from '@beacon/types';
 
 declare global {
@@ -9,5 +8,4 @@ declare global {
   }
 }
 
-// required so this file is treated as a module
 export {};
